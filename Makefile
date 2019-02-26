@@ -1,6 +1,6 @@
 OBJS 	= main.o ReadParameters.o
 SOURCE	= main.c Frontend/ReadParameters.c
-HEADER  = HeaderFiles/Input.h
+HEADER  = HeaderFiles/Input.h HeaderFiles/Structs.h
 OUT  	= bitcoin
 CC	= gcc
 FLAGS   = -g -c -Wall
