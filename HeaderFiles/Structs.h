@@ -1,9 +1,10 @@
 #include <time.h>
+#include "LinkedLists.h"
 #define NUMBER 50
 
 struct wallet {
-    char _walletID[NUMBER]; // this is the UserID
-    struct LinkedList* btcList; 
+    char _walletID[NUMBER];
+    struct LinkedList* list;  // this is a LL of userBitcoin*
     int balance;
 };
 
@@ -31,39 +32,27 @@ struct btcTree {
 
 struct trxObject {
     int _trxID;
-    struct wallet* senderID;
-    struct wallet* receiverID;
+    struct wallet* sender;
+    struct wallet* receiver;
     int value;
     struct tm time; // time
 };
 
 struct trxinLL {
     struct trxObject* trx;
-    struct wallet* walletID;
+    struct wallet* walletinTRX;
     struct btcTree* treePointer;
 };
 
 struct bucketNode {
     struct wallet* walletID;
-    struct trxinLL* headofList;
+    struct LinkedList* headofList; // this is  a LL of trxinLL* objects
 };
 
-// bucket is a LL of bucket Nodes, pointer to next bucket should be included in b size
-// generic implementation 
-struct LinkedList {
-    void *data;
-    struct LinkedList *next;
-};
-
-// generic implementation 
-struct HashTable {
+struct bucket {
     int size;
-    void **node; // buckets
+    struct bucketNode* array;
 };
-
-// 1 for rec 1 for send and one for wallet
-// hash table --> of all bitcoins , btcID and pointer in the tree
-// but user will have a ll of bitcoins and amount he has
 
 typedef struct wallet wallet;
 typedef struct bitcoin bitcoin;
@@ -71,7 +60,9 @@ typedef struct userBitcoin userBitcoin;
 typedef struct btcNode btcNode;
 typedef struct btcTree btcTree;
 typedef struct trxObject trxObject;
-typedef struct LinkedList LinkedList;
 typedef struct HashTable HashTable;
 typedef struct trxinLL trxinLL;
 typedef struct bucketNode bucketNode;
+typedef struct bucket bucket;
+
+

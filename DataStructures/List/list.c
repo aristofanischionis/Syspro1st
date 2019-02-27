@@ -1,24 +1,34 @@
 #include <stdio.h> 
 #include <stdlib.h> 
-#include "../../HeaderFiles/Structs.h"
+#include "../../HeaderFiles/LinkedLists.h"
 
 // source: https://www.geeksforgeeks.org/generic-linked-list-in-c-2/
 
-void push(LinkedList** head_ref, void *new_data, size_t data_size) 
+int insertintheEnd(LinkedList** head, void *newData, size_t dataSize) 
 { 
     // Allocate memory for node 
-    LinkedList* new_node = (LinkedList*)malloc(sizeof(LinkedList)); 
+    LinkedList* newNode = (LinkedList*)malloc(sizeof(LinkedList));
+    LinkedList* last = *head;
   
-    new_node->data  = malloc(data_size); 
-    new_node->next = (*head_ref); 
+    newNode->data  = malloc(dataSize); 
   
-    // Copy contents of new_data to newly allocated memory. 
+    // Copy contents of newData to newly allocated memory. 
     int i; 
-    for (i=0; i<data_size; i++) 
-        *(char *)(new_node->data + i) = *(char *)(new_data + i); 
+    for (i=0; i<dataSize; i++) 
+        *(char *)(newNode->data + i) = *(char *)(newData + i); 
   
-    // Change head pointer as new node is added at the beginning 
-    (*head_ref) = new_node; 
+    newNode->next = NULL; 
+    // If the Linked List is empty, then make the new node as head
+    if (*head == NULL) { 
+        *head = newNode;
+        return 0; 
+    } 
+    // Else traverse till the last node
+    while (last->next != NULL) last = last->next; 
+  
+    // Change the next of last node
+    last->next = newNode;
+    return 0; 
 } 
 
 void printList(LinkedList *node, void (*fptr)(void *)) 
