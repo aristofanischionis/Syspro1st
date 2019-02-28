@@ -1,10 +1,14 @@
+#ifndef STRUCTS_HEADER
+#define STRUCTS_HEADER
 #include <time.h>
 #include "LinkedLists.h"
-#define NUMBER 50
+#include "Tree.h"
+#define ERROR 1
+#define SUCCESS 0
 
 struct wallet {
-    char _walletID[NUMBER];
-    struct LinkedList* list;  // this is a LL of userBitcoin*
+    char* _walletID;
+    struct LinkedList* btcList;  // this is a LL of userBitcoin*
     int balance;
 };
 
@@ -15,19 +19,13 @@ struct userBitcoin {
 
 struct bitcoin {
     int _bitcoinID;
-    struct tree* btcTree;
+    struct Tree* btcTree;
 };
 
 struct btcNode {
     struct wallet* walletID;
     int dollars;
-    struct trxObject* trx;
-};
-
-struct btcTree {
-    struct btcNode node;
-    struct btcTree* lKid;
-    struct btcTree* rKid;
+    int _trxID;
 };
 
 struct trxObject {
@@ -58,11 +56,9 @@ typedef struct wallet wallet;
 typedef struct bitcoin bitcoin;
 typedef struct userBitcoin userBitcoin;
 typedef struct btcNode btcNode;
-typedef struct btcTree btcTree;
 typedef struct trxObject trxObject;
-typedef struct HashTable HashTable;
 typedef struct trxinLL trxinLL;
 typedef struct bucketNode bucketNode;
 typedef struct bucket bucket;
 
-
+#endif

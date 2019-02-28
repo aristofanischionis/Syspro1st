@@ -1,3 +1,5 @@
+#ifndef HASHTABLES_HEADER
+#define HASHTABLES_HEADER
 #include "LinkedLists.h"
 #include "Structs.h"
 
@@ -16,19 +18,12 @@ struct BitcoinHT {
     struct bitcoin** nodes;
 };
 
-struct SenderHT {
+struct SRHashT {
     int size;
     int count;
-    // mpla mpla ht things
-    LinkedList** myBuckets; // this is a bucket *
+    LinkedList* myBuckets; // this is a bucketNode
 };
 
-struct ReceiverHT {
-    int size;
-    int count;
-    // mpla mpla ht things
-    LinkedList** myBuckets; // this is a bucket *
-};
 // bucket is a LL of bucket Nodes, pointer to next bucket should be included in b size
 
 
@@ -40,5 +35,6 @@ struct ReceiverHT {
 
 typedef struct BitcoinHT BitcoinHT;
 typedef struct walletHT walletHT;
-typedef struct SenderHT SenderHT;
-typedef struct ReceiverHT ReceiverHT;
+typedef struct SRHashT SRHashT;
+
+#endif
