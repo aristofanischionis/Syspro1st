@@ -3,10 +3,11 @@
 #include <string.h>
 #include "../../HeaderFiles/Structs.h"
 #include "../../HeaderFiles/Hashtables.h"
+#include "../../HeaderFiles/LinkedLists.h"
 
 static wallet DELETED_WALLET = {NULL, NULL, NULL};
 
-const int HT_INITIAL_BASE_SIZE = 200;
+int HT_INITIAL_BASE_SIZE = 200;
 
 static void resizeUp(walletHT* );
 
@@ -21,12 +22,13 @@ static walletHT* newSize(const int baseSize) {
     return ht;
 }
 
-walletHT* new() {
+walletHT* new(const int size) {
+    HT_INITIAL_BASE_SIZE = size;
     return newSize(HT_INITIAL_BASE_SIZE);
 }
 
 static void delNode(wallet* i) {
-    deleteList(i->list);
+    destroy(i->btcList);
     free(i);
 }
 
@@ -66,20 +68,20 @@ static int getHash( const char* s, const int size, const int attempt) {
     return (hashA + (attempt * (hashB + 1))) % size;
 }
 
-void insert(walletHT* ht, char* _id) {
+void insert(walletHT* ht, wallet* item) {
     const int load = ht->count * 100 / ht->size;
     if (load > 70) {
         resizeUp(ht);
     }
-    wallet *item = newWallet(_id); // New wallet
+
     // printf("id that is given after newWallet %s\n", item->_walletID);
-    if(item == NULL) printf("Couldn't allocate space for new wallet\n");
+    if(item == NULL) printf("wallet is NULL\n");
     int index = getHash(item->_walletID, ht->size, 0);
     wallet* curItem = ht->nodes[index];
     int i = 1;
     while ( curItem != NULL ) {
         if( curItem != &DELETED_WALLET ){
-            if (strcmp(curItem->_walletID, _id) == 0) {
+            if (strcmp(curItem->_walletID, item->_walletID) == 0) {
                 // if an _id is given that it has already been given
                 //update its content with the new value
                 delNode(curItem);
@@ -182,12 +184,19 @@ void print(walletHT* ht){
     while(i < ht->baseSize){
         if(ht->nodes[i] != NULL){
             printf("|%s|\n", ht->nodes[i]->_walletID);
-            struct btcList *temp = ht->nodes[i]->list;
-            while(temp != NULL){   
-                // printf("\t -%d->|%s|\n", temp->weight, temp->target->_walletID);
-                // temp = temp->next;
-            }
+            LinkedList *temp = ht->nodes[i]->btcList;
+
+            doForAll(temp, iterateBitcoins); 
         }
         i++;
     }
+}
+
+int iterateBitcoins(void *data) {
+    userBitcoin* this;
+    this = (userBitcoin*) data;
+    int id = this->btc->_bitcoinID;
+    int am = this->amount;
+    printf("Id of this bitcoin %d and amount for this user %d\n", id, am);
+    return 1;
 }

@@ -37,4 +37,10 @@ typedef struct BitcoinHT BitcoinHT;
 typedef struct walletHT walletHT;
 typedef struct SRHashT SRHashT;
 
+walletHT* new(const int size);
+void delHT(walletHT* ht);
+void insert(walletHT* ht, wallet* item);
+wallet* search(walletHT* ht, char* _id);
+void print(walletHT* ht);
+
 #endif
