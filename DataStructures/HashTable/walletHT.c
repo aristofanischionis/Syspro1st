@@ -63,8 +63,8 @@ static int hash(const char* str, const int m) {
 }
 //avoiding collisions double hashing
 static int getHash( const char* s, const int size, const int attempt) {
-    const int hashA = hashFun(s, size);
-    const int hashB = hashFun(s, size);
+    const int hashA = hash(s, size);
+    const int hashB = hash(s, size);
     return (hashA + (attempt * (hashB + 1))) % size;
 }
 

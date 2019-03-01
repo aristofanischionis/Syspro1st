@@ -104,9 +104,38 @@ int newBucketNode(bucketNode* bkt, char* wal, walletHT* ht, LinkedList* trxList)
 }
 
 void newBucket(bucket* b, int size){
-    b = malloc(sizeof(bucket));
+    b = (bucket*) malloc(sizeof(bucket));
     b->size = size;
-    b->array = malloc(size* sizeof(bucketNode));
+    b->count = 0;
+    b->array = (bucketNode**)malloc(size* sizeof(bucketNode*));
+    int i;
+    for(i = 0; i<size ; i++){
+        b->array[i] = (bucketNode*)malloc(sizeof(bucketNode));
+        b->array[i] = NULL;
+    }
+}
+
+int insertNodeinBucket(bucket* b, bucketNode* bn){
+    if(b->count == b->size) printf("this bucket is full \n");
+    return ERROR;
+    // check if the sender or receiver already exists in a bucketNode
+    int i;
+    for(i=0; i< b->count ;i++){
+        if(!strcmp(b->array[i]->walletID->_walletID, bn->walletID->_walletID)){
+            printf("Sender of already exists so add in the beg of the trx list\n");
+            insertBEG(b->array[i]->headofList, bn);
+            return SUCCESS;
+        }
+    }
+    // so if he doesn't add him in the first available position
+    // i start searching from b->count because till there they are not available 
+    // if count is 3 it means that 0,1,2 are taken so put it in 3
+    for(i=b->count; i<b->size; i++){
+        if (b->array[i] != NULL) continue;
+        b->array[i] = bn;
+        b->count ++ ;
+    }
+    return SUCCESS;
 }
 
 void destroyBucketlist(void* data){

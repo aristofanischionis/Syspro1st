@@ -49,8 +49,9 @@ struct bucketNode {
 };
 
 struct bucket {
-    int size;
-    struct bucketNode* array;
+    int size; // how many can fit
+    int count; // how many are inside already
+    struct bucketNode** array;
 };
 
 typedef struct wallet wallet;
@@ -72,6 +73,7 @@ void newTRXList(LinkedList* list);
 int newTrxLLNode(trxinLL* node, trxObject* t, char* wal, walletHT* ht, btcTree* tptr);
 int newBucketNode(bucketNode* bkt, char* wal, walletHT* ht, LinkedList* trxList);
 void newBucket(bucket* b, int size);
+int insertNodeinBucket(bucket* b, bucketNode* bn);
 void newBucketList(LinkedList* list);
 
 #endif

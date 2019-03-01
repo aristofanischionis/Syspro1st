@@ -3,53 +3,129 @@
 #include <string.h>
 #include "../../HeaderFiles/Structs.h"
 #include "../../HeaderFiles/Hashtables.h"
-#include "../../HeaderFiles/LinkedList.h"
+#include "../../HeaderFiles/LinkedLists.h"
 
-int init(SenderHT** ht, int h1){
+int initSRHT(SRHashT* ht, int h1, int numOfBucketNodes){
     if(h1 < 0) return ERROR;
-    ht = (SenderHT**)malloc(h1 * sizeof(SenderHT*));
+    ht = (SRHashT*)malloc(sizeof(SRHashT)); // one ht
     ht->size = h1;
-    ht->count = 0;
+    ht->bucketNodesNum = numOfBucketNodes;
+    ht->myBuckets = (LinkedList**)malloc(h1 * sizeof(LinkedList*)); // this is a dynamic array of h1 elements of type LL* bucket
     int i;
-    for(i=0; i< h1; i++){
-        ht->myBuckets[i] = NULL;
+    for(i=0; i<h1; i++){
+        init(ht->myBuckets[i], sizeof(bucket*), deleteBucket);
     }
+    return SUCCESS;
 }
 
-int newBucket(SenderHT* ht, int index, int size ){
-    if(ht == NULL) return ERROR;
-    // malloc a bucket
-    bucket* curBuck;
-    curBuck = malloc(sizeof(bucket));
-    // init the bucket
-    curBuck->size = size;
-    curBuck->array = (bucketNode*)malloc(size* sizeof(bucketNode));
-    // check if this index has a list
-    if(ht->myBuckets[index] == NULL){
-        // this index doesn't have a list of buckets yet
-        // so create it
-        ht->myBuckets[index] = (LinkedList*)malloc(sizeof(LinkedList));
-        insertEND(ht->myBuckets[index], curBucket);
+void deleteBucketNode(bucketNode* this){
+    destroy(this->headofList);
+    free(this);
+}
+
+void deleteBucket(void* t){
+    bucket* this = (bucket*) t;
+    int i;
+    for(i=0; i<this->size && this != NULL; i++){
+        deleteBucketNode(&(this->array[i]));
+    }
+    free(this);
+}
+
+static int hash(const char* str, const int m) {
+    int hash = 5381;
+    int c;
+
+    while (c = *str++)
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+    return hash % m;
+}
+//avoiding collisions double hashing
+static int getHash1( const char* s, const int size) {
+    const int hashA = hash(s, size);
+    const int hashB = hash(s, size);
+    return (hashA + (hashB + 1)) % size;
+}
+
+void traverseLL(LinkedList* listofBuckets, bucket* result){
+    listNode* h = listofBuckets->head;
+    bucket* temp;
+    while (h != NULL)
+    {
+        temp = (bucket*) h->data ;
+        if(temp->count < temp->size){
+            // this can fit more records in it
+            result = temp;
+            return;
+        }
+        
+        // this is just a full bucket
+        h = h->next;
+    }
+    return;
+}
+
+void searchinLL(LinkedList* listofBuckets, bucketNode* result, char* _walletID){
+    listNode* h = listofBuckets->head;
+    bucket* temp;
+    int i;
+    while (h != NULL)
+    {
+        temp = (bucket*) h->data ;
+        for(i=0; i<temp->count ; i++){
+            if(!strcmp(temp->array[i]->walletID, _walletID)){
+                printf("Found the walletID! %s\n", temp->array[i]->walletID);
+                result = temp->array[i];
+                return;
+            }
+        }
+        printf("I couldn't find the walletID %s in this bucket\n", _walletID);
+        h = h->next;
+    }
+    printf("I wasn't able to find walletID %s in this LL\n", _walletID);
+    result = NULL;
+    return;
+}
+
+int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
+    // hash sender
+    if(bkt == NULL || ht == NULL || _id == NULL) return ERROR;
+
+    int index = getHash1(_id, ht->size);
+    bucket* curItem;
+    // go through the list and find the first not full bucket* of the list
+    traverseLL(ht->myBuckets[index], curItem);
+
+    if(curItem == NULL ) printf("everything was full \n");
+    curItem = ht->myBuckets[index];
+    if(curItem == NULL) {
+        printf("something is really wrong\n");
+        return ERROR;
+    }
+
+    
+    if(curItem->count == ht->bucketNodesNum){
+        // then that means we have to make a new bucket in this list
+        bucket* newBuck;
+        // malloc the new
+        newBucket(newBuck, ht->bucketNodesNum);
+        // insert the bucknode
+        insertNodeinBucket(newBuck, bkt);
+        // insert bucket in list
+        insertEND(ht->myBuckets[index], newBuck);
+        return SUCCESS;
+    }
+    else if(curItem->count < curItem->size){
+        // I can add one more bucketnode in this bucket
+        insertNodeinBucket(curItem, bkt);
+        return SUCCESS;
     }
     else {
-        insertEND(ht->myBuckets[index], curBucket);
+        printf("Some weird magic happened here! \n");
+        return ERROR;
     }
-}
-
-int insertBucket(){
-
-}
-
-
-int insertHT(SenderHT* ht, bucketNode* bkt, char* senderID ){
-
-    // hash sender
-
-    index den den uparxei
-    newBucket();
-    insertBucket(bkt); 
-    
-
+    // did that logic in insertNodeinBucket function
     // index uparxei
         // an uparxei sender
             // addsthn arxh trx
@@ -57,6 +133,24 @@ int insertHT(SenderHT* ht, bucketNode* bkt, char* senderID ){
             // koitaw an exei xwro to bucket
                 // kai to bazw
                 // alliws den to bazw
+}
 
+int searchSRHT(SRHashT* ht, char* _id, bucketNode* result){
+    if(ht == NULL || _id == NULL) return ERROR;
+
+    int index = getHash1(_id, ht->size);
+    bucket* curItem = (bucket *) ht->myBuckets[index];
+
+    searchinLL(curItem, result, _id);
+    if(result == NULL) {
+        printf("Couldn't find this _id %s \n", _id);
+        return ERROR;
+    }
+    return SUCCESS;
+}
+
+void deleteSRHT(SRHashT* ht){
+    destroy(ht->myBuckets);
+    free(ht);
 }
 

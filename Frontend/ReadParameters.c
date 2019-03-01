@@ -70,5 +70,8 @@ int InputReader(int argc, char *argv[]){
     bSize = atoi(b);
     // print them to be sure that everything is right
     printf("So the params list is %s, %s, %d, %d, %d, %d \n", bitCoinBalancesFile, trxFile, btcValue, h1Num, h2Num, bSize);
+
+    // so now i need to read the 2 files
+    // and write the data to my structs
     return 0;
 }

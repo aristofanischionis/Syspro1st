@@ -20,8 +20,8 @@ struct BitcoinHT {
 
 struct SRHashT {
     int size;
-    int count;
-    LinkedList* myBuckets; // this is a bucketNode
+    int bucketNodesNum; // how many bucketNodes in each bucket
+    LinkedList** myBuckets; // this is an array of size size and its one is a pointer to a LL of buckets
 };
 
 // bucket is a LL of bucket Nodes, pointer to next bucket should be included in b size
@@ -42,5 +42,10 @@ void delHT(walletHT* ht);
 void insert(walletHT* ht, wallet* item);
 wallet* search(walletHT* ht, char* _id);
 void print(walletHT* ht);
+// SRHT hashtables
+int initSRHT(SRHashT* ht, int h1, int numOfBucketNodes);
+int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id );
+int searchSRHT(SRHashT* ht, char* _id, bucketNode* result);
+void deleteSRHT(SRHashT* ht);
 
 #endif
