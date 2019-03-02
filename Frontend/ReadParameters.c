@@ -3,13 +3,13 @@
 #include <errno.h>
 #include <string.h>
 #include "../HeaderFiles/Input.h"
-#include "../HeaderFiles/Hashtables.h"
+// #include "../HeaderFiles/Hashtables.h"
 #include "../HeaderFiles/Structs.h"
 
-void errorHandling(char* message){
-    fprintf(stderr, message);
-    exit(EXIT_FAILURE);
-}
+// void errorHandling(char* message){
+//     fprintf(stderr, message);
+//     exit(EXIT_FAILURE);
+// }
 
 void paramChecker(int n, char* argv[], char* toCheck, char** result){
     int i = 1;
@@ -18,7 +18,7 @@ void paramChecker(int n, char* argv[], char* toCheck, char** result){
             if( i < n - 1 ){
                 if( argv[i+1][0] ==  '-' ){
                     printf("After %s flag a - was read\n", toCheck);
-                    errorHandling("param not given1 \n");
+                    // errorHandling("param not given1 \n");
                 }
                 printf("%s flag value is: %s\n", toCheck, argv[i+1]);
                 strcpy(*result, argv[i+1]);
@@ -27,7 +27,7 @@ void paramChecker(int n, char* argv[], char* toCheck, char** result){
             else{
                 printf("Param after %s flag was not given\n", toCheck);
                 printf("exiting...\n");
-                errorHandling("param not given2 \n");
+                // errorHandling("param not given2 \n");
             }
         }
         i++;
@@ -75,8 +75,8 @@ int InputReader(int argc, char *argv[]){
     printf("So the params list is %s, %s, %d, %d, %d, %d \n", bitCoinBalancesFile, trxFile, btcValue, h1Num, h2Num, bSize);
 
     // now let's make the walletHT and the Bitcoin HT
-    walletHT* wHT;
-    BitcoinHT* bHT;
+    struct walletHT* wHT;
+    struct BitcoinHT* bHT;
     wHT = new(WALLET_NUM);
     bHT = newBTC(BITCOINS_NUM);
     // so now i need to read the 2 files

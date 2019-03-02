@@ -1,11 +1,11 @@
-#include "../../HeaderFiles/Structs.h"
-#include "../../HeaderFiles/Tree.h"
-#include "../../HeaderFiles/Hashtables.h"
-#include "../../HeaderFiles/LinkedLists.h"
-
 #include <time.h>
 #include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include "../../HeaderFiles/Structs.h"
+#include "../../HeaderFiles/Tree.h"
+#include "../../HeaderFiles/LinkedLists.h"
 
 
 void newWallet(wallet* wal, char* _walletID, LinkedList* btcList, int balance){
@@ -57,15 +57,16 @@ void newBtcList(LinkedList* list){
     init(list, sizeof(userBitcoin*), destroyUserBitcoin);
 }
 
-int newTrxObj(trxObject* trx, SRHashT* ht1, SRHashT* ht2, char* sendID, char* recID, int id, int val, struct tm t){
+int newTrxObj(trxObject* trx, walletHT* wHT, char* sendID, char* recID, int id, int val, struct tm t){
     trx = malloc(sizeof(trxObject));
     wallet* res1;
     wallet* res2;
 
-    res1 = searchHT(ht1, sendID);
+    // verify that these owners are there
+    res1 = search(wHT, sendID);
     if (res1 == NULL) return ERROR;
 
-    res2 = searchHT(ht2, recID);
+    res2 = search(wHT, recID);
     if (res2 == NULL) return ERROR;
 
     trx->_trxID = id;
@@ -149,12 +150,14 @@ void newBucketList(LinkedList* list){
     init(list, sizeof(bucket), destroyBucketlist);
 }
 // ll of buckets
+// full balance of a user
 int FullBalance ;
 
-void currentAmount(void* data){
+int currentAmount(void* data){
     // userBitcoin *
     userBitcoin* this = (userBitcoin*)data;
     FullBalance += this->amount ;
+    return 1;
 }
 
 int calculateBalance(LinkedList* userBtc){

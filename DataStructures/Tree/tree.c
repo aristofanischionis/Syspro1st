@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "../../HeaderFiles/Tree.h"
 
+void deleteNode(btcTree* node);
+void printLeafNodes(btcTree* root);
 // create a new node & set default nodes
 void createTree(Tree* r){
     r = malloc(sizeof(Tree));
@@ -17,15 +19,15 @@ void deleteNode(btcTree* node){
     if (node == NULL) return;  
 
     // first delete both subtrees
-    deleteTree(node->lKid);  
-    deleteTree(node->rKid);
-      
+    deleteNode(node->lKid);  
+    deleteNode(node->rKid);
+
     // then delete the node
     printf("Deleting node with walID %s and dols %d\n", node->node->walletID->_walletID, node->node->dollars);  
     free(node);
 }
 
-btcTree* newTreeNode(struct btcNode* value){
+btcTree* newTreeNode(btcNode* value){
 	btcTree* n = (btcTree *)malloc(sizeof(btcTree));
     n->node = value;
 	n->lKid = NULL;
@@ -33,7 +35,7 @@ btcTree* newTreeNode(struct btcNode* value){
 	return n;
 }
 
-btcTree* TreeSearch(btcTree* root, struct btcNode* value){
+btcTree* TreeSearch(btcTree* root, btcNode* value){
 		if(root == NULL)
 			return NULL;
 		else if (root->node->thisTrx->_trxID == value->thisTrx->_trxID)
@@ -42,9 +44,10 @@ btcTree* TreeSearch(btcTree* root, struct btcNode* value){
 			TreeSearch(root->rKid, value);	     
 		else
 			TreeSearch(root->lKid, value);
+        
 }
 
-void addLeft(btcTree* node, struct btcNode* value){
+void addLeft(btcTree* node, btcNode* value){
     if(node->lKid != NULL){
         fprintf(stderr, "left kid already exists \n");
         exit(EXIT_FAILURE);
@@ -52,7 +55,7 @@ void addLeft(btcTree* node, struct btcNode* value){
     node->lKid = newTreeNode(value);
 }
 
-void addRight(btcTree* node, struct btcNode* value){
+void addRight(btcTree* node, btcNode* value){
     if(node->rKid != NULL){
         fprintf(stderr, "right kid already exists \n");
         exit(EXIT_FAILURE);

@@ -2,8 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "../../HeaderFiles/Structs.h"
-#include "../../HeaderFiles/Hashtables.h"
+// #include "../../HeaderFiles/Hashtables.h"
 #include "../../HeaderFiles/LinkedLists.h"
+
+void deleteBucket(void* t);
 
 int initSRHT(SRHashT* ht, int h1, int numOfBucketNodes){
     if(h1 < 0) return ERROR;
@@ -27,17 +29,19 @@ void deleteBucket(void* t){
     bucket* this = (bucket*) t;
     int i;
     for(i=0; i<this->size && this != NULL; i++){
-        deleteBucketNode(&(this->array[i]));
+        deleteBucketNode(this->array[i]);
     }
     free(this);
 }
 
 static int hash(const char* str, const int m) {
     int hash = 5381;
-    int c;
+    int c = (*str);
 
-    while (c = *str++)
+    while (c){
         hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+        c = (*str++);
+    }
 
     return hash % m;
 }
@@ -74,8 +78,8 @@ void searchinLL(LinkedList* listofBuckets, bucketNode* result, char* _walletID){
     {
         temp = (bucket*) h->data ;
         for(i=0; i<temp->count ; i++){
-            if(!strcmp(temp->array[i]->walletID, _walletID)){
-                printf("Found the walletID! %s\n", temp->array[i]->walletID);
+            if(!strcmp(temp->array[i]->walletID->_walletID, _walletID)){
+                printf("Found the walletID! %s\n", temp->array[i]->walletID->_walletID);
                 result = temp->array[i];
                 return;
             }
@@ -93,12 +97,12 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
     if(bkt == NULL || ht == NULL || _id == NULL) return ERROR;
 
     int index = getHash1(_id, ht->size);
-    bucket* curItem;
+    bucket* curItem = NULL;
     // go through the list and find the first not full bucket* of the list
     traverseLL(ht->myBuckets[index], curItem);
 
     if(curItem == NULL ) printf("everything was full \n");
-    curItem = ht->myBuckets[index];
+    curItem = (bucket*) ht->myBuckets[index]->head->data;
     if(curItem == NULL) {
         printf("something is really wrong\n");
         return ERROR;
@@ -107,7 +111,7 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
     
     if(curItem->count == ht->bucketNodesNum){
         // then that means we have to make a new bucket in this list
-        bucket* newBuck;
+        bucket* newBuck = NULL;
         // malloc the new
         newBucket(newBuck, ht->bucketNodesNum);
         // insert the bucknode
@@ -139,7 +143,7 @@ int searchSRHT(SRHashT* ht, char* _id, bucketNode* result){
     if(ht == NULL || _id == NULL) return ERROR;
 
     int index = getHash1(_id, ht->size);
-    bucket* curItem = (bucket *) ht->myBuckets[index];
+    LinkedList* curItem = ht->myBuckets[index];
 
     searchinLL(curItem, result, _id);
     if(result == NULL) {
@@ -150,7 +154,10 @@ int searchSRHT(SRHashT* ht, char* _id, bucketNode* result){
 }
 
 void deleteSRHT(SRHashT* ht){
-    destroy(ht->myBuckets);
+    int i;
+    for(i=0;i<ht->size;i++){
+        destroy(ht->myBuckets[i]);
+    }
     free(ht);
 }
 

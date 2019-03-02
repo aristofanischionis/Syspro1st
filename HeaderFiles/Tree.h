@@ -1,5 +1,8 @@
 #ifndef TREE_HEADER
 #define TREE_HEADER
+
+typedef struct Tree Tree;
+typedef struct btcTree btcTree;
 #include "Structs.h"
 
 struct btcTree {
@@ -12,15 +15,12 @@ struct Tree {
     struct btcTree* root;
 };
 
-typedef struct Tree Tree;
-typedef struct btcTree btcTree;
-
 void createTree(Tree* r);
 void destroyTree(Tree* r);
-struct btcTree* newTreeNode(struct btcNode* value);
-struct btcTree* TreeSearch(struct btcTree* root, struct btcNode* value);
+btcTree* newTreeNode(btcNode* value);
+btcTree* TreeSearch(btcTree* root, btcNode* value);
 void printTree(Tree t);
-void addLeft(struct btcTree* node, struct btcNode* value);
-void addRight(struct btcTree* node, struct btcNode* value);
+void addLeft(btcTree* node, btcNode* value);
+void addRight(btcTree* node, btcNode* value);
 
 #endif

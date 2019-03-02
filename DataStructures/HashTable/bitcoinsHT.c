@@ -2,12 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 #include "../../HeaderFiles/Structs.h"
-#include "../../HeaderFiles/Hashtables.h"
 #include "../../HeaderFiles/Tree.h"
 
-static bitcoin DELETED_BITCOIN = {NULL, NULL};
+static bitcoin DELETED_BITCOIN = {-1, NULL};
 
-int HT_INITIAL_BASE_SIZE = 200; // a default number for the base HT
+int HT_INITIAL_BASE_SIZE_BTC = 200; // a default number for the base HT
 
 static void resizeUpBTC(BitcoinHT* );
 
@@ -23,8 +22,8 @@ static BitcoinHT* newSizeBTC(const int baseSize){
 }
 
 BitcoinHT* newBTC(const int size){
-    HT_INITIAL_BASE_SIZE = size;
-    return newSizeBTC(HT_INITIAL_BASE_SIZE);
+    HT_INITIAL_BASE_SIZE_BTC = size;
+    return newSizeBTC(HT_INITIAL_BASE_SIZE_BTC);
 }
 
 static void delNodeBTC(bitcoin* i){
@@ -124,7 +123,7 @@ void deleteBTC(BitcoinHT* ht, int _id) {
 }
 
 static void resizeBTC(BitcoinHT* ht, const int baseSize) {
-    if (baseSize < HT_INITIAL_BASE_SIZE) {
+    if (baseSize < HT_INITIAL_BASE_SIZE_BTC) {
         return;
     }
     BitcoinHT* newHT = newSizeBTC(baseSize);

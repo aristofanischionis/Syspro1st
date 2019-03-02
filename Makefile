@@ -17,6 +17,30 @@ main.o: main.c
 ReadParameters.o: Frontend/ReadParameters.c
 	$(CC) $(FLAGS) Frontend/ReadParameters.c
 
+ReadFiles.o: Frontend/ReadFiles.c
+	$(CC) $(FLAGS) Frontend/ReadFiles.c
+
+bitcoinsHT.o: DataStructures/HashTable/bitcoinsHT.c
+	$(CC) $(FLAGS) DataStructures/HashTable/bitcoinsHT.c
+
+SRHashT.o: DataStructures/HashTable/SRHashT.c
+	$(CC) $(FLAGS) DataStructures/HashTable/SRHashT.c
+
+walletHT.o: DataStructures/HashTable/walletHT.c
+	$(CC) $(FLAGS) DataStructures/HashTable/walletHT.c
+
+list.o: DataStructures/List/list.c
+	$(CC) $(FLAGS) DataStructures/List/list.c
+
+structs.o: DataStructures/Structs/structs.c
+	$(CC) $(FLAGS) DataStructures/Structs/structs.c
+
+transactions.o: DataStructures/Structs/transactions.c
+	$(CC) $(FLAGS) DataStructures/Structs/transactions.c
+
+tree.o: DataStructures/Tree/tree.c
+	$(CC) $(FLAGS) DataStructures/Tree/tree.c
+	
 # clean house
 clean:
 	rm -f $(OBJS) $(OUT)

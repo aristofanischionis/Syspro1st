@@ -3,7 +3,7 @@
 #include <stdlib.h> 
 #include <errno.h> 
 #include "../HeaderFiles/Input.h"
-#include "../HeaderFiles/Hashtables.h"
+// #include "../HeaderFiles/Hashtables.h"
 #include "../HeaderFiles/Structs.h"
 
 FILE* FileRead (char *in){
@@ -16,7 +16,7 @@ FILE* FileRead (char *in){
     return input;
 }
 
-int InputManager(walletHT* wHT, BitcoinHT* bht, char *file, int btcVal){
+int InputManager(struct walletHT* wHT, struct BitcoinHT* bht, char *file, int btcVal){
     FILE* input = FileRead(file);
     if(input == NULL){
         printf("Couldn't Load Input File\n");
@@ -37,10 +37,10 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, char *file, int btcVal){
     bitcoinID = (char *)malloc(40);
 
     while ((nread = getline(&line, &len, input)) != -1) {
-        LinkedList* ll;
-        wallet* wal;
-        bitcoin* btc;
-        userBitcoin* ubtc;
+        LinkedList* ll = NULL;
+        wallet* wal = NULL;
+        bitcoin* btc = NULL;
+        userBitcoin* ubtc = NULL;
 
         printf("Retrieved line of length %zu:\n", nread);
         newBtcList(ll);

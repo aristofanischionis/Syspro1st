@@ -2,16 +2,17 @@
 #include <stdio.h>
 #include <string.h>
 #include "../../HeaderFiles/Structs.h"
-#include "../../HeaderFiles/Hashtables.h"
 #include "../../HeaderFiles/LinkedLists.h"
 
-static wallet DELETED_WALLET = {NULL, NULL, NULL};
+static wallet DELETED_WALLET = {NULL, NULL, -1};
 
-int HT_INITIAL_BASE_SIZE = 200;
+int HT_INITIAL_BASE_SIZE_WAL = 200;
 
 static void resizeUp(walletHT* );
 
 static void resizeDown(walletHT* );
+
+int iterateBitcoins(void *data);
 
 static walletHT* newSize(const int baseSize) {
     walletHT* ht = malloc(sizeof(walletHT));
@@ -23,8 +24,8 @@ static walletHT* newSize(const int baseSize) {
 }
 
 walletHT* new(const int size) {
-    HT_INITIAL_BASE_SIZE = size;
-    return newSize(HT_INITIAL_BASE_SIZE);
+    HT_INITIAL_BASE_SIZE_WAL = size;
+    return newSize(HT_INITIAL_BASE_SIZE_WAL);
 }
 
 static void delNode(wallet* i) {
@@ -45,11 +46,12 @@ void delHT(walletHT* ht) {
 // hash function
 static int hash(const char* str, const int m) {
     int hash = 5381;
-    int c;
+    int c = (*str);
 
-    while (c = *str++)
+    while (c){
         hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-
+        c = (*str++) ;
+    }
     return hash % m;
 }
 //avoiding collisions double hashing
@@ -133,7 +135,7 @@ void delete(walletHT* ht, char* _id) {
 }
 
 static void resize(walletHT* ht, const int baseSize) {
-    if (baseSize < HT_INITIAL_BASE_SIZE) {
+    if (baseSize < HT_INITIAL_BASE_SIZE_WAL) {
         return;
     }
     walletHT* newHT = newSize(baseSize);
@@ -183,7 +185,7 @@ void print(walletHT* ht){
     }
 }
 
-int iterateBitcoins(void *data) {
+int iterateBitcoins(void *data){
     userBitcoin* this;
     this = (userBitcoin*) data;
     int id = this->btc->_bitcoinID;
