@@ -36,12 +36,18 @@ struct SRHashT {
 typedef struct BitcoinHT BitcoinHT;
 typedef struct walletHT walletHT;
 typedef struct SRHashT SRHashT;
-
+// wallet HT
 walletHT* new(const int size);
 void delHT(walletHT* ht);
 void insert(walletHT* ht, wallet* item);
 wallet* search(walletHT* ht, char* _id);
 void print(walletHT* ht);
+// Bitcoin HT
+BitcoinHT* newBTC(const int size);
+void delHTBTC(BitcoinHT* ht);
+void insertBTC(BitcoinHT* ht, bitcoin* item);
+bitcoin* searchBTC(BitcoinHT* ht, int _id);
+void printBTC(BitcoinHT* ht);
 // SRHT hashtables
 int initSRHT(SRHashT* ht, int h1, int numOfBucketNodes);
 int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id );

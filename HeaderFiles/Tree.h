@@ -19,7 +19,8 @@ void createTree(Tree* r);
 void destroyTree(Tree* r);
 btcTree* newTreeNode(btcNode value);
 btcTree* TreeSearch(btcTree* root, btcNode value);
-btcTree* addLeft(btcTree* node, btcNode value);
-btcTree* addRight(btcTree* node, btcNode value);
+void printTree(Tree t);
+void addLeft(btcTree* node, btcNode value);
+void addRight(btcTree* node, btcNode value);
 
 #endif

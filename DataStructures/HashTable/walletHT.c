@@ -42,16 +42,7 @@ void delHT(walletHT* ht) {
     free(ht->nodes);
     free(ht);
 }
-// hash function 
-// static int hashFun(const char* s, const int m) {
-//     const int lenS = strlen(s);
-//     int hash = 7;
-//     for (int i = 0; i < lenS; i++) {
-//         hash = hash*31 + s[i];
-//     }
-//     return hash % m;
-// }
-
+// hash function
 static int hash(const char* str, const int m) {
     int hash = 5381;
     int c;
@@ -149,7 +140,7 @@ static void resize(walletHT* ht, const int baseSize) {
     for (int i = 0; i < ht->size; i++) {
         wallet* item = ht->nodes[i];
         if (item != NULL && item != &DELETED_WALLET) {
-            insert(newHT, item->_walletID);
+            insert(newHT, item);
         }
     }
 

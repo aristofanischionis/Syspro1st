@@ -10,7 +10,19 @@ void createTree(Tree* r){
 }
 
 void destroyTree(Tree* r){
+    deleteNode(r->root);
+}
 
+void deleteNode(btcTree* node){
+    if (node == NULL) return;  
+
+    // first delete both subtrees
+    deleteTree(node->lKid);  
+    deleteTree(node->rKid);
+      
+    // then delete the node
+    printf("Deleting node with walID %s and dols %d\n", node->node.walletID->_walletID, node->node.dollars);  
+    free(node);
 }
 
 btcTree* newTreeNode(btcNode value){
@@ -27,13 +39,12 @@ btcTree* TreeSearch(btcTree* root, btcNode value){
 		else if (root->node._trxID == value._trxID)
 			return root;
 		else if(root->rKid != NULL)
-			search(root->rKid, value);	     
+			TreeSearch(root->rKid, value);	     
 		else
-			search(root->lKid, value);
-
+			TreeSearch(root->lKid, value);
 }
 
-btcTree* addLeft(btcTree* node, btcNode value){
+void addLeft(btcTree* node, btcNode value){
     if(node->lKid != NULL){
         fprintf(stderr, "left kid already exists \n");
         exit(EXIT_FAILURE);
@@ -41,10 +52,35 @@ btcTree* addLeft(btcTree* node, btcNode value){
     node->lKid = newTreeNode(value);
 }
 
-btcTree* addRight(btcTree* node, btcNode value){
+void addRight(btcTree* node, btcNode value){
     if(node->rKid != NULL){
         fprintf(stderr, "right kid already exists \n");
         exit(EXIT_FAILURE);
     }
     node->rKid = newTreeNode(value);
 }
+
+void printTree(Tree t){
+    printLeafNodes(t.root);
+}
+// function to print leaf  
+// nodes from left to right 
+void printLeafNodes(btcTree* root){
+    // if node is null, return 
+    if (!root) return; 
+      
+    // if node is leaf node, print its data     
+    if (!root->lKid && !root->rKid)
+    { 
+        printf("This is a leaf! %s, %d \n", root->node.walletID->_walletID, root->node.dollars);
+        return; 
+    } 
+  
+    // if left child exists, check for leaf  
+    // recursively 
+    if (root->lKid) printLeafNodes(root->lKid); 
+          
+    // if right child exists, check for leaf  
+    // recursively 
+    if (root->rKid) printLeafNodes(root->rKid); 
+}  
