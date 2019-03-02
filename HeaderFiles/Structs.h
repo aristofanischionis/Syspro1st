@@ -70,7 +70,7 @@ void newUserBitcoin(userBitcoin* bcoin, int amount, bitcoin* b);
 void newBitcoin(bitcoin* b, int _bitcoinID);
 int newBTCNode(btcNode* b, walletHT* ht, char* walletID, int dollars, int txID);
 void newBtcList(LinkedList* list);
-int newTrxObj(trxObject* trx, SRHashT* ht1, SRHashT* ht2, char* sendID, char* recID, int id, int val, struct tm t);
+int newTrxObj(trxObject* trx, SRHashT* ht1, SRHashT* ht2, char* sendID, char* recID, int id, int val, tm t);
 void newTRXList(LinkedList* list);
 int newTrxLLNode(trxinLL* node, trxObject* t, char* wal, walletHT* ht, btcTree* tptr);
 int newBucketNode(bucketNode* bkt, char* wal, walletHT* ht, LinkedList* trxList);

@@ -3,7 +3,7 @@
 #include "Structs.h"
 
 struct btcTree {
-    struct btcNode node;
+    struct btcNode* node;
     struct btcTree* lKid;
     struct btcTree* rKid;
 };
@@ -17,10 +17,10 @@ typedef struct btcTree btcTree;
 
 void createTree(Tree* r);
 void destroyTree(Tree* r);
-btcTree* newTreeNode(btcNode value);
-btcTree* TreeSearch(btcTree* root, btcNode value);
+struct btcTree* newTreeNode(struct btcNode* value);
+struct btcTree* TreeSearch(struct btcTree* root, struct btcNode* value);
 void printTree(Tree t);
-void addLeft(btcTree* node, btcNode value);
-void addRight(btcTree* node, btcNode value);
+void addLeft(struct btcTree* node, struct btcNode* value);
+void addRight(struct btcTree* node, struct btcNode* value);
 
 #endif

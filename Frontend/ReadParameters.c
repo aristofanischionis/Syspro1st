@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include "../HeaderFiles/Input.h"
 #include "../HeaderFiles/HashTables.h"
 #include "../HeaderFiles/Structs.h"
 
@@ -80,7 +81,7 @@ int InputReader(int argc, char *argv[]){
     bHT = newBTC(BITCOINS_NUM);
     // so now i need to read the 2 files
     if(strcmp(bitCoinBalancesFile, "") != 0){
-        InputManager();
+        InputManager(wHT, bHT, bitCoinBalancesFile, btcValue);
     }
     else printf("Input File Name for Graph not given\n");
     // and write the data to my structs

@@ -77,5 +77,5 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, char *file, int btcVal){
     fclose(input);
     free(walletID);
     free(bitcoinID);
-    return 0;
+    return SUCCESS;
 }

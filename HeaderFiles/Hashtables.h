@@ -3,7 +3,6 @@
 #include "LinkedLists.h"
 #include "Structs.h"
 
-
 struct walletHT {
     int size;
     int count;
@@ -36,6 +35,7 @@ struct SRHashT {
 typedef struct BitcoinHT BitcoinHT;
 typedef struct walletHT walletHT;
 typedef struct SRHashT SRHashT;
+
 // wallet HT
 walletHT* new(const int size);
 void delHT(walletHT* ht);

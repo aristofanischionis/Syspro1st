@@ -1,6 +1,8 @@
 #include "../../HeaderFiles/Structs.h"
 #include "../../HeaderFiles/Tree.h"
 #include "../../HeaderFiles/Hashtables.h"
+#include "../../HeaderFiles/LinkedLists.h"
+
 #include <time.h>
 #include <errno.h>
 #include <string.h>

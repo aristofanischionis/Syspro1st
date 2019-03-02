@@ -21,11 +21,11 @@ void deleteNode(btcTree* node){
     deleteTree(node->rKid);
       
     // then delete the node
-    printf("Deleting node with walID %s and dols %d\n", node->node.walletID->_walletID, node->node.dollars);  
+    printf("Deleting node with walID %s and dols %d\n", node->node->walletID->_walletID, node->node->dollars);  
     free(node);
 }
 
-btcTree* newTreeNode(btcNode value){
+btcTree* newTreeNode(struct btcNode* value){
 	btcTree* n = (btcTree *)malloc(sizeof(btcTree));
     n->node = value;
 	n->lKid = NULL;
@@ -33,10 +33,10 @@ btcTree* newTreeNode(btcNode value){
 	return n;
 }
 
-btcTree* TreeSearch(btcTree* root, btcNode value){
+btcTree* TreeSearch(btcTree* root, struct btcNode* value){
 		if(root == NULL)
 			return NULL;
-		else if (root->node.thisTrx->_trxID == value.thisTrx->_trxID)
+		else if (root->node->thisTrx->_trxID == value->thisTrx->_trxID)
 			return root;
 		else if(root->rKid != NULL)
 			TreeSearch(root->rKid, value);	     
@@ -44,7 +44,7 @@ btcTree* TreeSearch(btcTree* root, btcNode value){
 			TreeSearch(root->lKid, value);
 }
 
-void addLeft(btcTree* node, btcNode value){
+void addLeft(btcTree* node, struct btcNode* value){
     if(node->lKid != NULL){
         fprintf(stderr, "left kid already exists \n");
         exit(EXIT_FAILURE);
@@ -52,7 +52,7 @@ void addLeft(btcTree* node, btcNode value){
     node->lKid = newTreeNode(value);
 }
 
-void addRight(btcTree* node, btcNode value){
+void addRight(btcTree* node, struct btcNode* value){
     if(node->rKid != NULL){
         fprintf(stderr, "right kid already exists \n");
         exit(EXIT_FAILURE);
@@ -72,7 +72,7 @@ void printLeafNodes(btcTree* root){
     // if node is leaf node, print its data     
     if (!root->lKid && !root->rKid)
     { 
-        printf("This is a leaf! %s, %d \n", root->node.walletID->_walletID, root->node.dollars);
+        printf("This is a leaf! %s, %d \n", root->node->walletID->_walletID, root->node->dollars);
         return; 
     } 
   
