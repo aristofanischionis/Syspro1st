@@ -2,7 +2,9 @@
 #include "../../HeaderFiles/Tree.h"
 #include "../../HeaderFiles/Hashtables.h"
 #include <time.h>
+#include <errno.h>
 #include <string.h>
+
 
 void newWallet(wallet* wal, char* _walletID, LinkedList* btcList, int balance){
     wal = malloc(sizeof(wallet));
@@ -36,7 +38,7 @@ void newBitcoin(bitcoin* b, int _bitcoinID){
     createTree(b->btcTree);
 }
 
-int newBTCNode(btcNode* b, walletHT* ht, char* walletID, int dollars, int txID){
+int newBTCNode(btcNode* b, walletHT* ht, char* walletID, int dollars, trxObject* txID){
     b = malloc(sizeof(btcNode));
     wallet* res;
 
@@ -45,12 +47,12 @@ int newBTCNode(btcNode* b, walletHT* ht, char* walletID, int dollars, int txID){
 
     b->dollars = dollars;
     b->walletID = res;
-    b->_trxID = txID;
+    b->thisTrx = txID;
     return SUCCESS;
 }
 
 void newBtcList(LinkedList* list){
-    init(list, sizeof(userBitcoin), destroyUserBitcoin);
+    init(list, sizeof(userBitcoin*), destroyUserBitcoin);
 }
 
 int newTrxObj(trxObject* trx, SRHashT* ht1, SRHashT* ht2, char* sendID, char* recID, int id, int val, struct tm t){
@@ -88,7 +90,6 @@ int newTrxLLNode(trxinLL* node, trxObject* t, char* wal, walletHT* ht, btcTree* 
     if (res == NULL) return ERROR;
 
     node->trx = t;
-    node->treePointer = tptr;
     node->walletinTRX = res;
     return SUCCESS;
 }
@@ -146,3 +147,27 @@ void newBucketList(LinkedList* list){
     init(list, sizeof(bucket), destroyBucketlist);
 }
 // ll of buckets
+int FullBalance ;
+
+void currentAmount(void* data){
+    // userBitcoin *
+    userBitcoin* this = (userBitcoin*)data;
+    FullBalance += this->amount ;
+}
+
+int calculateBalance(LinkedList* userBtc){
+    if(userBtc == NULL) return ERROR;
+
+    FullBalance = 0;
+    int temp = 0;
+    if(doForAll(userBtc, currentAmount)){
+        // executed correctly
+        temp = FullBalance;
+        printf("this list's balance is %d \n", temp);
+    }
+    else{
+        exit(1);
+    }
+    FullBalance = 0;
+    return temp;
+}

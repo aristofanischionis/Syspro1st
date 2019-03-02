@@ -36,7 +36,7 @@ btcTree* newTreeNode(btcNode value){
 btcTree* TreeSearch(btcTree* root, btcNode value){
 		if(root == NULL)
 			return NULL;
-		else if (root->node._trxID == value._trxID)
+		else if (root->node.thisTrx->_trxID == value.thisTrx->_trxID)
 			return root;
 		else if(root->rKid != NULL)
 			TreeSearch(root->rKid, value);	     

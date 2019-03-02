@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include "../HeaderFiles/HashTables.h"
+#include "../HeaderFiles/Structs.h"
 
 void errorHandling(char* message){
     fprintf(stderr, message);
@@ -71,7 +73,16 @@ int InputReader(int argc, char *argv[]){
     // print them to be sure that everything is right
     printf("So the params list is %s, %s, %d, %d, %d, %d \n", bitCoinBalancesFile, trxFile, btcValue, h1Num, h2Num, bSize);
 
+    // now let's make the walletHT and the Bitcoin HT
+    walletHT* wHT;
+    BitcoinHT* bHT;
+    wHT = new(WALLET_NUM);
+    bHT = newBTC(BITCOINS_NUM);
     // so now i need to read the 2 files
+    if(strcmp(bitCoinBalancesFile, "") != 0){
+        InputManager();
+    }
+    else printf("Input File Name for Graph not given\n");
     // and write the data to my structs
     return 0;
 }

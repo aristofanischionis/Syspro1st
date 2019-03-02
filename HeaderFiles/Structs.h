@@ -4,8 +4,11 @@
 #include "LinkedLists.h"
 #include "Hashtables.h"
 #include "Tree.h"
-#define ERROR 1
+#define ERROR -1
 #define SUCCESS 0
+#define WALLET_NUM 100
+#define BITCOINS_NUM 100
+
 
 struct wallet {
     char* _walletID;
@@ -26,7 +29,7 @@ struct bitcoin {
 struct btcNode {
     struct wallet* walletID;
     int dollars;
-    int _trxID;
+    struct trxObject* thisTrx;
 };
 
 struct trxObject {
@@ -40,7 +43,6 @@ struct trxObject {
 struct trxinLL {
     struct trxObject* trx;
     struct wallet* walletinTRX;
-    struct btcTree* treePointer;
 };
 
 struct bucketNode {
@@ -75,5 +77,7 @@ int newBucketNode(bucketNode* bkt, char* wal, walletHT* ht, LinkedList* trxList)
 void newBucket(bucket* b, int size);
 int insertNodeinBucket(bucket* b, bucketNode* bn);
 void newBucketList(LinkedList* list);
+void currentAmount(void* data);
+int calculateBalance(LinkedList* userBtc);
 
 #endif
