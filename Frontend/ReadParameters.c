@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <string.h>
 #include "../HeaderFiles/Input.h"
-#include "../HeaderFiles/HashTables.h"
+#include "../HeaderFiles/Hashtables.h"
 #include "../HeaderFiles/Structs.h"
 
 void errorHandling(char* message){
@@ -11,7 +11,7 @@ void errorHandling(char* message){
     exit(EXIT_FAILURE);
 }
 
-int paramChecker(int n, char* argv[], char* toCheck, char** result){
+void paramChecker(int n, char* argv[], char* toCheck, char** result){
     int i = 1;
     while( i<n ){
         if( strcmp(argv[i], toCheck) == 0 ){
@@ -22,7 +22,7 @@ int paramChecker(int n, char* argv[], char* toCheck, char** result){
                 }
                 printf("%s flag value is: %s\n", toCheck, argv[i+1]);
                 strcpy(*result, argv[i+1]);
-                return 0;
+                return ;
             }
             else{
                 printf("Param after %s flag was not given\n", toCheck);

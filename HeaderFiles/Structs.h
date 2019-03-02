@@ -1,8 +1,8 @@
 #ifndef STRUCTS_HEADER
 #define STRUCTS_HEADER
 #include <time.h>
-#include "LinkedLists.h"
 #include "Hashtables.h"
+#include "LinkedLists.h"
 #include "Tree.h"
 #define ERROR -1
 #define SUCCESS 0
@@ -56,6 +56,30 @@ struct bucket {
     struct bucketNode** array;
 };
 
+struct walletHT {
+    int size;
+    int count;
+    int baseSize;
+    struct wallet** nodes;
+};
+
+struct BitcoinHT {
+    int size;
+    int count;
+    int baseSize;
+    struct bitcoin** nodes;
+};
+
+struct SRHashT {
+    int size;
+    int bucketNodesNum; // how many bucketNodes in each bucket
+    LinkedList** myBuckets; // this is an array of size size and its one is a pointer to a LL of buckets
+};
+
+typedef struct BitcoinHT BitcoinHT;
+typedef struct walletHT walletHT;
+typedef struct SRHashT SRHashT;
+
 typedef struct wallet wallet;
 typedef struct bitcoin bitcoin;
 typedef struct userBitcoin userBitcoin;
@@ -70,7 +94,7 @@ void newUserBitcoin(userBitcoin* bcoin, int amount, bitcoin* b);
 void newBitcoin(bitcoin* b, int _bitcoinID);
 int newBTCNode(btcNode* b, walletHT* ht, char* walletID, int dollars, int txID);
 void newBtcList(LinkedList* list);
-int newTrxObj(trxObject* trx, SRHashT* ht1, SRHashT* ht2, char* sendID, char* recID, int id, int val, tm t);
+int newTrxObj(trxObject* trx, SRHashT* ht1, SRHashT* ht2, char* sendID, char* recID, int id, int val,struct tm t);
 void newTRXList(LinkedList* list);
 int newTrxLLNode(trxinLL* node, trxObject* t, char* wal, walletHT* ht, btcTree* tptr);
 int newBucketNode(bucketNode* bkt, char* wal, walletHT* ht, LinkedList* trxList);
