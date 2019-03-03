@@ -4,16 +4,18 @@
 #include "../../HeaderFiles/LinkedLists.h"
 #include "../../HeaderFiles/Structs.h"
 
-int init(LinkedList *list, int size, freeFunction fn)
+LinkedList* init(int size, freeFunction fn)
 {
+    LinkedList* list;
+    list = malloc(sizeof(LinkedList));
     if (size <= 0)
-        return ERROR;
+        return NULL;
     list->length = 0;
     list->dataSize = size;
     list->head = NULL;
     list->tail = NULL;
     list->freeFn = fn;
-    return SUCCESS;
+    return list;
 }
 
 int destroy(LinkedList *list)
@@ -37,11 +39,15 @@ int destroy(LinkedList *list)
 
 int insertBEG(LinkedList *list, void *newData)
 {
+    if(list->dataSize == 0 || newData == NULL){
+        printf("something went wrong here datasize of list == 0 or newdata is null\n");
+        return ERROR;
+    }
     // Allocate memory for node
     listNode *newNode = (listNode *)malloc(sizeof(listNode));
-    newNode->data = malloc(list->dataSize);
+    newNode->data = malloc(sizeof(list->dataSize));
     // copy data to new node
-    memcpy(newNode->data, newData, list->dataSize);
+    memcpy(newNode->data, newData, sizeof(list->dataSize));
     if (newNode->data == NULL)
         return ERROR;
     // make it first in the list and point next to current head
@@ -59,13 +65,17 @@ int insertBEG(LinkedList *list, void *newData)
 
 int insertEND(LinkedList *list, void *newData)
 {
+    if(list->dataSize == 0 || newData == NULL){
+        printf("something went wrong here datasize of list == 0 or newdata is null\n");
+        return ERROR;
+    }
     // Allocate memory for node
     listNode *newNode = (listNode *)malloc(sizeof(listNode));
-    newNode->data = malloc(list->dataSize);
+    newNode->data = malloc(sizeof(list->dataSize));
     newNode->next = NULL;
 
     // copy data to new node
-    memcpy(newNode->data, newData, list->dataSize);
+    memcpy(newNode->data, newData, sizeof(list->dataSize));
     if (newNode->data == NULL)
         return ERROR;
 

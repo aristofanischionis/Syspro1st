@@ -15,7 +15,7 @@ int initSRHT(SRHashT* ht, int h1, int numOfBucketNodes){
     ht->myBuckets = (LinkedList**)malloc(h1 * sizeof(LinkedList*)); // this is a dynamic array of h1 elements of type LL* bucket
     int i;
     for(i=0; i<h1; i++){
-        init(ht->myBuckets[i], sizeof(bucket*), deleteBucket);
+        ht->myBuckets[i] = init(sizeof(bucket*), deleteBucket);
     }
     return SUCCESS;
 }
@@ -111,9 +111,9 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
     
     if(curItem->count == ht->bucketNodesNum){
         // then that means we have to make a new bucket in this list
-        bucket* newBuck = NULL;
+        bucket* newBuck;
         // malloc the new
-        newBucket(newBuck, ht->bucketNodesNum);
+        newBuck = newBucket(ht->bucketNodesNum);
         // insert the bucknode
         insertNodeinBucket(newBuck, bkt);
         // insert bucket in list

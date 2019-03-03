@@ -26,7 +26,7 @@ struct LinkedList {
 };
 typedef struct LinkedList LinkedList;
 
-int init(LinkedList* list, int size, freeFunction fn);
+LinkedList* init(int size, freeFunction fn);
 int destroy(LinkedList* list);
 int insertBEG(LinkedList* list, void* newData);
 int insertEND(LinkedList* list, void* newData);

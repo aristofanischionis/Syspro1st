@@ -7,12 +7,13 @@
 #include "../../HeaderFiles/Tree.h"
 #include "../../HeaderFiles/LinkedLists.h"
 
-
-void newWallet(wallet* wal, char* _walletID, LinkedList* btcList, int balance){
+wallet* newWallet(char* _walletID, LinkedList* btcList, int balance){
+    wallet* wal;
     wal = malloc(sizeof(wallet));
     strcpy(wal->_walletID, _walletID);
     wal->balance = balance;
     wal->btcList = btcList;
+    return wal;
 }
 
 void destroyBitcoin(void* data){
@@ -28,46 +29,52 @@ void destroyUserBitcoin(void* data){
 //   free(*(char **)data);
 // }
 
-void newUserBitcoin(userBitcoin* bcoin, int amount, bitcoin* b){
+userBitcoin* newUserBitcoin(int amount, bitcoin* b){
+    userBitcoin* bcoin;
     bcoin = malloc(sizeof(userBitcoin));
     bcoin->amount = amount;
     bcoin->btc = b;
+    return bcoin;
 }
 
-void newBitcoin(bitcoin* b, int _bitcoinID){
+bitcoin* newBitcoin(int _bitcoinID){
+    bitcoin* b;
     b = malloc(sizeof(bitcoin));
     b->_bitcoinID = _bitcoinID;
     createTree(b->btcTree);
+    return b;
 }
 
-int newBTCNode(btcNode* b, walletHT* ht, char* walletID, int dollars, trxObject* txID){
+btcNode* newBTCNode(walletHT* ht, char* walletID, int dollars, trxObject* txID){
+    btcNode* b;
     b = malloc(sizeof(btcNode));
     wallet* res;
 
     res = search(ht, walletID);
-    if (res == NULL) return ERROR;
+    if (res == NULL) return NULL;
 
     b->dollars = dollars;
     b->walletID = res;
     b->thisTrx = txID;
-    return SUCCESS;
+    return b;
 }
 
-void newBtcList(LinkedList* list){
-    init(list, sizeof(userBitcoin*), destroyUserBitcoin);
+LinkedList* newBtcList(){
+    return init(sizeof(userBitcoin), destroyUserBitcoin);
 }
 
-int newTrxObj(trxObject* trx, walletHT* wHT, char* sendID, char* recID, int id, int val, struct tm t){
+trxObject* newTrxObj(walletHT* wHT, char* sendID, char* recID, int id, int val, struct tm t){
+    trxObject* trx;
     trx = malloc(sizeof(trxObject));
     wallet* res1;
     wallet* res2;
 
     // verify that these owners are there
     res1 = search(wHT, sendID);
-    if (res1 == NULL) return ERROR;
+    if (res1 == NULL) return NULL;
 
     res2 = search(wHT, recID);
-    if (res2 == NULL) return ERROR;
+    if (res2 == NULL) return NULL;
 
     trx->_trxID = id;
     trx->value = val;
@@ -75,39 +82,42 @@ int newTrxObj(trxObject* trx, walletHT* wHT, char* sendID, char* recID, int id, 
     trx->sender = res1;
     trx->receiver = res2;
 
-    return SUCCESS;
+    return trx;
 }
 
 void destroyTRXlist(void* data){
 
 }
 
-void newTRXList(LinkedList* list){
-    init(list, sizeof(trxinLL), destroyTRXlist);
+LinkedList* newTRXList(){
+    return init(sizeof(trxinLL*), destroyTRXlist);
 }
 
-int newTrxLLNode(trxinLL* node, trxObject* t, char* wal, walletHT* ht, btcTree* tptr){
+trxinLL* newTrxLLNode(trxObject* t, char* wal, walletHT* ht, btcTree* tptr){
+    trxinLL* node;
     wallet* res;
     node = malloc(sizeof(trxinLL));
     res = search(ht, wal);
-    if (res == NULL) return ERROR;
+    if (res == NULL) return NULL;
 
     node->trx = t;
     node->walletinTRX = res;
-    return SUCCESS;
+    return node;
 }
 
-int newBucketNode(bucketNode* bkt, char* wal, walletHT* ht, LinkedList* trxList){
+bucketNode* newBucketNode(char* wal, walletHT* ht, LinkedList* trxList){
+    bucketNode* bkt;
     bkt = malloc(sizeof(bucketNode));
     wallet* res;
     res = search(ht, wal);
-    if (res == NULL) return ERROR;
+    if (res == NULL) return NULL;
     bkt->walletID = res;
     bkt->headofList = trxList;
-    return SUCCESS;
+    return bkt;
 }
 
-void newBucket(bucket* b, int size){
+bucket* newBucket(int size){
+    bucket* b;
     b = (bucket*) malloc(sizeof(bucket));
     b->size = size;
     b->count = 0;
@@ -117,6 +127,7 @@ void newBucket(bucket* b, int size){
         b->array[i] = (bucketNode*)malloc(sizeof(bucketNode));
         b->array[i] = NULL;
     }
+    return b;
 }
 
 int insertNodeinBucket(bucket* b, bucketNode* bn){
@@ -146,15 +157,14 @@ void destroyBucketlist(void* data){
 
 }
 
-void newBucketList(LinkedList* list){
-    init(list, sizeof(bucket), destroyBucketlist);
+LinkedList* newBucketList(){
+    return init(sizeof(bucket*), destroyBucketlist);
 }
 // ll of buckets
 // full balance of a user
 int FullBalance ;
 
 int currentAmount(void* data){
-    // userBitcoin *
     userBitcoin* this = (userBitcoin*)data;
     FullBalance += this->amount ;
     return 1;
@@ -165,7 +175,7 @@ int calculateBalance(LinkedList* userBtc){
 
     FullBalance = 0;
     int temp = 0;
-    if(doForAll(userBtc, currentAmount)){
+    if(doForAll(userBtc, currentAmount) == SUCCESS){
         // executed correctly
         temp = FullBalance;
         printf("this list's balance is %d \n", temp);

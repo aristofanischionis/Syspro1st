@@ -3,7 +3,6 @@
 #include <errno.h>
 #include <string.h>
 #include "../HeaderFiles/Input.h"
-// #include "../HeaderFiles/Hashtables.h"
 #include "../HeaderFiles/Structs.h"
 
 // void errorHandling(char* message){
@@ -83,7 +82,7 @@ int InputReader(int argc, char *argv[]){
     if(strcmp(bitCoinBalancesFile, "") != 0){
         InputManager(wHT, bHT, bitCoinBalancesFile, btcValue);
     }
-    else printf("Input File Name for Graph not given\n");
+    else printf("Input File Name for bitCoinBalancesFile not given\n");
     // and write the data to my structs
     return 0;
 }

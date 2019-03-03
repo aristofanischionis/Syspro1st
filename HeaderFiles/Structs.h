@@ -95,18 +95,19 @@ struct SRHashT {
 // hash table --> of all bitcoins , btcID and pointer in the tree
 // but user will have a ll of bitcoins and amount he has
 
-void newWallet(wallet* wal, char* _walletID, LinkedList* btcList, int balance);
-void newUserBitcoin(userBitcoin* bcoin, int amount, bitcoin* b);
-void newBitcoin(bitcoin* b, int _bitcoinID);
-int newBTCNode(btcNode* b, walletHT* ht, char* walletID, int dollars, trxObject* txID);
-void newBtcList(LinkedList* list);
-int newTrxObj(trxObject* trx, walletHT* wHT, char* sendID, char* recID, int id, int val, struct tm t);
-void newTRXList(LinkedList* list);
-int newTrxLLNode(trxinLL* node, trxObject* t, char* wal, walletHT* ht, btcTree* tptr);
-int newBucketNode(bucketNode* bkt, char* wal, walletHT* ht, LinkedList* trxList);
-void newBucket(bucket* b, int size);
+wallet* newWallet(char* _walletID, LinkedList* btcList, int balance);
+userBitcoin* newUserBitcoin(int amount, bitcoin* b);
+void destroyUserBitcoin(void* data);
+bitcoin* newBitcoin(int _bitcoinID);
+btcNode* newBTCNode(walletHT* ht, char* walletID, int dollars, trxObject* txID);
+LinkedList* newBtcList();
+trxObject* newTrxObj(walletHT* wHT, char* sendID, char* recID, int id, int val, struct tm t);
+LinkedList* newTRXList();
+trxinLL* newTrxLLNode(trxObject* t, char* wal, walletHT* ht, btcTree* tptr);
+bucketNode* newBucketNode(char* wal, walletHT* ht, LinkedList* trxList);
+bucket* newBucket(int size);
 int insertNodeinBucket(bucket* b, bucketNode* bn);
-void newBucketList(LinkedList* list);
+LinkedList* newBucketList();
 int currentAmount(void* data);
 int calculateBalance(LinkedList* userBtc);
 
