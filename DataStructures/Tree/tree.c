@@ -12,7 +12,13 @@ void createTree(Tree* r){
 }
 
 void destroyTree(Tree* r){
+    if(r == NULL) return;
+    if(r->root == NULL) {
+        free(r);
+        return;
+    }
     deleteNode(r->root);
+    free(r);
 }
 
 void deleteNode(btcTree* node){

@@ -20,6 +20,10 @@ static walletHT* newSize(const int baseSize) {
     ht->size = baseSize;
     ht->count = 0;
     ht->nodes = malloc((size_t)ht->size * sizeof(wallet*));
+    int i;
+    for(i=0;i<baseSize;i++){
+        ht->nodes[i] = NULL;
+    }
     return ht;
 }
 
@@ -45,9 +49,8 @@ void delHT(walletHT* ht) {
 }
 // hash function
 static int hash(const char* str, const int m) {
-    int hash = 5381;
+    unsigned long hash = 5381;
     int c = (*str);
-
     while (c){
         hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
         c = (*str++) ;
@@ -56,9 +59,10 @@ static int hash(const char* str, const int m) {
 }
 //avoiding collisions double hashing
 static int getHash( const char* s, const int size, const int attempt) {
-    const int hashA = hash(s, size);
-    const int hashB = hash(s, size);
-    return (hashA + (attempt * (hashB + 1))) % size;
+    int hashA = hash(s, size);
+    // const int hashB = hash(s, size);
+    int result = (hashA + attempt) % size;
+    return result;
 }
 
 void insert(walletHT* ht, wallet* item) {
@@ -67,16 +71,19 @@ void insert(walletHT* ht, wallet* item) {
         resizeUp(ht);
     }
 
-    // printf("id that is given after newWallet %s\n", item->_walletID);
     if(item == NULL) printf("wallet is NULL\n");
     int index = getHash(item->_walletID, ht->size, 0);
+    
+    printf("index is %d \n", index);
     wallet* curItem = ht->nodes[index];
+    // printf("id that is given after newWallet %s\n", ht->nodes[index]);
     int i = 1;
     while ( curItem != NULL ) {
         if( curItem != &DELETED_WALLET ){
             if (strcmp(curItem->_walletID, item->_walletID) == 0) {
                 // if an _id is given that it has already been given
-                //update its content with the new value
+                // printf("Error this wallet id already exists in the Hashtable\n");
+                // exit(1);
                 delNode(curItem);
                 ht->nodes[index] = item;
                 return;

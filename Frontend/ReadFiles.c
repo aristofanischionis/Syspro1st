@@ -83,13 +83,10 @@ int InputManager(struct walletHT* wHT, struct BitcoinHT* bht, char *file, int bt
         // printf("insertion of btc %d is correctly execd\n", res->_bitcoinID);
         // bitcoin* res1 = searchBTC(bht, 541);
         // printf("insertion of btc %d is correctly execd\n", res1->_bitcoinID);
-        doForAll(ll, printuserBTC);
+        // doForAll(ll, printuserBTC);
         balance = calculateBalance(ll);
-        printf("the name is %s \n", walletID);
         wal = newWallet(walletID, ll, balance);
-        printf("The insertion of wallet is ok! \n");
         insert(wHT, wal);
-
         printf("The insertion of wallet in HT is ok! \n");
 
     }

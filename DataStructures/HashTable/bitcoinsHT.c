@@ -18,6 +18,10 @@ static BitcoinHT* newSizeBTC(const int baseSize){
     ht->size = baseSize;
     ht->count = 0;
     ht->nodes = malloc((size_t)ht->size * sizeof(bitcoin*));
+    int i;
+    for(i=0;i<baseSize;i++){
+        ht->nodes[i] = NULL;
+    }
     return ht;
 }
 
@@ -59,12 +63,14 @@ void insertBTC(BitcoinHT* ht, bitcoin* item) {
     if(item == NULL) printf("bitcoin is NULL\n");
     int index = getHashBTC(item->_bitcoinID, ht->size, 0);
     bitcoin* curItem = ht->nodes[index];
+    
     int i = 1;
     while ( curItem != NULL ){
         if( curItem != &DELETED_BITCOIN ){
             if (curItem->_bitcoinID == item->_bitcoinID) {
                 // if an _id is given that it has already been given
-                //update its content with the new value
+                // printf("Error this bitcoin id already exists in the Hashtable\n");
+                // exit(1);
                 delNodeBTC(curItem);
                 ht->nodes[index] = item;
                 return;
