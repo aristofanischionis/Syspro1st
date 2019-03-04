@@ -20,7 +20,10 @@ static BitcoinHT* newSizeBTC(const int baseSize){
     ht->nodes = malloc((size_t)ht->size * sizeof(bitcoin*));
     int i;
     for(i=0;i<baseSize;i++){
+<<<<<<< HEAD
         // ht->nodes[i] = malloc(sizeof(bitcoin));
+=======
+>>>>>>> 52f96aef1178e4d0623e787500084279235ccce7
         ht->nodes[i] = NULL;
     }
     return ht;
@@ -48,6 +51,7 @@ void delHTBTC(BitcoinHT* ht) {
 }
 // hash function got from the web
 static int getHashBTC(int key, const int size, const int attempt) {
+<<<<<<< HEAD
     unsigned long x = (unsigned long) key;
     x = ((x >> 16) ^ x) * 0x45d9f3b;
     x = ((x >> 16) ^ x) * 0x45d9f3b;
@@ -55,6 +59,13 @@ static int getHashBTC(int key, const int size, const int attempt) {
     // return (((x + attempt) % size);
     int temp = (int)(x % size);
     return ((temp + attempt) % size);
+=======
+    unsigned int x = (unsigned int) key;
+    x = ((x >> 16) ^ x) * 0x45d9f3b;
+    x = ((x >> 16) ^ x) * 0x45d9f3b;
+    x = (x >> 16) ^ x;
+    return (((int)x + attempt) % size);
+>>>>>>> 52f96aef1178e4d0623e787500084279235ccce7
 }
 
 void insertBTC(BitcoinHT* ht, bitcoin* item) {
