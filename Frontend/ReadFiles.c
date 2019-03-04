@@ -37,7 +37,7 @@ int InputManager(struct walletHT* wHT, struct BitcoinHT* bht, char *file, int bt
     int balance = 0;
     char *line = NULL;
     size_t len = 0;
-    ssize_t nread;
+    size_t nread;
     const char s[2] = " ";
     char *token;
 

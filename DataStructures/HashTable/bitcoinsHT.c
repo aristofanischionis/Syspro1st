@@ -8,9 +8,9 @@ static bitcoin DELETED_BITCOIN = {-1, NULL};
 
 int HT_INITIAL_BASE_SIZE_BTC = 200; // a default number for the base HT
 
-static void resizeUpBTC(BitcoinHT* );
+// static void resizeUpBTC(BitcoinHT* );
 
-static void resizeDownBTC(BitcoinHT* );
+// static void resizeDownBTC(BitcoinHT* );
 
 static BitcoinHT* newSizeBTC(const int baseSize){
     BitcoinHT* ht = malloc(sizeof(BitcoinHT));
@@ -20,10 +20,7 @@ static BitcoinHT* newSizeBTC(const int baseSize){
     ht->nodes = malloc((size_t)ht->size * sizeof(bitcoin*));
     int i;
     for(i=0;i<baseSize;i++){
-<<<<<<< HEAD
         // ht->nodes[i] = malloc(sizeof(bitcoin));
-=======
->>>>>>> 52f96aef1178e4d0623e787500084279235ccce7
         ht->nodes[i] = NULL;
     }
     return ht;
@@ -51,7 +48,6 @@ void delHTBTC(BitcoinHT* ht) {
 }
 // hash function got from the web
 static int getHashBTC(int key, const int size, const int attempt) {
-<<<<<<< HEAD
     unsigned long x = (unsigned long) key;
     x = ((x >> 16) ^ x) * 0x45d9f3b;
     x = ((x >> 16) ^ x) * 0x45d9f3b;
@@ -59,20 +55,13 @@ static int getHashBTC(int key, const int size, const int attempt) {
     // return (((x + attempt) % size);
     int temp = (int)(x % size);
     return ((temp + attempt) % size);
-=======
-    unsigned int x = (unsigned int) key;
-    x = ((x >> 16) ^ x) * 0x45d9f3b;
-    x = ((x >> 16) ^ x) * 0x45d9f3b;
-    x = (x >> 16) ^ x;
-    return (((int)x + attempt) % size);
->>>>>>> 52f96aef1178e4d0623e787500084279235ccce7
 }
 
 void insertBTC(BitcoinHT* ht, bitcoin* item) {
-    const int load = ht->count * 100 / ht->size;
-    if (load > 70) {
-        resizeUpBTC(ht);
-    }
+    // const int load = ht->count * 100 / ht->size;
+    // if (load > 70) {
+    //     resizeUpBTC(ht);
+    // }
 
     if(item == NULL) printf("bitcoin is NULL\n");
     int index = getHashBTC(item->_bitcoinID, ht->size, 0);
@@ -122,10 +111,10 @@ bitcoin* searchBTC(BitcoinHT* ht, int _id) {
 // delete an item with HashTable resizeBTC if needed
 
 void deleteBTC(BitcoinHT* ht, int _id) {
-    const int load = ht->count * 100 / ht->size;
-    if (load < 10) {
-        resizeDownBTC(ht);
-    }
+    // const int load = ht->count * 100 / ht->size;
+    // if (load < 10) {
+    //     resizeDownBTC(ht);
+    // }
     int index = getHashBTC(_id, ht->size, 0);
     bitcoin* item = ht->nodes[index];
     int i = 1;
@@ -143,43 +132,43 @@ void deleteBTC(BitcoinHT* ht, int _id) {
     ht->count--;
 }
 
-static void resizeBTC(BitcoinHT* ht, const int baseSize) {
-    if (baseSize < HT_INITIAL_BASE_SIZE_BTC) {
-        return;
-    }
-    BitcoinHT* newHT = newSizeBTC(baseSize);
-    for (int i = 0; i < ht->size; i++) {
-        bitcoin* item = ht->nodes[i];
-        if (item != NULL && item != &DELETED_BITCOIN) {
-            insertBTC(newHT, item);
-        }
-    }
+// static void resizeBTC(BitcoinHT* ht, const int baseSize) {
+//     if (baseSize < HT_INITIAL_BASE_SIZE_BTC) {
+//         return;
+//     }
+//     BitcoinHT* newHT = newSizeBTC(baseSize);
+//     for (int i = 0; i < ht->size; i++) {
+//         bitcoin* item = ht->nodes[i];
+//         if (item != NULL && item != &DELETED_BITCOIN) {
+//             insertBTC(newHT, item);
+//         }
+//     }
 
-    ht->baseSize = newHT->baseSize;
-    ht->count = newHT->count;
+//     ht->baseSize = newHT->baseSize;
+//     ht->count = newHT->count;
 
-    // To deleteBTC newHT, we give it ht's size and nodes 
-    const int tmp_size = ht->size;
-    ht->size = newHT->size;
-    newHT->size = tmp_size;
+//     // To deleteBTC newHT, we give it ht's size and nodes 
+//     const int tmp_size = ht->size;
+//     ht->size = newHT->size;
+//     newHT->size = tmp_size;
 
-    bitcoin** tmp_items = ht->nodes;
-    ht->nodes = newHT->nodes;
-    newHT->nodes = tmp_items;
+//     bitcoin** tmp_items = ht->nodes;
+//     ht->nodes = newHT->nodes;
+//     newHT->nodes = tmp_items;
 
-    delHTBTC(newHT);
-}
+//     delHTBTC(newHT);
+// }
 
-static void resizeUpBTC(BitcoinHT* ht) {
-    const int new_size = ht->baseSize * 2;
-    resizeBTC(ht, new_size);
-}
+// static void resizeUpBTC(BitcoinHT* ht) {
+//     const int new_size = ht->baseSize * 2;
+//     resizeBTC(ht, new_size);
+// }
 
 
-static void resizeDownBTC(BitcoinHT* ht) {
-    const int new_size = ht->baseSize / 2;
-    resizeBTC(ht, new_size);
-}
+// static void resizeDownBTC(BitcoinHT* ht) {
+//     const int new_size = ht->baseSize / 2;
+//     resizeBTC(ht, new_size);
+// }
 
 void printBTC(BitcoinHT* ht){
     int i =0 ;

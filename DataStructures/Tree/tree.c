@@ -12,8 +12,8 @@ void createTree(Tree* r){
 }
 
 void destroyTree(Tree* r){
-    if(r == NULL) return;
-    if(r->root == NULL) {
+    if(!r) return;
+    if(!r->root) {
         free(r);
         return;
     }

@@ -8,9 +8,9 @@ static wallet DELETED_WALLET = {NULL, NULL, -1};
 
 int HT_INITIAL_BASE_SIZE_WAL = 200;
 
-static void resizeUp(walletHT* );
+// static void resizeUp(walletHT* );
 
-static void resizeDown(walletHT* );
+// static void resizeDown(walletHT* );
 
 int iterateBitcoins(void *data);
 
@@ -66,10 +66,10 @@ static int getHash( const char* s, const int size, const int attempt) {
 }
 
 void insert(walletHT* ht, wallet* item) {
-    const int load = ht->count * 100 / ht->size;
-    if (load > 70) {
-        resizeUp(ht);
-    }
+    // const int load = ht->count * 100 / ht->size;
+    // if (load > 70) {
+    //     resizeUp(ht);
+    // }
 
     if(item == NULL) printf("wallet is NULL\n");
     int index = getHash(item->_walletID, ht->size, 0);
@@ -120,10 +120,10 @@ wallet* search(walletHT* ht, char* _id) {
 // delete an item with HashTable resize if needed
 
 void delete(walletHT* ht, char* _id) {
-    const int load = ht->count * 100 / ht->size;
-    if (load < 10) {
-        resizeDown(ht);
-    }
+    // const int load = ht->count * 100 / ht->size;
+    // if (load < 10) {
+    //     resizeDown(ht);
+    // }
     int index = getHash(_id, ht->size, 0);
     wallet* item = ht->nodes[index];
     int i = 1;
@@ -141,43 +141,43 @@ void delete(walletHT* ht, char* _id) {
     ht->count--;
 }
 
-static void resize(walletHT* ht, const int baseSize) {
-    if (baseSize < HT_INITIAL_BASE_SIZE_WAL) {
-        return;
-    }
-    walletHT* newHT = newSize(baseSize);
-    for (int i = 0; i < ht->size; i++) {
-        wallet* item = ht->nodes[i];
-        if (item != NULL && item != &DELETED_WALLET) {
-            insert(newHT, item);
-        }
-    }
+// static void resize(walletHT* ht, const int baseSize) {
+//     if (baseSize < HT_INITIAL_BASE_SIZE_WAL) {
+//         return;
+//     }
+//     walletHT* newHT = newSize(baseSize);
+//     for (int i = 0; i < ht->size; i++) {
+//         wallet* item = ht->nodes[i];
+//         if (item != NULL && item != &DELETED_WALLET) {
+//             insert(newHT, item);
+//         }
+//     }
 
-    ht->baseSize = newHT->baseSize;
-    ht->count = newHT->count;
+//     ht->baseSize = newHT->baseSize;
+//     ht->count = newHT->count;
 
-    // To delete newHT, we give it ht's size and nodes 
-    const int tmp_size = ht->size;
-    ht->size = newHT->size;
-    newHT->size = tmp_size;
+//     // To delete newHT, we give it ht's size and nodes 
+//     const int tmp_size = ht->size;
+//     ht->size = newHT->size;
+//     newHT->size = tmp_size;
 
-    wallet** tmp_items = ht->nodes;
-    ht->nodes = newHT->nodes;
-    newHT->nodes = tmp_items;
+//     wallet** tmp_items = ht->nodes;
+//     ht->nodes = newHT->nodes;
+//     newHT->nodes = tmp_items;
 
-    delHT(newHT);
-}
+//     delHT(newHT);
+// }
 
-static void resizeUp(walletHT* ht) {
-    const int new_size = ht->baseSize * 2;
-    resize(ht, new_size);
-}
+// static void resizeUp(walletHT* ht) {
+//     const int new_size = ht->baseSize * 2;
+//     resize(ht, new_size);
+// }
 
 
-static void resizeDown(walletHT* ht) {
-    const int new_size = ht->baseSize / 2;
-    resize(ht, new_size);
-}
+// static void resizeDown(walletHT* ht) {
+//     const int new_size = ht->baseSize / 2;
+//     resize(ht, new_size);
+// }
 
 void print(walletHT* ht){
     int i =0 ;
