@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "structs.h": "c",
+        "hashtables.h": "c",
+        "linkedlists.h": "c",
+        "input.h": "c",
+        "string.h": "c",
+        "tree.h": "c"
+    }
+}
