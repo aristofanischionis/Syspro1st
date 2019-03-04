@@ -16,11 +16,12 @@ FILE* FileRead (char *in){
 }
 
 // Function to print a btc
-void printuserBTC(void *t)
+int printuserBTC(void *t)
 {
-    userBitcoin temp = *(userBitcoin *)t;
+    userBitcoin* temp = (userBitcoin *)t;
    
-    printf("this bitcoin's id is : %d and the user owns %d amount \n",  temp.btc->_bitcoinID, temp.amount);
+    printf("this bitcoin's id is : %d and the user owns %d amount \n",  temp->btc->_bitcoinID, temp->amount);
+    return 1;
 }
 
 int InputManager(struct walletHT* wHT, struct BitcoinHT* bht, char *file, int btcVal){
@@ -68,17 +69,13 @@ int InputManager(struct walletHT* wHT, struct BitcoinHT* bht, char *file, int bt
             _id = atoi(bitcoinID);
             // make a new bitcoin
             btc = newBitcoin(_id);
-            printf("---------> %d .............\n", btc->_bitcoinID);
             // i have to put it to the ht
             insertBTC(bht, btc);
             // make a userbitcoin
             ubtc = newUserBitcoin(btcVal, btc);
             
             // insert this in the ll 
-            printf(" i am putting an id  %d and amount %d\n", ubtc->btc->_bitcoinID, ubtc->amount);
             insertEND(ll, ubtc);
-
-            printf("I did this btc !\n");
         }
         // make a linked list of all bitcoins and add it to this wallet
         
@@ -87,13 +84,13 @@ int InputManager(struct walletHT* wHT, struct BitcoinHT* bht, char *file, int bt
         // bitcoin* res1 = searchBTC(bht, 541);
         // printf("insertion of btc %d is correctly execd\n", res1->_bitcoinID);
         doForAll(ll, printuserBTC);
-        // printList(ll, printuserBTC);
         balance = calculateBalance(ll);
         printf("the name is %s \n", walletID);
-        printf("The balance is %d\n", balance);
         wal = newWallet(walletID, ll, balance);
         printf("The insertion of wallet is ok! \n");
         insert(wHT, wal);
+
+        printf("The insertion of wallet in HT is ok! \n");
 
     }
 

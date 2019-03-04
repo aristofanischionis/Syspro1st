@@ -47,7 +47,9 @@ int insertBEG(LinkedList *list, void *newData)
     listNode *newNode = (listNode *)malloc(sizeof(listNode));
     newNode->data = malloc(sizeof(list->dataSize));
     // copy data to new node
-    memcpy(newNode->data, newData, sizeof(list->dataSize));
+    // memcpy(newNode->data, newData, sizeof(list->dataSize));
+    newNode->data = newData;
+    
     if (newNode->data == NULL)
         return ERROR;
     // make it first in the list and point next to current head
@@ -75,7 +77,9 @@ int insertEND(LinkedList *list, void *newData)
     newNode->next = NULL;
 
     // copy data to new node
-    memcpy(newNode->data, newData, sizeof(list->dataSize));
+    // memcpy(newNode->data, newData, sizeof(list->dataSize));
+    newNode->data = newData;
+
     if (newNode->data == NULL)
         return ERROR;
 

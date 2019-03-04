@@ -10,7 +10,10 @@
 wallet* newWallet(char* _walletID, LinkedList* btcList, int balance){
     wallet* wal;
     wal = malloc(sizeof(wallet));
+
+    wal->_walletID = (char *)malloc(50);
     strcpy(wal->_walletID, _walletID);
+    
     wal->balance = balance;
     wal->btcList = btcList;
     return wal;
