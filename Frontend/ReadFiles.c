@@ -18,6 +18,10 @@ FILE* FileRead (char *in){
 // Function to print a btc
 int printuserBTC(void *t)
 {
+    if(t == NULL){
+        printf("No user bitcoins in this list\n");
+        return 1;
+    }
     userBitcoin* temp = (userBitcoin *)t;
    
     printf("this bitcoin's id is : %d and the user owns %d amount \n",  temp->btc->_bitcoinID, temp->amount);
@@ -46,6 +50,9 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, char *file1, char *file2, int bt
     const char s[2] = " ";
     char *token;
 
+    // wHT = new(WALLET_NUM);
+    // bht = newBTC(BITCOINS_NUM);
+
     walletID = (char *)malloc(50);
     bitcoinID = (char *)malloc(40);
 
@@ -58,7 +65,6 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, char *file1, char *file2, int bt
         token = strtok(line, s);
         // walletIDs
         strcpy(walletID, token);
-
         // walk through other tokens
         while( token != NULL ){
             bitcoin* btc;
@@ -75,7 +81,6 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, char *file1, char *file2, int bt
             insertBTC(bht, btc);
             // make a userbitcoin
             ubtc = newUserBitcoin(btcVal, btc);
-            
             // insert this in the ll 
             insertEND(ll, ubtc);
         }
@@ -85,6 +90,8 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, char *file1, char *file2, int bt
         // printf("insertion of btc %d is correctly execd\n", res->_bitcoinID);
         // bitcoin* res1 = searchBTC(bht, 541);
         // printf("insertion of btc %d is correctly execd\n", res1->_bitcoinID);
+        // userBitcoin* temp = (userBitcoin*)ll->head->data;
+        // printf("list's id of head is %d\n", temp->btc->_bitcoinID);
         // doForAll(ll, printuserBTC);
         balance = calculateBalance(ll);
         wal = newWallet(walletID, ll, balance);

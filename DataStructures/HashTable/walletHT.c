@@ -8,10 +8,6 @@ static wallet DELETED_WALLET = {NULL, NULL, -1};
 
 int HT_INITIAL_BASE_SIZE_WAL = 200;
 
-// static void resizeUp(walletHT* );
-
-// static void resizeDown(walletHT* );
-
 int iterateBitcoins(void *data);
 
 static walletHT* newSize(const int baseSize) {
@@ -66,11 +62,6 @@ static int getHash( const char* s, const int size, const int attempt) {
 }
 
 void insert(walletHT* ht, wallet* item) {
-    // const int load = ht->count * 100 / ht->size;
-    // if (load > 70) {
-    //     resizeUp(ht);
-    // }
-
     if(item == NULL) printf("wallet is NULL\n");
     int index = getHash(item->_walletID, ht->size, 0);
     
@@ -79,21 +70,25 @@ void insert(walletHT* ht, wallet* item) {
     // printf("id that is given after newWallet %s\n", ht->nodes[index]);
     int i = 1;
     while ( curItem != NULL ) {
-        if( curItem != &DELETED_WALLET ){
-            if (strcmp(curItem->_walletID, item->_walletID) == 0) {
-                // if an _id is given that it has already been given
-                // printf("Error this wallet id already exists in the Hashtable\n");
-                // exit(1);
-                delNode(curItem);
-                ht->nodes[index] = item;
-                return;
-            }
+        // if( curItem != &DELETED_WALLET ){
+        if (strcmp(curItem->_walletID, item->_walletID) == 0) {
+            // if an _id is given that it has already been given
+            printf("Error this wallet id already exists in the Hashtable\n");
+            exit(1);
+            // delNode(curItem);
+            // // ht->nodes[index] = item;
+            // ht->nodes[index] = malloc(sizeof(wallet));
+            // memcpy(ht->nodes[index], item, sizeof(wallet));
+            // return;
         }
+        // }
         index = getHash(item->_walletID, ht->size, i);
         curItem = ht->nodes[index];
         i++;
     } // avoid collisions, trying to find the suitable index to place the wallet
-    ht->nodes[index] = item;
+    // ht->nodes[index] = item;
+    ht->nodes[index] = malloc(sizeof(wallet));
+    memcpy(ht->nodes[index], item, sizeof(wallet));
     ht->count++; // wallet inserted
     return;
 }
@@ -120,10 +115,6 @@ wallet* search(walletHT* ht, char* _id) {
 // delete an item with HashTable resize if needed
 
 void delete(walletHT* ht, char* _id) {
-    // const int load = ht->count * 100 / ht->size;
-    // if (load < 10) {
-    //     resizeDown(ht);
-    // }
     int index = getHash(_id, ht->size, 0);
     wallet* item = ht->nodes[index];
     int i = 1;
@@ -140,44 +131,6 @@ void delete(walletHT* ht, char* _id) {
     } 
     ht->count--;
 }
-
-// static void resize(walletHT* ht, const int baseSize) {
-//     if (baseSize < HT_INITIAL_BASE_SIZE_WAL) {
-//         return;
-//     }
-//     walletHT* newHT = newSize(baseSize);
-//     for (int i = 0; i < ht->size; i++) {
-//         wallet* item = ht->nodes[i];
-//         if (item != NULL && item != &DELETED_WALLET) {
-//             insert(newHT, item);
-//         }
-//     }
-
-//     ht->baseSize = newHT->baseSize;
-//     ht->count = newHT->count;
-
-//     // To delete newHT, we give it ht's size and nodes 
-//     const int tmp_size = ht->size;
-//     ht->size = newHT->size;
-//     newHT->size = tmp_size;
-
-//     wallet** tmp_items = ht->nodes;
-//     ht->nodes = newHT->nodes;
-//     newHT->nodes = tmp_items;
-
-//     delHT(newHT);
-// }
-
-// static void resizeUp(walletHT* ht) {
-//     const int new_size = ht->baseSize * 2;
-//     resize(ht, new_size);
-// }
-
-
-// static void resizeDown(walletHT* ht) {
-//     const int new_size = ht->baseSize / 2;
-//     resize(ht, new_size);
-// }
 
 void print(walletHT* ht){
     int i =0 ;

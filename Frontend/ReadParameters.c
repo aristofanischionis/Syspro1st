@@ -74,8 +74,8 @@ int InputReader(int argc, char *argv[]){
     printf("So the params list is %s, %s, %d, %d, %d, %d \n", bitCoinBalancesFile, trxFile, btcValue, h1Num, h2Num, bSize);
 
     // now let's make the walletHT and the Bitcoin HT
-    struct walletHT* wHT;
-    struct BitcoinHT* bHT;
+    walletHT* wHT;
+    BitcoinHT* bHT;
     wHT = new(WALLET_NUM);
     bHT = newBTC(BITCOINS_NUM);
     // so now i need to read the 2 files
@@ -84,9 +84,10 @@ int InputReader(int argc, char *argv[]){
     }
     else printf("Input File Name for bitCoinBalancesFile not given\n");
 
-
-    printf("the first wid %s and balance %d \n", wHT->nodes[0]->_walletID, wHT->nodes[0]->balance);
-    doForAll(wHT->nodes[0]->btcList, printuserBTC);
+    printf("a random wid %s and balance %d \n", wHT->nodes[25]->_walletID, wHT->nodes[25]->balance);
+    wallet *wal;
+    wal = wHT->nodes[25];
+    doForAll(wal->btcList, printuserBTC);
     // and write the data to my structs
     return 0;
 }
