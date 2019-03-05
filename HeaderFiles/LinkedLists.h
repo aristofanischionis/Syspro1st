@@ -31,6 +31,7 @@ int destroy(LinkedList* list);
 int insertBEG(LinkedList* list, void* newData);
 int insertEND(LinkedList* list, void* newData);
 int doForAll(LinkedList *list, repeator rep);
+int deleteNode(LinkedList *list, repeator rep);
 int listHead(LinkedList *list, void *item, int removal);
 int listTail(LinkedList* list, void *item);
 void printList(LinkedList *node, void (*fptr)(void *));

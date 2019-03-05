@@ -3,6 +3,6 @@
 // #include "Hashtables.h"
 #include "Structs.h"
 int InputReader(int argc, char *argv[]);
-int InputManager(struct walletHT* wHT, struct BitcoinHT* bht, char *file, int btcVal);
+int InputManager(walletHT* wHT, BitcoinHT* bht, char *file1, char *file2, int btcVal);
 
 #endif

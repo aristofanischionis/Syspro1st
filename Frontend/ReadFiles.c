@@ -24,10 +24,15 @@ int printuserBTC(void *t)
     return 1;
 }
 
-int InputManager(struct walletHT* wHT, struct BitcoinHT* bht, char *file, int btcVal){
-    FILE* input = FileRead(file);
+int InputManager(walletHT* wHT, BitcoinHT* bht, char *file1, char *file2, int btcVal){
+    FILE* input = FileRead(file1);
     if(input == NULL){
-        printf("Couldn't Load Input File\n");
+        printf("Couldn't Load BitCoin file\n");
+        return ERROR;
+    }
+    FILE* input1 = FileRead(file2);
+    if(input1 == NULL){
+        printf("Couldn't Load transactions file\n");
         return ERROR;
     }
     // char word[255];
@@ -43,9 +48,6 @@ int InputManager(struct walletHT* wHT, struct BitcoinHT* bht, char *file, int bt
 
     walletID = (char *)malloc(50);
     bitcoinID = (char *)malloc(40);
-    // initializing the two hts
-    wHT = new(WALLET_NUM);
-    bht = newBTC(BITCOINS_NUM);
 
     while ((nread = getline(&line, &len, input)) != -1) {
         LinkedList* ll;
@@ -90,6 +92,23 @@ int InputManager(struct walletHT* wHT, struct BitcoinHT* bht, char *file, int bt
         printf("The insertion of wallet in HT is ok! \n");
 
     }
+
+    while ((nread = getline(&line, &len, input1)) != -1) {
+        // get the first token
+        token = strtok(line, s);
+
+
+        // walk through other tokens
+        while( token != NULL ){
+            printf( " %s\n", token );
+            token = strtok(NULL, s);
+            if(token == NULL) break;
+        }
+
+    }
+
+
+
 
     free(line);
     fclose(input);

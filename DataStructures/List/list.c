@@ -117,6 +117,32 @@ int doForAll(LinkedList *list, repeator rep)
     return SUCCESS;
 }
 
+int deleteNode(LinkedList *list, repeator rep){
+
+    listNode* temp = list->head;
+    listNode* prev;
+    // If head node itself holds the key to be deleted 
+    if(temp != NULL && rep(temp->data)){
+        list->head = temp->next;
+        free(temp);
+        return SUCCESS;
+    }
+
+    // search the node to be deleted
+    while(temp != NULL && !rep(temp->data)){
+        prev = temp;
+        temp = temp->next;
+    }
+
+    // If key was not present in linked list 
+    if (temp == NULL) return ERROR; 
+  
+    // Unlink the node from linked list 
+    prev->next = temp->next; 
+
+    free(temp);  // Free memory 
+    return SUCCESS;
+}
 int listHead(LinkedList *list, void *item, int removal)
 {
     if (list->head == NULL) return ERROR;

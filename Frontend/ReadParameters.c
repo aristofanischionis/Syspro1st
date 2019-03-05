@@ -79,8 +79,8 @@ int InputReader(int argc, char *argv[]){
     wHT = new(WALLET_NUM);
     bHT = newBTC(BITCOINS_NUM);
     // so now i need to read the 2 files
-    if(strcmp(bitCoinBalancesFile, "") != 0){
-        InputManager(wHT, bHT, bitCoinBalancesFile, btcValue);
+    if((strcmp(bitCoinBalancesFile, "") != 0) && (strcmp(trxFile, "") != 0)){
+        InputManager(wHT, bHT, bitCoinBalancesFile, trxFile, btcValue);
     }
     else printf("Input File Name for bitCoinBalancesFile not given\n");
     // and write the data to my structs
