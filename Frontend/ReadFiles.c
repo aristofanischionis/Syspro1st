@@ -93,19 +93,19 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, char *file1, char *file2, int bt
 
     }
 
-    while ((nread = getline(&line, &len, input1)) != -1) {
-        // get the first token
-        token = strtok(line, s);
+    // while ((nread = getline(&line, &len, input1)) != -1) {
+    //     // get the first token
+    //     token = strtok(line, s);
 
 
-        // walk through other tokens
-        while( token != NULL ){
-            printf( " %s\n", token );
-            token = strtok(NULL, s);
-            if(token == NULL) break;
-        }
+    //     // walk through other tokens
+    //     while( token != NULL ){
+    //         printf( " %s\n", token );
+    //         token = strtok(NULL, s);
+    //         if(token == NULL) break;
+    //     }
 
-    }
+    // }
 
 
 

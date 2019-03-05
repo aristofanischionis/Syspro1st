@@ -83,6 +83,10 @@ int InputReader(int argc, char *argv[]){
         InputManager(wHT, bHT, bitCoinBalancesFile, trxFile, btcValue);
     }
     else printf("Input File Name for bitCoinBalancesFile not given\n");
+
+
+    printf("the first wid %s and balance %d \n", wHT->nodes[0]->_walletID, wHT->nodes[0]->balance);
+    doForAll(wHT->nodes[0]->btcList, printuserBTC);
     // and write the data to my structs
     return 0;
 }

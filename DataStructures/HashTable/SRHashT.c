@@ -34,22 +34,21 @@ void deleteBucket(void* t){
     free(this);
 }
 
+// hash function
 static int hash(const char* str, const int m) {
-    int hash = 5381;
+    unsigned long hash = 5381;
     int c = (*str);
-
     while (c){
         hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-        c = (*str++);
+        c = (*str++) ;
     }
-
     return hash % m;
 }
-//avoiding collisions double hashing
+
 static int getHash1( const char* s, const int size) {
     const int hashA = hash(s, size);
-    const int hashB = hash(s, size);
-    return (hashA + (hashB + 1)) % size;
+
+    return (hashA + 1) % size;
 }
 
 void traverseLL(LinkedList* listofBuckets, bucket* result){

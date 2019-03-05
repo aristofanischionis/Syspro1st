@@ -4,5 +4,6 @@
 #include "Structs.h"
 int InputReader(int argc, char *argv[]);
 int InputManager(walletHT* wHT, BitcoinHT* bht, char *file1, char *file2, int btcVal);
+int printuserBTC(void *t);
 
 #endif

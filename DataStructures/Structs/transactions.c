@@ -42,7 +42,7 @@ int ubtcFinder(void *data){
 }
 
 void deleteBitcoinFromUser(wallet* this, userBitcoin* ubtc){
-    deleteNode(this->btcList, ubtcFinder);
+    dNode(this->btcList, ubtcFinder);
 }
 
 // this fun will return a LL of bitcoins to be used in this trx

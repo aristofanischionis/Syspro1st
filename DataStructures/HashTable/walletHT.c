@@ -57,7 +57,7 @@ static int hash(const char* str, const int m) {
     }
     return hash % m;
 }
-//avoiding collisions double hashing
+
 static int getHash( const char* s, const int size, const int attempt) {
     int hashA = hash(s, size);
     // const int hashB = hash(s, size);

@@ -22,5 +22,7 @@ btcTree* TreeSearch(btcTree* root, btcNode* value);
 void printTree(Tree t);
 void addLeft(btcTree* node, btcNode* value);
 void addRight(btcTree* node, btcNode* value);
+void deleteNode(btcTree* node);
+void printLeafNodes(btcTree* root);
 
 #endif
