@@ -2,13 +2,13 @@
 #include <stdio.h>
 #include <string.h>
 #include "../../HeaderFiles/Structs.h"
-// #include "../../HeaderFiles/Hashtables.h"
 #include "../../HeaderFiles/LinkedLists.h"
 
 void deleteBucket(void* t);
 
-int initSRHT(SRHashT* ht, int h1, int numOfBucketNodes){
-    if(h1 < 0) return ERROR;
+SRHashT* initSRHT(int h1, int numOfBucketNodes){
+    SRHashT* ht;
+    if(h1 < 0) return NULL;
     ht = (SRHashT*)malloc(sizeof(SRHashT)); // one ht
     ht->size = h1;
     ht->bucketNodesNum = numOfBucketNodes;
@@ -17,7 +17,7 @@ int initSRHT(SRHashT* ht, int h1, int numOfBucketNodes){
     for(i=0; i<h1; i++){
         ht->myBuckets[i] = init(sizeof(bucket*), deleteBucket);
     }
-    return SUCCESS;
+    return ht;
 }
 
 void deleteBucketNode(bucketNode* this){
@@ -47,7 +47,6 @@ static int hash(const char* str, const int m) {
 
 static int getHash1( const char* s, const int size) {
     const int hashA = hash(s, size);
-
     return (hashA + 1) % size;
 }
 

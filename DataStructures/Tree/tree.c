@@ -1,5 +1,6 @@
 #include <stdio.h> 
 #include <stdlib.h>
+#include <string.h>
 #include "../../HeaderFiles/Tree.h"
 
 void deleteNode(btcTree* node);
@@ -44,7 +45,7 @@ btcTree* newTreeNode(btcNode* value){
 btcTree* TreeSearch(btcTree* root, btcNode* value){
 		if(root == NULL)
 			return NULL;
-		else if (root->node->thisTrx->_trxID == value->thisTrx->_trxID)
+		else if (!strcmp(root->node->thisTrx->_trxID, value->thisTrx->_trxID))
 			return root;
 		else if(root->rKid != NULL)
 			TreeSearch(root->rKid, value);	     

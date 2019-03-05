@@ -1,6 +1,6 @@
 OBJS 	= main.o ReadParameters.o ReadFiles.o bitcoinsHT.o SRHashT.o walletHT.o list.o structs.o transactions.o tree.o
 SOURCE	= main.c Frontend/ReadParameters.c Frontend/ReadFiles.c DataStructures/HashTable/bitcoinsHT.c DataStructures/HashTable/SRHashT.c DataStructures/HashTable/walletHT.c DataStructures/List/list.c DataStructures/Structs/structs.c DataStructures/Structs/transactions.c DataStructures/Tree/tree.c
-HEADER  = HeaderFiles/Input.h HeaderFiles/Structs.h HeaderFiles/HashTables.h HeaderFiles/LinkedLists.h HeaderFiles/Tree.h
+HEADER  = HeaderFiles/Input.h HeaderFiles/Structs.h HeaderFiles/HashTables.h HeaderFiles/LinkedLists.h HeaderFiles/Tree.h HeaderFiles/Transactions.h
 OUT  	= bitcoin
 CC	= gcc
 FLAGS   = -g -c -Wall

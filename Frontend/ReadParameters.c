@@ -10,6 +10,15 @@
 //     exit(EXIT_FAILURE);
 // }
 
+int bucketCalculator(int b){
+    // we have to have buckets of b bytes
+    // and inside we have to put an array of buckets
+    int sizeOfBucketNodeArray = 0;
+    sizeOfBucketNodeArray = (int)((b - 2 * sizeof(int)) / sizeof(bucketNode*));
+    printf("I calculated the bucketnodes in each bucket will be %d", sizeOfBucketNodeArray);
+    return sizeOfBucketNodeArray;
+}
+
 void paramChecker(int n, char* argv[], char* toCheck, char** result){
     int i = 1;
     while( i<n ){
@@ -76,18 +85,28 @@ int InputReader(int argc, char *argv[]){
     // now let's make the walletHT and the Bitcoin HT
     walletHT* wHT;
     BitcoinHT* bHT;
+    SRHashT* sender;
+    SRHashT* receiver;
+    LinkedList* allTrxIDs;
+
+    allTrxIDs = init(sizeof(char*), freeString);
     wHT = new(WALLET_NUM);
     bHT = newBTC(BITCOINS_NUM);
+    int sizeOfBucketNodeArray = 0;
+    sizeOfBucketNodeArray = bucketCalculator(bSize);
+    //
+    sender = initSRHT(h1Num, sizeOfBucketNodeArray);
+    receiver = initSRHT(h2Num, sizeOfBucketNodeArray);
     // so now i need to read the 2 files
     if((strcmp(bitCoinBalancesFile, "") != 0) && (strcmp(trxFile, "") != 0)){
-        InputManager(wHT, bHT, bitCoinBalancesFile, trxFile, btcValue);
+        InputManager(wHT, bHT, sender, receiver, allTrxIDs, bitCoinBalancesFile, trxFile, btcValue);
     }
-    else printf("Input File Name for bitCoinBalancesFile not given\n");
+    else printf("Input File Name for bitCoinBalancesFile or Transactions File not given\n");
 
-    printf("a random wid %s and balance %d \n", wHT->nodes[25]->_walletID, wHT->nodes[25]->balance);
-    wallet *wal;
-    wal = wHT->nodes[25];
-    doForAll(wal->btcList, printuserBTC);
+    // printf("a random wid %s and balance %d \n", wHT->nodes[25]->_walletID, wHT->nodes[25]->balance);
+    // wallet *wal;
+    // wal = wHT->nodes[25];
+    // doForAll(wal->btcList, printuserBTC);
     // and write the data to my structs
     return 0;
 }

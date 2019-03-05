@@ -6,6 +6,9 @@
 #define SUCCESS 0
 #define WALLET_NUM 100
 #define BITCOINS_NUM 100
+#define YES 2
+#define NO 3
+
 
 typedef struct wallet wallet;
 typedef struct bitcoin bitcoin;
@@ -43,7 +46,7 @@ struct btcNode {
 };
 
 struct trxObject {
-    int _trxID;
+    char* _trxID;
     struct wallet* sender;
     struct wallet* receiver;
     int value;
@@ -101,7 +104,7 @@ void destroyUserBitcoin(void* data);
 bitcoin* newBitcoin(int _bitcoinID);
 btcNode* newBTCNode(walletHT* ht, char* walletID, int dollars, trxObject* txID);
 LinkedList* newBtcList();
-trxObject* newTrxObj(walletHT* wHT, char* sendID, char* recID, int id, int val, struct tm t);
+trxObject* newTrxObj(walletHT* wHT, char* sendID, char* recID, char* id, int val, struct tm t);
 LinkedList* newTRXList();
 trxinLL* newTrxLLNode(trxObject* t, char* wal, walletHT* ht, btcTree* tptr);
 bucketNode* newBucketNode(char* wal, walletHT* ht, LinkedList* trxList);
@@ -110,7 +113,7 @@ int insertNodeinBucket(bucket* b, bucketNode* bn);
 LinkedList* newBucketList();
 int currentAmount(void* data);
 int calculateBalance(LinkedList* userBtc);
-
+void freeString(void *data);
 //
 // wallet HT
 walletHT* new(const int size);
@@ -125,7 +128,7 @@ void insertBTC(BitcoinHT* ht, bitcoin* item);
 bitcoin* searchBTC(BitcoinHT* ht, int _id);
 void printBTC(BitcoinHT* ht);
 // SRHT hashtables
-int initSRHT(SRHashT* ht, int h1, int numOfBucketNodes);
+SRHashT* initSRHT(int h1, int numOfBucketNodes);
 int insertSRHT(SRHashT* ht,  bucketNode* bkt, char* _id );
 int searchSRHT(SRHashT* ht, char* _id,  bucketNode* result);
 void deleteSRHT(SRHashT* ht);

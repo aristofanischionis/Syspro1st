@@ -117,14 +117,14 @@ int doForAll(LinkedList *list, repeator rep)
     return SUCCESS;
 }
 
-int dNode(LinkedList *list, repeator rep){ // do not free the bitcoin
+int SkipNode(LinkedList *list, repeator rep){ // do not free the bitcoin
 
     listNode* temp = list->head;
     listNode* prev;
     // If head node itself holds the key to be deleted 
     if(temp != NULL && rep(temp->data)){
         list->head = temp->next;
-        free(temp);
+        // free(temp);
         return SUCCESS;
     }
 
@@ -140,9 +140,10 @@ int dNode(LinkedList *list, repeator rep){ // do not free the bitcoin
     // Unlink the node from linked list 
     prev->next = temp->next; 
 
-    free(temp);  // Free memory 
+    // free(temp);  // Free memory 
     return SUCCESS;
 }
+
 int listHead(LinkedList *list, void *item, int removal)
 {
     if (list->head == NULL) return ERROR;
@@ -186,9 +187,11 @@ void printTRXobj(void *t)
 {
     trxinLL* tr;
     tr = (trxinLL*)t;
-    int id = tr->trx->_trxID;
+    char* id = malloc(15);
+    strcpy(id, tr->trx->_trxID);
     
-    printf("TRX id is:  %d\n", id);
+    printf("TRX id is:  %s\n", id);
 
     printf(" wallet in trx is: %s\n ", tr->walletinTRX->_walletID);
+    free(id);
 }

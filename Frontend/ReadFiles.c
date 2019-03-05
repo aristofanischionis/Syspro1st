@@ -4,6 +4,8 @@
 #include <errno.h> 
 #include "../HeaderFiles/Input.h"
 #include "../HeaderFiles/Structs.h"
+#include "../HeaderFiles/Transactions.h"
+
 
 FILE* FileRead (char *in){
     FILE * input;
@@ -20,7 +22,7 @@ int printuserBTC(void *t)
 {
     if(t == NULL){
         printf("No user bitcoins in this list\n");
-        return 1;
+        return 0;
     }
     userBitcoin* temp = (userBitcoin *)t;
    
@@ -28,7 +30,7 @@ int printuserBTC(void *t)
     return 1;
 }
 
-int InputManager(walletHT* wHT, BitcoinHT* bht, char *file1, char *file2, int btcVal){
+int InputManager(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, LinkedList* allTrxIDs, char *file1, char *file2, int btcVal){
     FILE* input = FileRead(file1);
     if(input == NULL){
         printf("Couldn't Load BitCoin file\n");
@@ -39,10 +41,14 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, char *file1, char *file2, int bt
         printf("Couldn't Load transactions file\n");
         return ERROR;
     }
-    // char word[255];
+    char *_trxId;
     char *walletID;
     char *bitcoinID;
-    int _id;
+    char *senderID;
+    char *receiverID;
+    char *date;
+    char *_time;
+    int _id = 0;
     int balance = 0;
     char *line = NULL;
     size_t len = 0;
@@ -50,12 +56,16 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, char *file1, char *file2, int bt
     const char s[2] = " ";
     char *token;
 
-    // wHT = new(WALLET_NUM);
-    // bht = newBTC(BITCOINS_NUM);
-
+    _trxId = (char*) malloc(15);
     walletID = (char *)malloc(50);
     bitcoinID = (char *)malloc(40);
-
+    senderID = (char *)malloc(50);
+    receiverID = (char *)malloc(50);
+    date = (char *)malloc(50);
+    _time = (char *)malloc(50);
+    // let's read trx file
+    printf("Time to read the Bitcoin Balances File!\n");
+    
     while ((nread = getline(&line, &len, input)) != -1) {
         LinkedList* ll;
         wallet* wal;
@@ -97,29 +107,54 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, char *file1, char *file2, int bt
         wal = newWallet(walletID, ll, balance);
         insert(wHT, wal);
         printf("The insertion of wallet in HT is ok! \n");
-
     }
 
-    // while ((nread = getline(&line, &len, input1)) != -1) {
-    //     // get the first token
-    //     token = strtok(line, s);
+    // let's read trx file
+    printf("Time to read the Transactions File!\n");
 
+    char word[255];
+    int counter = 0;
+    int value = 0;
+    while (fscanf(input1,"%s",word)==1){
+        switch(counter % 6) {
+            case 0 :
+                strcpy(_trxId, word);
+                break;
+            case 1 :
+                strcpy(senderID, word);
+                break;
+            case 2 :
+                strcpy(receiverID, word);
+                break;
+            case 3 :
+                value = atoi(word);
+                break;
+            case 4 :
+                strcpy(date, word);
+                break;
+            case 5 :
+                strcpy(_time, word);
+                break;
+        }
+        counter++;
+        if( counter % 6 == 0) {
+            if(processTrx(allTrxIDs, wHT, bht, sender, receiver, _trxId, senderID, receiverID, value, date, _time) == ERROR){
+                printf("Program crashed while reading the TransactionsFile\n");
+                printf("Exiting....\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
 
-    //     // walk through other tokens
-    //     while( token != NULL ){
-    //         printf( " %s\n", token );
-    //         token = strtok(NULL, s);
-    //         if(token == NULL) break;
-    //     }
-
-    // }
-
-
-
-
+    printf("Done reading both files Successfully!\n");
     free(line);
     fclose(input);
     free(walletID);
     free(bitcoinID);
+    free(senderID);
+    free(receiverID);
+    free(date);
+    free(_time);
+    // maybe i also need to free btc, ubtc, wal, destroy ll
     return SUCCESS;
 }
