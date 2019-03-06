@@ -90,12 +90,12 @@ bitcoin* searchBTC(BitcoinHT* ht, int _id) {
     int i = 1;
     while (item != NULL) {
         // printf("%s---searching---%s,---->%d\n",item->_id,_id, i);
-        if (item != &DELETED_BITCOIN) { 
+        // if (item != &DELETED_BITCOIN) { 
             if (item->_bitcoinID == _id) {
                 // printf("search to %s kai brhka %s as epistrepsw %d \n",_id, item->_id, index);
                 return item;
             }
-        }
+        // }
         index = getHashBTC(_id, ht->size, i);
         item = ht->nodes[index];
         // if(item == NULL) printf("item is null %d\n", index);

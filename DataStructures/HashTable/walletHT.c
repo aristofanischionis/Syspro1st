@@ -99,11 +99,9 @@ wallet* search(walletHT* ht, char* _id) {
     int i = 1;
     while (item != NULL) {
         // printf("%s---searching---%s,---->%d\n",item->_id,_id, i);
-        if (item != &DELETED_WALLET) { 
-            if (strcmp(item->_walletID, _id) == 0) {
-                // printf("search to %s kai brhka %s as epistrepsw %d \n",_id, item->_id, index);
-                return item;
-            }
+        if (strcmp(item->_walletID, _id) == 0) {
+            // printf("search to %s kai brhka %s as epistrepsw %d \n",_id, item->_id, index);
+            return item;
         }
         index = getHash(_id, ht->size, i);
         item = ht->nodes[index];

@@ -137,12 +137,12 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiv
     int i;
     // allTrxIDs = (char**)malloc(trxiDs * sizeof(char*));
     // int i;
-    for(i=0;i<trxiDs;i++){
-        // allocate space for each trxid
-        // allTrxIDs[i] = (char*)malloc(15);
-        // allTrxIDs[i] = NULL;
-        memset(allTrxIDs[i], '\0', sizeof(allTrxIDs));
-    }
+    // for(i=0;i<trxiDs;i++){
+    //     // allocate space for each trxid
+    //     // allTrxIDs[i] = (char*)malloc(15);
+    //     // allTrxIDs[i] = NULL;
+    //     memset(allTrxIDs[i], '\0', sizeof(allTrxIDs));
+    // }
 
     char word[255];
     int counter = 0;
@@ -172,10 +172,8 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiv
         if( counter % 6 == 0) {
             // first check if id is unique
             // check that the trxid is unique
-            printf("------> %s \n", _trxId);
             for(i=0;i < trxiDs;i++){
                 if(!strcmp(allTrxIDs[i], "")){
-                    printf("This id in i is null %d\n", i);
                     break;
                 }
                 if(!strcmp(allTrxIDs[i], _trxId)){
@@ -187,11 +185,7 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiv
             // if i made it till here and this id is unique
             // push it in i position
             strcpy(allTrxIDs[i], _trxId);
-            // memcpy(allTrxIDs[i], _trxId, 15);
-            printf("id is -->%d\n", i);
-            // allTrxIDs[i] = _trxId;
-            printf("alltrxid tou i %d is %s\n", i, allTrxIDs[i]);
-            printf("Id is unique \n");
+            // id is unique let's process the trx
             if(processTrx(wHT, bht, sender, receiver, _trxId, senderID, receiverID, value, date, _time) == ERROR){
                 printf("Program crashed while reading the TransactionsFile\n");
                 printf("Exiting....\n");
