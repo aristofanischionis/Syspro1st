@@ -198,9 +198,11 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiv
             strcpy(allTrxIDs[i], _trxId);
             // id is unique let's process the trx
             if(processTrx(wHT, bht, sender, receiver, _trxId, senderID, receiverID, value, date, _time) == ERROR){
-                printf("Program crashed while reading the TransactionsFile\n");
-                printf("Exiting....\n");
-                exit(EXIT_FAILURE);
+                // printf("Program crashed while reading the TransactionsFile\n");
+                // printf("Exiting....\n");
+                // exit(EXIT_FAILURE);
+                printf("Wrong transaction details, Transaction will be ignored\n");
+                continue;
             }
         }
     }
