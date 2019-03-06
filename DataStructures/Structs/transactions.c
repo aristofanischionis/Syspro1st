@@ -5,12 +5,14 @@
 #include "../../HeaderFiles/Structs.h"
 #include "../../HeaderFiles/LinkedLists.h"
 
-int MAX = 0;
-char* toBeChecked;
+int MAX = 363746; // random big int
 int Unique = YES;
 
-int getNextTrxID(){
-    return MAX+1;
+char* getNextTrxID(){
+    char* res = malloc(15);
+    sprintf(res, "%d", MAX + 1);
+    MAX++;
+    return res;
 }
 
 int possibleTrx(wallet* wal, int value){
@@ -31,8 +33,6 @@ void addNewUserBitcoin(wallet* this, userBitcoin* ubtc, int v){
 
 int ubtcFinder(void *data){
     userBitcoin* temp = (userBitcoin *)data;
-
-
 }
 
 void deleteBitcoinFromUser(wallet* this, userBitcoin* ubtc){
@@ -101,7 +101,6 @@ struct tm* checkDateTime(char* date, char* _time){
     //     puts(buffer);
     // }
 
-    
     strptime(_time, "%H:%M:%S", res);
     struct tm * parsedTime; 
     int year, month, day;
@@ -132,6 +131,7 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     wallet* temp1;
     wallet* temp2;
     struct tm* _timeStruct;
+    trxObject* this;
     printf("senderid is %s\n", senderID);
     temp1 = search(wHT, senderID);
     if(temp1 == NULL){
@@ -157,6 +157,9 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     printf("Transaction with id %s is going to be executed right now!\n", _trxId);
 
     // make the trx object
+
+    this = newTrxObj(wHT, senderID, receiverID, _trxId, value, *_timeStruct);
+    // check if everything is correct with this trx obj
     //take the sender's btc's trees and add kids
 
 
