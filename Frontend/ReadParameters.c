@@ -9,6 +9,17 @@
 //     fprintf(stderr, message);
 //     exit(EXIT_FAILURE);
 // }
+int readLines(char* in){
+    char *line = NULL;
+    size_t len = 0;
+    size_t nread;
+    int counter = 0;
+    FILE* input = FileRead(in);
+    while ((nread = getline(&line, &len, input)) != -1) {
+        counter++;
+    }
+    return counter;
+}
 
 int bucketCalculator(int b){
     // we have to have buckets of b bytes
@@ -87,9 +98,10 @@ int InputReader(int argc, char *argv[]){
     BitcoinHT* bHT;
     SRHashT* sender;
     SRHashT* receiver;
-    LinkedList* allTrxIDs;
 
-    allTrxIDs = init(sizeof(char*), freeString);
+    int trxiDs = readLines(trxFile);
+    printf("The trx file has got %d lines\n", trxiDs);
+    
     wHT = new(WALLET_NUM);
     bHT = newBTC(BITCOINS_NUM);
     int sizeOfBucketNodeArray = 0;
@@ -99,7 +111,7 @@ int InputReader(int argc, char *argv[]){
     receiver = initSRHT(h2Num, sizeOfBucketNodeArray);
     // so now i need to read the 2 files
     if((strcmp(bitCoinBalancesFile, "") != 0) && (strcmp(trxFile, "") != 0)){
-        InputManager(wHT, bHT, sender, receiver, allTrxIDs, bitCoinBalancesFile, trxFile, btcValue);
+        InputManager(wHT, bHT, sender, receiver, trxiDs, bitCoinBalancesFile, trxFile, btcValue);
     }
     else printf("Input File Name for bitCoinBalancesFile or Transactions File not given\n");
 
