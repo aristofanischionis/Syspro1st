@@ -100,7 +100,6 @@ wallet* search(walletHT* ht, char* _id) {
     while (item != NULL) {
         // printf("%s---searching---%s,---->%d\n",item->_id,_id, i);
         if (strcmp(item->_walletID, _id) == 0) {
-            // printf("search to %s kai brhka %s as epistrepsw %d \n",_id, item->_id, index);
             return item;
         }
         index = getHash(_id, ht->size, i);

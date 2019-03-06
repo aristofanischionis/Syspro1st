@@ -93,6 +93,7 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiv
         // get the first token
         token = strtok(line, s);
         // walletIDs
+        // token[strlen(token) - 1] = '\0';
         strcpy(walletID, token);
         // walk through other tokens
         while( token != NULL ){
@@ -123,9 +124,19 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiv
         // printf("list's id of head is %d\n", temp->btc->_bitcoinID);
         // doForAll(ll, printuserBTC);
         balance = calculateBalance(ll);
+        if(balance == 0){
+            // for user that don't have any bitcoins at first ignore whitespace at the end
+            walletID[strlen(walletID) - 1] = 0;
+        }
         wal = newWallet(walletID, ll, balance);
         insert(wHT, wal);
         printf("The insertion of wallet in HT is ok! \n");
+        wallet* temp = search(wHT, walletID);
+        if(temp == NULL){
+            printf("for some reason i got a null wallet for %s\n", walletID);
+            return ERROR;
+        }
+        
     }
 
     // let's read trx file
