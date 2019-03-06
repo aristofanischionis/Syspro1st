@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "../../HeaderFiles/Structs.h"
 #include "../../HeaderFiles/LinkedLists.h"
 
@@ -86,18 +87,51 @@ LinkedList* findBitcoins(wallet* sender, int money){
 //     }
 //     return 1;
 // }
+struct tm* checkDateTime(char* date, char* _time){
+    // struct tm* res;
+    struct tm* res;
+    // if(date == NULL || _time == NULL){
+    //     time_t rawtime;
+    //     char buffer[80];
 
+    //     time(&rawtime);
+    //     res = localtime(&rawtime);
+
+    //     strftime(buffer,80,"Now it's %y/%m/%d.",res);
+    //     puts(buffer);
+    // }
+
+    
+    strptime(_time, "%H:%M:%S", res);
+    struct tm * parsedTime; 
+    int year, month, day;
+    if(sscanf(date, "%d-%d-%d", &day, &month, &year) != EOF){ 
+        time_t rawTime;
+        time(&rawTime);
+        parsedTime = localtime(&rawTime);
+
+        parsedTime->tm_year = year;
+        parsedTime->tm_mon = month;
+        parsedTime->tm_mday = day;
+        // -->
+        res->tm_year = parsedTime->tm_year;
+        res->tm_mon = parsedTime->tm_mon;
+        res->tm_mday = parsedTime->tm_mday;
+    }
+    return res;
+}
 
 
 int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char* _trxId, char* senderID, char* receiverID, int value, char* date, char* _time){
 
-    if(wHT == NULL || bht == NULL || sender == NULL || receiver == NULL || senderID == NULL || receiverID == NULL || date == NULL || _time == NULL){
+    if(wHT == NULL || bht == NULL || sender == NULL || receiver == NULL || senderID == NULL || receiverID == NULL){
         printf("processTrx got wrong input \n");
     }
     // firstly check if trx is valid
     //check if sender and rec ids are valid wallets
     wallet* temp1;
     wallet* temp2;
+    struct tm* _timeStruct;
     printf("senderid is %s\n", senderID);
     temp1 = search(wHT, senderID);
     if(temp1 == NULL){
@@ -115,12 +149,16 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
         printf("Sender doesn't have enough money to send\n");
         return ERROR;
     }
+
+    // check date and time validity
+    _timeStruct = checkDateTime(date, _time);
+    printf("--> I have in my struct : %d-%d-%d and time -> %d:%d\n", _timeStruct->tm_mday, _timeStruct->tm_mon, _timeStruct->tm_year, _timeStruct->tm_hour, _timeStruct->tm_min );
     //do it
     printf("Transaction with id %s is going to be executed right now!\n", _trxId);
 
+    // make the trx object
     //take the sender's btc's trees and add kids
 
-    // make the trx object
 
     // add it in both linked lists r and s
 

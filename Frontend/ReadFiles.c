@@ -146,15 +146,6 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiv
     // char** allTrxIDs;
     char allTrxIDs[trxiDs][15];
     int i;
-    // allTrxIDs = (char**)malloc(trxiDs * sizeof(char*));
-    // int i;
-    // for(i=0;i<trxiDs;i++){
-    //     // allocate space for each trxid
-    //     // allTrxIDs[i] = (char*)malloc(15);
-    //     // allTrxIDs[i] = NULL;
-    //     memset(allTrxIDs[i], '\0', sizeof(allTrxIDs));
-    // }
-
     char word[255];
     int counter = 0;
     int value = 0;
