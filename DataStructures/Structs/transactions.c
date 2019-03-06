@@ -158,8 +158,16 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
 
     // make the trx object
 
-    this = newTrxObj(wHT, senderID, receiverID, _trxId, value, *_timeStruct);
+    this = newTrxObj(temp1, temp2, _trxId, value, _timeStruct);
+    if(this == NULL){
+        printf("trxobj is null \n");
+        return ERROR;
+    }
     // check if everything is correct with this trx obj
+    // struct tm *temptime = this->_time;
+    // printf("------> id %s,v %d send %s rec %s \n", this->_trxID, this->value, this->sender->_walletID, this->receiver->_walletID);
+    // printf("trxobj time : %d-%d-%d and time -> %d:%d\n", temptime->tm_mday, temptime->tm_mon, temptime->tm_year, temptime->tm_hour, temptime->tm_min );
+    // check done successfully
     //take the sender's btc's trees and add kids
 
 

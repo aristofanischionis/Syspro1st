@@ -15,7 +15,6 @@ typedef struct bitcoin bitcoin;
 typedef struct userBitcoin userBitcoin;
 typedef struct btcNode btcNode;
 typedef struct trxObject trxObject;
-typedef struct trxinLL trxinLL;
 typedef struct bucketNode bucketNode;
 typedef struct bucket bucket;
 typedef struct BitcoinHT BitcoinHT;
@@ -50,17 +49,17 @@ struct trxObject {
     struct wallet* sender;
     struct wallet* receiver;
     int value;
-    struct tm time; // time
+    struct tm* _time; // time
 };
 
-struct trxinLL {
-    struct trxObject* trx;
-    struct wallet* walletinTRX;
-};
+// struct trxinLL {
+//     struct trxObject* trx;
+//     struct wallet* walletinTRX;
+// };
 
 struct bucketNode {
     struct wallet* walletID;
-    struct LinkedList* headofList; // this is  a LL of trxinLL* objects
+    struct LinkedList* headofList; // this is  a LL of trxobj* objects
 };
 
 struct bucket {
@@ -104,9 +103,9 @@ void destroyUserBitcoin(void* data);
 bitcoin* newBitcoin(int _bitcoinID);
 btcNode* newBTCNode(walletHT* ht, char* walletID, int dollars, trxObject* txID);
 LinkedList* newBtcList();
-trxObject* newTrxObj(walletHT* wHT, char* sendID, char* recID, char* id, int val, struct tm t);
+trxObject* newTrxObj(wallet* sendID, wallet* recID, char* id, int val, struct tm* t);
 LinkedList* newTRXList();
-trxinLL* newTrxLLNode(trxObject* t, char* wal, walletHT* ht, btcTree* tptr);
+// trxinLL* newTrxLLNode(trxObject* t, char* wal, walletHT* ht, btcTree* tptr);
 bucketNode* newBucketNode(char* wal, walletHT* ht, LinkedList* trxList);
 bucket* newBucket(int size);
 int insertNodeinBucket(bucket* b, bucketNode* bn);

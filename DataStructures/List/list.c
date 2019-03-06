@@ -185,13 +185,13 @@ void printList(LinkedList *list, void (*fptr)(void *))
 // Function to print an trx
 void printTRXobj(void *t)
 {
-    trxinLL* tr;
-    tr = (trxinLL*)t;
+    trxObject* tr;
+    tr = (trxObject*)t;
     char* id = malloc(15);
-    strcpy(id, tr->trx->_trxID);
+    strcpy(id, tr->_trxID);
     
     printf("TRX id is:  %s\n", id);
 
-    printf(" wallet in trx is: %s\n ", tr->walletinTRX->_walletID);
+    printf("receiver is: %s and sender is: %s\n ", tr->receiver->_walletID, tr->sender->_walletID);
     free(id);
 }

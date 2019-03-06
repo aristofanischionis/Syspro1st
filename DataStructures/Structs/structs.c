@@ -68,25 +68,16 @@ LinkedList* newBtcList(){
     return init(sizeof(userBitcoin), destroyUserBitcoin);
 }
 
-trxObject* newTrxObj(walletHT* wHT, char* sendID, char* recID, char* id, int val, struct tm t){
+trxObject* newTrxObj(wallet* sendID, wallet* recID, char* id, int val, struct tm* t){
     trxObject* trx;
     trx = malloc(sizeof(trxObject));
-    wallet* res1;
-    wallet* res2;
-
-    // verify that these owners are there
-    res1 = search(wHT, sendID);
-    if (res1 == NULL) return NULL;
-
-    res2 = search(wHT, recID);
-    if (res2 == NULL) return NULL;
 
     trx->_trxID = malloc(15);
     strcpy(trx->_trxID, id);
     trx->value = val;
-    trx->time = t;
-    trx->sender = res1;
-    trx->receiver = res2;
+    trx->_time = t;
+    trx->sender = sendID;
+    trx->receiver = recID;
 
     return trx;
 }
@@ -96,19 +87,7 @@ void destroyTRXlist(void* data){
 }
 
 LinkedList* newTRXList(){
-    return init(sizeof(trxinLL*), destroyTRXlist);
-}
-
-trxinLL* newTrxLLNode(trxObject* t, char* wal, walletHT* ht, btcTree* tptr){
-    trxinLL* node;
-    wallet* res;
-    node = malloc(sizeof(trxinLL));
-    res = search(ht, wal);
-    if (res == NULL) return NULL;
-
-    node->trx = t;
-    node->walletinTRX = res;
-    return node;
+    return init(sizeof(trxObject*), destroyTRXlist);
 }
 
 bucketNode* newBucketNode(char* wal, walletHT* ht, LinkedList* trxList){
