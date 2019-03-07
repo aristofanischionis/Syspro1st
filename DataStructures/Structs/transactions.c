@@ -5,12 +5,15 @@
 #include "../../HeaderFiles/Structs.h"
 #include "../../HeaderFiles/LinkedLists.h"
 
-int MAX = 363746; // random big int
+int MAX = 36374; // random big int
 int Unique = YES;
 
 char* getNextTrxID(){
+    // change it to be more efficient
+    // check if there is any number in the LL and then take the biggest and then add +1
+    // and after reading the file they are not going to give me any trxids
     char* res = malloc(15);
-    sprintf(res, "%d", MAX + 1);
+    sprintf(res, "%d", MAX);
     MAX++;
     return res;
 }
@@ -28,7 +31,7 @@ void incrementUserBitcoin(userBitcoin* this, int v){
 
 void addNewUserBitcoin(wallet* this, userBitcoin* ubtc, int v){
     userBitcoin* clone = newUserBitcoin(v, ubtc->btc);
-    insertEND(this->btcList, clone);
+    insertBEG(this->btcList, clone);
 }
 
 int ubtcFinder(void *data){
@@ -39,46 +42,145 @@ void deleteBitcoinFromUser(wallet* this, userBitcoin* ubtc){
     SkipNode(this->btcList, ubtcFinder);
 }
 
-// this fun will return a LL of bitcoins to be used in this trx
-LinkedList* findBitcoins(wallet* sender, int money){
-    LinkedList* btcs;
-    userBitcoin* t;
-    btcs = init(sizeof(userBitcoin*), NULL);
+userBitcoin* findInReceiver(wallet* receiver, bitcoin* this){
+    listNode *node = receiver->btcList->head;
+
+    while (node != NULL){
+        userBitcoin* t;
+        t = (userBitcoin*) node->data;
+
+        if(t->btc->_bitcoinID == this->_bitcoinID){
+            printf("I found btc id %d in receiver\n", t->btc->_bitcoinID);
+            return t;
+        }
+        node = node->next;
+    }
+    printf("I couldn't find in receiver the requested id %d\n", this->_bitcoinID);
+    return NULL;
+}
+
+void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this){
     int available = 0;
     int iNeed = 0;
     listNode *node = sender->btcList->head;
-
-    while (node != NULL)
+    int adder = 0;
+    int flag = 0;
+    while (node != NULL && flag != 1)
     {
+        userBitcoin* t;
         t = (userBitcoin*) node->data;
-        if((t->amount + available) > money ){
-            // which means if i get all of this bitcoin i will give more money
-            // i will only use a part of it and return the list
-            iNeed = money - available;
-            // put this in the btc list
-            insertEND(btcs, t);
+
+        if(t->amount == 0){
+            printf("this is an empty btc %d shouldn't be in this list\n", t->btc->_bitcoinID);
+            return ;
         }
-        // t->amount
+        bitcoin* thisOne;
+        thisOne = t->btc;
+
+        while(flag != 1){
+            // check for nodes that have the sender as walletid
+            btcTree* tempo;
+            
+            tempo = returnLeafNodes(thisOne->btcTree->root, sender->_walletID);
+            if(tempo == NULL){
+                printf("No more leaf nodes\n");
+                break;
+                // no more leafs 
+            }
+            // here check amount available in this leaf
+            adder = tempo->node->dollars;
+            //
+
+            if((adder + available) > money ){
+                // which means if i get all of this bitcoin i will give more money
+                // i will only use a part of it and return
+                iNeed = money - available;
+                adder -= iNeed; 
+                // reduce this money needed from userbtc
+                reduceUserBitcoin(t, iNeed);
+                // add it to rec's list if it's not there
+                // check if btc is in rec's list
+                userBitcoin* temp;
+                temp = findInReceiver(receiver, t->btc);
+                if(temp == NULL){
+                    // rec doesn't have this btc in his list
+                    addNewUserBitcoin(receiver, t, iNeed);
+                }
+                else{
+                    // he has it so just increment amount
+                    incrementUserBitcoin(temp, iNeed);
+                }
+                flag = 1;
+            }
+            else if(adder + available == money){
+                // take all of it 
+                iNeed = adder;
+                adder=0;
+                reduceUserBitcoin(t, iNeed);
+                // add it to rec's list
+                userBitcoin* temp;
+                temp = findInReceiver(receiver, t->btc);
+                if(temp == NULL){
+                    // rec doesn't have this btc in his list
+                    addNewUserBitcoin(receiver, t, iNeed);
+                }
+                else{
+                    // he has it so just increment amount
+                    incrementUserBitcoin(temp, iNeed);
+                }
+                // take it out of the sender's btc list
+                deleteBitcoinFromUser(sender, t);
+                flag =1;
+            }
+            else if(adder + available < money){
+                // use all of it and got to the next one
+                iNeed = adder;
+                adder=0;
+                reduceUserBitcoin(t, iNeed);
+                // add this ineed to money available for next loops
+                available += iNeed;
+                // add it to rec's list
+                userBitcoin* temp;
+                temp = findInReceiver(receiver, t->btc);
+                if(temp == NULL){
+                    // rec doesn't have this btc in his list
+                    addNewUserBitcoin(receiver, t, iNeed);
+                }
+                else{
+                    // he has it so just increment amount
+                    incrementUserBitcoin(temp, iNeed);
+                }
+                // delete it from sender
+                deleteBitcoinFromUser(sender, t);
+                flag = 0;
+            }
+            else {
+                printf("Something weird happened here\n");
+            }
+            // and now it's a good time to add the kids in t's bitcoin tree
+            // a kid
+            btcNode* theleftKid; // receiver
+            btcNode* therightKid; // sender
+            theleftKid = newBTCNode(receiver, iNeed, this);
+            therightKid = newBTCNode(sender, adder, this);
+            addLeft(tempo, theleftKid);
+            addRight(tempo, therightKid);
+            // this bitcoin is used in one more trx
+            thisOne->noOfTrxUsed ++;
+        }
+
         node = node->next;
     }
-
-    // while( available != money &&  )
-    // userBitcoin* goodOne;
-
-
-
-
-    // insertEND(btcs, );
 }
+
+
 
 int checkUniqueness(LinkedList* AllTrxs, char* _id){
     // return YES if unique, NO if not
     listNode *node = AllTrxs->head;
-    int result = 1;
     while (node != NULL){
         char* temp;
         temp = (char *)(node->data);
-        // str
         // printf("temp is %s, id is %s \n", temp, _id);
         if(!strcmp(temp, _id)){
             // if true, temp == id id is not unique
@@ -93,21 +195,6 @@ int checkUniqueness(LinkedList* AllTrxs, char* _id){
     insertBEG(AllTrxs, tempId);
     return YES;
 }
-// {
-//     if(t == NULL){
-//         printf("No trx ids in this list\n");
-//         return 1;
-//     }
-//     char* temp = *(char **)t;
-    
-//     printf("this trx id is : %s \n", temp);
-//     if(!strcmp(temp, toBeChecked)){
-//         // then this id is not unique
-//         Unique = NO;
-//         return 0;
-//     }
-//     return 1;
-// }
 
 struct tm* checkDateTime(char* date, char* _time){
     // struct tm* res;
@@ -195,11 +282,17 @@ int processTrx(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* send
     // printf("------> id %s,v %d send %s rec %s \n", this->_trxID, this->value, this->sender->_walletID, this->receiver->_walletID);
     // printf("trxobj time : %d-%d-%d and time -> %d:%d\n", temptime->tm_mday, temptime->tm_mon, temptime->tm_year, temptime->tm_hour, temptime->tm_min );
     // check done successfully
+    // exchange bitcoins between two parties
+    // chenge balances of wallets
+    temp1->balance -= value;
+    temp2->balance += value;
+    // change 
+    // find which ones to give to each other
     //take the sender's btc's trees and add kids
+    findBitcoins(temp1, temp2, value, this);
+    printf("findBitcoins executed successfully!\n");
     
-
     // add it in both linked lists r and s
 
-    //
-    //update all the structs
+    // update all the structs
 }

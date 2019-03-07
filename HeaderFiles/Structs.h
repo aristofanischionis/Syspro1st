@@ -35,6 +35,7 @@ struct userBitcoin {
 
 struct bitcoin {
     int _bitcoinID;
+    int noOfTrxUsed;
     struct Tree* btcTree;
 };
 
@@ -101,11 +102,10 @@ wallet* newWallet(char* _walletID, LinkedList* btcList, int balance);
 userBitcoin* newUserBitcoin(int amount, bitcoin* b);
 void destroyUserBitcoin(void* data);
 bitcoin* newBitcoin(int _bitcoinID);
-btcNode* newBTCNode(walletHT* ht, char* walletID, int dollars, trxObject* txID);
+btcNode* newBTCNode(wallet* walletID, int dollars, trxObject* txID);
 LinkedList* newBtcList();
 trxObject* newTrxObj(wallet* sendID, wallet* recID, char* id, int val, struct tm* t);
 LinkedList* newTRXList();
-// trxinLL* newTrxLLNode(trxObject* t, char* wal, walletHT* ht, btcTree* tptr);
 bucketNode* newBucketNode(char* wal, walletHT* ht, LinkedList* trxList);
 bucket* newBucket(int size);
 int insertNodeinBucket(bucket* b, bucketNode* bn);

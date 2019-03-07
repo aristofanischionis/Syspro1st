@@ -30,24 +30,27 @@ int printuserBTC(void *t)
     return 1;
 }
 
-// int checkUniqueness(char** allTrxIDs, char* toBeChecked){
-//     int i = 0;
-//     for(i=0;(allTrxIDs[i] != NULL);i++){
-        
-//         if(!strcmp(allTrxIDs[i], toBeChecked)){
-//             // this id already exists in the list
-//             printf("ID is --> %d, %s,         %s \n", i, allTrxIDs[i], toBeChecked);
-//             return NO;
-//         }
-//     }
-//     // if i made it till here and this id is unique
-//     // push it in i position
-//     // strcpy(allTrxIDs[i], toBeChecked);
-//     // memcpy(allTrxIDs[i], toBeChecked, 15);
-//     allTrxIDs[i] = toBeChecked;
-//     printf("id is -->%d  %s,         %s \n", i, allTrxIDs[i], toBeChecked);
-//     return YES;
-// }
+//Attention in Transactions, when a user gets a bitcoin for the first time call this one
+void initializeBitcoinTrees(wallet* this, int btcval){
+
+    btcNode* t;
+    t= newBTCNode(this, btcval, NULL);
+
+    listNode* node = this->btcList->head;
+
+    while(node != NULL){
+        userBitcoin* ubtc;
+        ubtc = (userBitcoin*) (node->data);
+        if(ubtc->btc->btcTree == NULL){
+            printf(" ----> null this tree\n");
+            
+        }
+        ubtc->btc->btcTree->root = newTreeNode(t);
+
+        node = node->next;
+    }
+
+}
 
 int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char *file1, char *file2, int btcVal){
     FILE* input = FileRead(file1);
@@ -136,7 +139,12 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
             printf("for some reason i got a null wallet for %s\n", walletID);
             return ERROR;
         }
-        
+        // add the first node of the tree
+        initializeBitcoinTrees(wal, btcVal);
+        if(wal->btcList->head != NULL){
+            userBitcoin* tata = (userBitcoin*) wal->btcList->head->data;
+            printf("in head this wal btc list has btc with id %d and the btc node has the correct walletid: %s\n", tata->btc->_bitcoinID, tata->btc->btcTree->root->node->walletID->_walletID);
+        }
     }
 
     // let's read trx file

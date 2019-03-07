@@ -6,10 +6,12 @@
 void deleteNode(btcTree* node);
 void printLeafNodes(btcTree* root);
 // create a new node & set default nodes
-void createTree(Tree* r){
+Tree* createTree(){
+    Tree* r;
     r = malloc(sizeof(Tree));
     r->root = malloc(sizeof(btcTree));
     r->root = NULL;
+    return r;
 }
 
 void destroyTree(Tree* r){
@@ -42,15 +44,15 @@ btcTree* newTreeNode(btcNode* value){
 	return n;
 }
 
-btcTree* TreeSearch(btcTree* root, btcNode* value){
+btcTree* TreeSearch(btcTree* root, char* walId){
 		if(root == NULL)
 			return NULL;
-		else if (!strcmp(root->node->thisTrx->_trxID, value->thisTrx->_trxID))
+		else if (!strcmp(root->node->walletID->_walletID, walId))
 			return root;
 		else if(root->rKid != NULL)
-			TreeSearch(root->rKid, value);	     
+			TreeSearch(root->rKid, walId);	     
 		else
-			TreeSearch(root->lKid, value);
+			TreeSearch(root->lKid, walId);
         
 }
 
@@ -83,6 +85,7 @@ void printLeafNodes(btcTree* root){
     if (!root->lKid && !root->rKid)
     { 
         printf("This is a leaf! %s, %d \n", root->node->walletID->_walletID, root->node->dollars);
+        
         return; 
     } 
   
@@ -94,3 +97,32 @@ void printLeafNodes(btcTree* root){
     // recursively 
     if (root->rKid) printLeafNodes(root->rKid); 
 }  
+
+btcTree* returnLeafNodes(btcTree* root, char* walId){
+    // if node is null, return 
+    if (!root) return NULL; 
+      
+    // if node is leaf node, print its data     
+    if ((!root->lKid) && (!root->rKid) && (!strcmp(root->node->walletID->_walletID, walId)))
+    { 
+        printf("This is a leaf! %s, %d \n", root->node->walletID->_walletID, root->node->dollars);
+        
+        return root; 
+    } 
+  
+    // if left child exists, check for leaf  
+    // recursively 
+    if (root->lKid) returnLeafNodes(root->lKid, walId); 
+          
+    // if right child exists, check for leaf  
+    // recursively 
+    if (root->rKid) returnLeafNodes(root->rKid, walId); 
+}  
+
+int unspent(btcTree* root){
+    if(!root) return NULL;
+
+    // go all left till lkid is null
+    // then return dollars of it
+    
+}

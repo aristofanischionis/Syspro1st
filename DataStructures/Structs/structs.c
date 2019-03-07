@@ -46,20 +46,17 @@ bitcoin* newBitcoin(int _bitcoinID){
     bitcoin* b;
     b = malloc(sizeof(bitcoin));
     b->_bitcoinID = _bitcoinID;
-    createTree(b->btcTree);
+    b->noOfTrxUsed = 0;
+    b->btcTree = createTree();
     return b;
 }
 
-btcNode* newBTCNode(walletHT* ht, char* walletID, int dollars, trxObject* txID){
+btcNode* newBTCNode(wallet* walletID, int dollars, trxObject* txID){
     btcNode* b;
     b = malloc(sizeof(btcNode));
-    wallet* res;
-
-    res = search(ht, walletID);
-    if (res == NULL) return NULL;
 
     b->dollars = dollars;
-    b->walletID = res;
+    b->walletID = walletID;
     b->thisTrx = txID;
     return b;
 }
