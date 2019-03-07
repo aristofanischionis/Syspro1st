@@ -98,9 +98,11 @@ int InputReader(int argc, char *argv[]){
     BitcoinHT* bHT;
     SRHashT* sender;
     SRHashT* receiver;
+    LinkedList* AllTrxs;
 
-    int trxiDs = readLines(trxFile);
-    printf("The trx file has got %d lines\n", trxiDs);
+    AllTrxs = init(sizeof(char*), freeString);
+    // int trxiDs = readLines(trxFile);
+    // printf("The trx file has got %d lines\n", trxiDs);
     
     wHT = new(WALLET_NUM);
     bHT = newBTC(BITCOINS_NUM);
@@ -111,7 +113,7 @@ int InputReader(int argc, char *argv[]){
     receiver = initSRHT(h2Num, sizeOfBucketNodeArray);
     // so now i need to read the 2 files
     if((strcmp(bitCoinBalancesFile, "") != 0) && (strcmp(trxFile, "") != 0)){
-        InputManager(wHT, bHT, sender, receiver, trxiDs, bitCoinBalancesFile, trxFile, btcValue);
+        InputManager(AllTrxs, wHT, bHT, sender, receiver, bitCoinBalancesFile, trxFile, btcValue);
     }
     else printf("Input File Name for bitCoinBalancesFile or Transactions File not given\n");
 

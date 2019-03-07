@@ -16,7 +16,7 @@ char* getNextTrxID(){
 }
 
 int possibleTrx(wallet* wal, int value){
-    return ((wal->balance >= value) ? SUCCESS : ERROR );
+    return ((wal->balance >= value) ? YES : NO );
 }
 
 void reduceUserBitcoin(userBitcoin* this, int v){
@@ -71,7 +71,28 @@ LinkedList* findBitcoins(wallet* sender, int money){
     // insertEND(btcs, );
 }
 
-// int checkUniqueness(void *t)
+int checkUniqueness(LinkedList* AllTrxs, char* _id){
+    // return YES if unique, NO if not
+    listNode *node = AllTrxs->head;
+    int result = 1;
+    while (node != NULL){
+        char* temp;
+        temp = (char *)(node->data);
+        // str
+        // printf("temp is %s, id is %s \n", temp, _id);
+        if(!strcmp(temp, _id)){
+            // if true, temp == id id is not unique
+            return NO;
+        }
+        node = node->next;
+    }
+    // if node == NULL means it's unique
+    char* tempId;
+    tempId = malloc(15);
+    strcpy(tempId, _id);
+    insertBEG(AllTrxs, tempId);
+    return YES;
+}
 // {
 //     if(t == NULL){
 //         printf("No trx ids in this list\n");
@@ -87,6 +108,7 @@ LinkedList* findBitcoins(wallet* sender, int money){
 //     }
 //     return 1;
 // }
+
 struct tm* checkDateTime(char* date, char* _time){
     // struct tm* res;
     struct tm* res;
@@ -121,7 +143,7 @@ struct tm* checkDateTime(char* date, char* _time){
 }
 
 
-int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char* _trxId, char* senderID, char* receiverID, int value, char* date, char* _time){
+int processTrx(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char* _trxId, char* senderID, char* receiverID, int value, char* date, char* _time){
 
     if(wHT == NULL || bht == NULL || sender == NULL || receiver == NULL || senderID == NULL || receiverID == NULL){
         printf("processTrx got wrong input \n");
@@ -143,16 +165,21 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
         printf("receiver id doesn't have a wallet in the Hashtable\n");
         return ERROR;
     }
-    
+    // check uniqueness in ll
+    if(checkUniqueness(AllTrxs, _trxId) == NO){
+        printf("The id: %s is not unique\n", _trxId);
+        return ERROR;
+    }
+
     // secondly check if it's possible
-    if(possibleTrx(temp1, value) == ERROR){
+    if(possibleTrx(temp1, value) == NO){
         printf("Sender doesn't have enough money to send\n");
         return ERROR;
     }
 
     // check date and time validity
     _timeStruct = checkDateTime(date, _time);
-    printf("--> I have in my struct : %d-%d-%d and time -> %d:%d\n", _timeStruct->tm_mday, _timeStruct->tm_mon, _timeStruct->tm_year, _timeStruct->tm_hour, _timeStruct->tm_min );
+    // printf("--> I have in my struct : %d-%d-%d and time -> %d:%d\n", _timeStruct->tm_mday, _timeStruct->tm_mon, _timeStruct->tm_year, _timeStruct->tm_hour, _timeStruct->tm_min );
     //do it
     printf("Transaction with id %s is going to be executed right now!\n", _trxId);
 
@@ -169,7 +196,7 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     // printf("trxobj time : %d-%d-%d and time -> %d:%d\n", temptime->tm_mday, temptime->tm_mon, temptime->tm_year, temptime->tm_hour, temptime->tm_min );
     // check done successfully
     //take the sender's btc's trees and add kids
-
+    
 
     // add it in both linked lists r and s
 

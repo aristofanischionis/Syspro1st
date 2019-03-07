@@ -49,7 +49,7 @@ int printuserBTC(void *t)
 //     return YES;
 // }
 
-int InputManager(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, int trxiDs, char *file1, char *file2, int btcVal){
+int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char *file1, char *file2, int btcVal){
     FILE* input = FileRead(file1);
     if(input == NULL){
         printf("Couldn't Load BitCoin file\n");
@@ -142,9 +142,6 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiv
     // let's read trx file
     printf("Time to read the Transactions File!\n");
 
-    
-    // char** allTrxIDs;
-    char allTrxIDs[trxiDs][15];
     int i;
     char word[255];
     int counter = 0;
@@ -174,21 +171,21 @@ int InputManager(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiv
         if( counter % 6 == 0) {
             // first check if id is unique
             // check that the trxid is unique
-            for(i=0;i < trxiDs;i++){
-                if(!strcmp(allTrxIDs[i], "")){
-                    break;
-                }
-                if(!strcmp(allTrxIDs[i], _trxId)){
-                    // this id already exists in the list
-                    printf("This id is not unique %d \n", i);
-                    return ERROR;
-                }
-            }
-            // if i made it till here and this id is unique
-            // push it in i position
-            strcpy(allTrxIDs[i], _trxId);
+            // for(i=0;i < trxiDs;i++){
+            //     if(!strcmp(allTrxIDs[i], "")){
+            //         break;
+            //     }
+            //     if(!strcmp(allTrxIDs[i], _trxId)){
+            //         // this id already exists in the list
+            //         printf("This id is not unique %d \n", i);
+            //         return ERROR;
+            //     }
+            // }
+            // // if i made it till here and this id is unique
+            // // push it in i position
+            // strcpy(allTrxIDs[i], _trxId);
             // id is unique let's process the trx
-            if(processTrx(wHT, bht, sender, receiver, _trxId, senderID, receiverID, value, date, _time) == ERROR){
+            if(processTrx(AllTrxs, wHT, bht, sender, receiver, _trxId, senderID, receiverID, value, date, _time) == ERROR){
                 // printf("Program crashed while reading the TransactionsFile\n");
                 // printf("Exiting....\n");
                 // exit(EXIT_FAILURE);
