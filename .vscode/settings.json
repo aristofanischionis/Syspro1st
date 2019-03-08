@@ -6,6 +6,7 @@
         "input.h": "c",
         "string.h": "c",
         "tree.h": "c",
-        "transactions.h": "c"
+        "transactions.h": "c",
+        "time.h": "c"
     }
 }

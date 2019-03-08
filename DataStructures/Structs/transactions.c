@@ -102,7 +102,7 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, 
     int moneyGatheredAlready = 0;
     int finished = NO;
 
-    while (node != NULL && finished == NO)
+    while (node != NULL && node->data != NULL && finished == NO)
     {
         userBitcoin* thisUbtc;
         thisUbtc = (userBitcoin*) node->data;
@@ -148,7 +148,10 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, 
             printf("all money is gathered by this ubtc so get it from it's leafs\n");
             finished = YES;
         }
-         
+        // if(thisUbtc->btc->btcTree->root == NULL){
+        //     printf("I have an unitialized btc tree!!!!!!!!!!!!!!!\n");
+        // }
+        // else printf("the btc trees are initializedddd!!!!!!!11\n");
         updateTree(thisUbtc->btc->btcTree->root, sender, receiver, iNeed, this);
         
         // this bitcoin is used in one more trx
@@ -184,7 +187,7 @@ int checkUniqueness(LinkedList* AllTrxs, char* _id){
 
 struct tm* checkDateTime(char* date, char* _time){
     // struct tm* res;
-    struct tm* res;
+    struct tm* res = malloc(sizeof(struct tm));
     // if(date == NULL || _time == NULL){
     //     time_t rawtime;
     //     char buffer[80];
@@ -196,7 +199,13 @@ struct tm* checkDateTime(char* date, char* _time){
     //     puts(buffer);
     // }
 
-    strptime(_time, "%H:%M:%S", res);
+    int hours, minutes;
+    // printf("---> %s\n", _time);
+    if(sscanf(_time, "%d:%d", &hours, &minutes) != EOF){
+        // printf("%d : %d what i read\n", hours, minutes);
+        res->tm_hour = hours;
+        res->tm_min = minutes;
+    }
     struct tm * parsedTime; 
     int year, month, day;
     if(sscanf(date, "%d-%d-%d", &day, &month, &year) != EOF){ 
@@ -212,6 +221,8 @@ struct tm* checkDateTime(char* date, char* _time){
         res->tm_mon = parsedTime->tm_mon;
         res->tm_mday = parsedTime->tm_mday;
     }
+    // res->tm_hour = hours;
+    // res->tm_min = minutes;
     return res;
 }
 

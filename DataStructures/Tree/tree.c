@@ -37,7 +37,8 @@ void deleteNode(btcTree* node){
 }
 
 btcTree* newTreeNode(btcNode* value){
-	btcTree* n = malloc(sizeof(btcTree));
+	btcTree* n = (btcTree*) malloc(sizeof(btcTree));
+    // n->node = malloc(sizeof(btcNode));
     n->node = value;
 	n->lKid = NULL;
     n->lKid = NULL;
@@ -57,19 +58,27 @@ btcTree* TreeSearch(btcTree* root, char* walId){
 }
 
 void addLeft(btcTree* node, btcNode* value){
+    if(!node) return;
     if(node->lKid){
         fprintf(stderr, "left kid already exists \n");
         exit(EXIT_FAILURE);
     }
     node->lKid = newTreeNode(value);
+    if(!node->rKid){
+        node->rKid = NULL;
+    }
 }
 
 void addRight(btcTree* node, btcNode* value){
+    if(!node) return;
     if(node->rKid){
         fprintf(stderr, "right kid already exists \n");
         exit(EXIT_FAILURE);
     }
     node->rKid = newTreeNode(value);
+    if(!node->lKid){
+        node->lKid = NULL;
+    }
 }
 
 void printTree(Tree t){
@@ -79,9 +88,9 @@ void printTree(Tree t){
 // nodes from left to right 
 void printLeafNodes(btcTree* root){
     // if node is null, return 
-    if (!root) return;  
+    if (root == NULL) return;  
     // if node is leaf node, print its data
-    if (!root->lKid && !root->rKid)
+    if (root->lKid = NULL && root->rKid == NULL)
     { 
         printf("This is a leaf! %s, %d \n", root->node->walletID->_walletID, root->node->dollars);
         return; 
@@ -89,20 +98,20 @@ void printLeafNodes(btcTree* root){
   
     // if left child exists, check for leaf  
     // recursively 
-    if (root->lKid) printLeafNodes(root->lKid); 
+    if (root->lKid != NULL) printLeafNodes(root->lKid); 
           
     // if right child exists, check for leaf  
     // recursively 
-    if (root->rKid) printLeafNodes(root->rKid); 
+    if (root->rKid != NULL) printLeafNodes(root->rKid); 
 }  
 
 void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFromLeafs, trxObject* this){
     // if node is null, return 
-    if (!root) return; 
+    if (root == NULL) return; 
     int send = 0;
     int rec = 0;
     // if node is leaf node, and name is walid, get as much balance i can in order to reach balanceFromLeafs  
-    if ((!root->lKid) && (!root->rKid) && (!strcmp(root->node->walletID->_walletID, sender->_walletID)))
+    if ((root->lKid == NULL) && (root->rKid == NULL) && (!strcmp(root->node->walletID->_walletID, sender->_walletID)))
     { 
         if(root->node->dollars >= balanceFromLeafs){
             //after I get money from this leaf I am basically done
@@ -136,11 +145,11 @@ void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFrom
   
     // if left child exists, check for leaf  
     // recursively 
-    if (root->lKid) updateTree(root->lKid, sender, receiver, balanceFromLeafs, this); 
+    if (root->lKid != NULL) updateTree(root->lKid, sender, receiver, balanceFromLeafs, this); 
           
     // if right child exists, check for leaf  
     // recursively 
-    if (root->rKid) updateTree(root->rKid, sender, receiver, balanceFromLeafs, this); 
+    if (root->rKid != NULL) updateTree(root->rKid, sender, receiver, balanceFromLeafs, this); 
 }  
 
 int unspent(btcTree* root){
