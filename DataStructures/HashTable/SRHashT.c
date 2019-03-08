@@ -15,8 +15,10 @@ SRHashT* initSRHT(int h1, int numOfBucketNodes){
     ht->myBuckets = (LinkedList**)malloc(h1 * sizeof(LinkedList*)); // this is a dynamic array of h1 elements of type LL* bucket
     int i;
     for(i=0; i<h1; i++){
-        ht->myBuckets[i] = init(sizeof(bucket*), deleteBucket);
-        // ht->myBuckets[i] = NULL;
+        // ht->myBuckets[i] = init(sizeof(bucket*), deleteBucket);
+
+        ht->myBuckets[i] = NULL;
+        // ht->myBuckets[i] = newBucketList();
     }
     return ht;
 }
@@ -52,6 +54,9 @@ static int getHash1( const char* s, const int size) {
 }
 
 bucket* traverseLL(LinkedList* listofBuckets){
+    if(listofBuckets == NULL){
+        return NULL;
+    }
     listNode* h = listofBuckets->head;
     bucket* temp;
     while (h != NULL)
@@ -69,7 +74,11 @@ bucket* traverseLL(LinkedList* listofBuckets){
 }
 // search in a ll of bucket*
 bucketNode* searchinLL(LinkedList* listofBuckets, char* _walletID){
+    if(listofBuckets == NULL){
+        return NULL;
+    }
     listNode* h = listofBuckets->head;
+
     bucket* temp;
     int i;
     while (h != NULL)
@@ -99,11 +108,17 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
     bucket* curItem;
     // go through the list and find the first not full bucket* of the list
     // linked list of bucket*
-    curItem = traverseLL(ht->myBuckets[index]);
+    if(ht->myBuckets[index] == NULL){
+        ht->myBuckets[index] = newBucketList();
+        curItem = NULL;
+    }
+    else{
+        curItem = traverseLL(ht->myBuckets[index]);
+    }
 
     if(curItem == NULL ){
         printf("I have to make a new bucket! \n");
-         // then that means we have to make a new bucket in this list
+        // then that means we have to make a new bucket in this list
         bucket* newBuck;
         // malloc the new
         newBuck = newBucket(ht->bucketNodesNum);
@@ -122,7 +137,7 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
 
     
     if(curItem->count == ht->bucketNodesNum){
-        printf("I have to make a new bucket! \n");
+        printf("I have to make a new bucket!!!!!\n");
         // then that means we have to make a new bucket in this list
         bucket* newBuck;
         // malloc the new

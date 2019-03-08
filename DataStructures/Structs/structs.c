@@ -113,11 +113,14 @@ bucket* newBucket(int size){
 }
 
 int insertNodeinBucket(bucket* b, bucketNode* bn){
-    if(b->count == b->size) printf("this bucket is full \n");
-    return ERROR;
+    if(b->count == b->size){
+        printf("this bucket is full \n");
+        return ERROR;
+    } 
+    
     // check if the sender or receiver already exists in a bucketNode
     int i;
-    printf("---------------------> ia am in hereeee\n");
+    printf("---------------------> ia am in hereeee b->count %d\n", b->count);
     for(i=0; i< b->count ;i++){
         if(!strcmp(b->array[i]->walletID->_walletID, bn->walletID->_walletID)){
             printf("Sender of already exists so add in the beg of the trx list\n");
@@ -133,7 +136,10 @@ int insertNodeinBucket(bucket* b, bucketNode* bn){
     for(i=b->count; i<b->size; i++){
         if (b->array[i] != NULL) continue;
         b->array[i] = bn;
+        printf("%s wal in i-> %d\n", b->array[i]->walletID->_walletID, i);
         b->count ++ ;
+        printf("---------^$^$^$---->Now the b->count in insert node in bucket is %d\n", b->count);
+        break;
     }
     return SUCCESS;
 }
