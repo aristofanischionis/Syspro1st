@@ -291,26 +291,34 @@ int processTrx(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* send
     
 
     // add it in both linked lists r and s
-    // bucketNode* bkt1;
-    // bucketNode* bkt2;
-    // searchSRHT(sender, senderID, bkt1);
-    // searchSRHT(receiver, receiverID, bkt2);
+    bucketNode* bkt1;
+    bucketNode* bkt2;
+    bkt1 = searchSRHT(sender, senderID);
+    bkt2 = searchSRHT(receiver, receiverID);
 
-    // if(bkt1 == NULL){
-    //     // first trx for sender
-    //     // so
-    //     LinkedList* newList = newTRXList();
-    //     bkt1 = newBucketNode(senderID, wHT, newList);
-    // }
-    // if(bkt2 == NULL){
-    //     // first trx for rec
-    //     // so
-    //     LinkedList* newList = newTRXList();
-    //     bkt2 = newBucketNode(receiverID, wHT, newList);
-    // }
+    if(bkt1 == NULL){
+        // first trx for sender
+        // so
+        LinkedList* newList = newTRXList();
+        insertBEG(newList, this);
+        bkt1 = newBucketNode(senderID, wHT, newList);
+    }
+    else{
+        insertBEG(bkt1->headofList, this);
+    }
+    if(bkt2 == NULL){
+        // first trx for rec
+        // so
+        LinkedList* newList = newTRXList();
+        insertBEG(newList, this);
+        bkt2 = newBucketNode(receiverID, wHT, newList);
+    }
+    else{
+        insertBEG(bkt2->headofList, this);
+    }
     
-    // insertSRHT(sender, bkt1, senderID);
-    // insertSRHT(receiver, bkt2, receiverID);
+    insertSRHT(sender, bkt1, senderID);
+    insertSRHT(receiver, bkt2, receiverID);
 
     // update all the structs done (I guess)
 

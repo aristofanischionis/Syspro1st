@@ -141,10 +141,10 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
         }
         // add the first node of the tree
         initializeBitcoinTrees(wal, btcVal);
-        if(wal->btcList->head != NULL){
-            userBitcoin* tata = (userBitcoin*) wal->btcList->head->data;
-            printf("in head this wal btc list has btc with id %d and the btc node has the correct walletid: %s\n", tata->btc->_bitcoinID, tata->btc->btcTree->root->node->walletID->_walletID);
-        }
+        // if(wal->btcList->head != NULL){
+        //     userBitcoin* tata = (userBitcoin*) wal->btcList->head->data;
+        //     printf("in head this wal btc list has btc with id %d and the btc node has the correct walletid: %s\n", tata->btc->_bitcoinID, tata->btc->btcTree->root->node->walletID->_walletID);
+        // }
     }
 
     // let's read trx file
@@ -207,7 +207,12 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
     printf("Done reading both files Successfully!\n");
 
     
-    printBTC(bht);
+    // printBTC(bht);
+    bucketNode* bkt1 = NULL;
+    bkt1 = searchSRHT(sender, "richard");
+    if(bkt1 != NULL){
+        printf("%s found in sender hash table and balance he has is %d\n", bkt1->walletID->_walletID, bkt1->walletID->balance);
+    }
     
     free(line);
     fclose(input);

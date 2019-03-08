@@ -51,45 +51,43 @@ static int getHash1( const char* s, const int size) {
     return (hashA + 1) % size;
 }
 
-void traverseLL(LinkedList* listofBuckets, bucket* result){
-    listNode* h = listofBuckets->tail;
+bucket* traverseLL(LinkedList* listofBuckets){
+    listNode* h = listofBuckets->head;
     bucket* temp;
     while (h != NULL)
     {
         temp = (bucket*) h->data ;
         if(temp->count < temp->size){
             // this can fit more records in it
-            result = temp;
-            return;
+            return temp;
         }
         
         // this is just a full bucket
         h = h->next;
     }
-    result = NULL;
-    return;
+    return NULL;
 }
-
-void searchinLL(LinkedList* listofBuckets, bucketNode* result, char* _walletID){
+// search in a ll of bucket*
+bucketNode* searchinLL(LinkedList* listofBuckets, char* _walletID){
     listNode* h = listofBuckets->head;
     bucket* temp;
     int i;
     while (h != NULL)
     {
         temp = (bucket*) h->data ;
+        printf("this bucket has got %d items\n", temp->count);
         for(i=0; i<temp->count ; i++){
             if(!strcmp(temp->array[i]->walletID->_walletID, _walletID)){
                 printf("Found the walletID! %s\n", temp->array[i]->walletID->_walletID);
-                result = temp->array[i];
-                return;
+                // result = temp->array[i];
+                return temp->array[i];
             }
         }
         printf("I couldn't find the walletID %s in this bucket\n", _walletID);
         h = h->next;
     }
     printf("I wasn't able to find walletID %s in this LL\n", _walletID);
-    result = NULL;
-    return;
+    return NULL;
 }
 
 int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
@@ -101,10 +99,10 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
     bucket* curItem;
     // go through the list and find the first not full bucket* of the list
     // linked list of bucket*
-    traverseLL(ht->myBuckets[index], curItem);
+    curItem = traverseLL(ht->myBuckets[index]);
 
     if(curItem == NULL ){
-        printf("last bucket full \n");
+        printf("I have to make a new bucket! \n");
          // then that means we have to make a new bucket in this list
         bucket* newBuck;
         // malloc the new
@@ -124,6 +122,7 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
 
     
     if(curItem->count == ht->bucketNodesNum){
+        printf("I have to make a new bucket! \n");
         // then that means we have to make a new bucket in this list
         bucket* newBuck;
         // malloc the new
@@ -153,18 +152,15 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
                 // alliws den to bazw
 }
 
-int searchSRHT(SRHashT* ht, char* _id, bucketNode* result){
-    if(ht == NULL || _id == NULL) return ERROR;
-
+bucketNode* searchSRHT(SRHashT* ht, char* _id){
+    if(ht == NULL || _id == NULL) return NULL;
+    bucketNode* res;
     int index = getHash1(_id, ht->size);
     LinkedList* curItem = ht->myBuckets[index];
 
-    searchinLL(curItem, result, _id);
-    if(result == NULL) {
-        printf("Couldn't find this _id %s \n", _id);
-        return ERROR;
-    }
-    return SUCCESS;
+    res = searchinLL(curItem, _id);
+    
+    return res;
 }
 
 void deleteSRHT(SRHashT* ht){

@@ -129,7 +129,7 @@ void printBTC(BitcoinHT* ht);
 // SRHT hashtables
 SRHashT* initSRHT(int h1, int numOfBucketNodes);
 int insertSRHT(SRHashT* ht,  bucketNode* bkt, char* _id );
-int searchSRHT(SRHashT* ht, char* _id,  bucketNode* result);
+bucketNode* searchSRHT(SRHashT* ht, char* _id);
 void deleteSRHT(SRHashT* ht);
 
 #endif
