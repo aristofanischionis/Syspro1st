@@ -98,31 +98,57 @@ void printLeafNodes(btcTree* root){
     if (root->rKid) printLeafNodes(root->rKid); 
 }  
 
-btcTree* returnLeafNodes(btcTree* root, char* walId){
+void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFromLeafs, trxObject* this){
     // if node is null, return 
-    if (!root) return NULL; 
-      
-    // if node is leaf node, print its data     
-    if ((!root->lKid) && (!root->rKid) && (!strcmp(root->node->walletID->_walletID, walId)))
+    if (root == NULL) return; 
+    int send = 0;
+    int rec = 0;
+    // if node is leaf node, and name is walid, get as much balance i can in order to reach balanceFromLeafs  
+    if ((root->lKid == NULL) && (root->rKid == NULL) && (!strcmp(root->node->walletID->_walletID, sender->_walletID)))
     { 
-        printf("This is a leaf! %s, %d \n", root->node->walletID->_walletID, root->node->dollars);
-        
-        return root; 
+        if(root->node->dollars >= balanceFromLeafs){
+            //after I get money from this leaf I am basically done
+            printf("This is a final leaf! %s, %d , money needed to finish %d\n", root->node->walletID->_walletID, root->node->dollars, balanceFromLeafs);
+            rec = balanceFromLeafs; // this is how sender will give
+            send = root->node->dollars - balanceFromLeafs;
+            btcNode* theleftKid; // receiver
+            btcNode* therightKid; // sender
+            theleftKid = newBTCNode(receiver, rec, this);
+            therightKid = newBTCNode(sender, send, this);
+            addLeft(root, theleftKid);
+            addRight(root, therightKid);
+            return;
+        }
+        else{
+            //after I get money from this leaf I am not done yet
+            printf("This is a leaf! %s, %d \n", root->node->walletID->_walletID, root->node->dollars);
+            rec = root->node->dollars; // receiver will get all money from sender
+            send = 0; // sender will have no money
+            balanceFromLeafs -= rec; 
+            // balance left to get from other leafs is -= money received from this leaf and recursively  got to the other leafs as well
+
+            btcNode* theleftKid; // receiver
+            btcNode* therightKid; // sender
+            theleftKid = newBTCNode(receiver, rec, this);
+            therightKid = newBTCNode(sender, send, this);
+            addLeft(root, theleftKid);
+            addRight(root, therightKid);
+        }        
     } 
   
     // if left child exists, check for leaf  
     // recursively 
-    if (root->lKid) returnLeafNodes(root->lKid, walId); 
+    if (root->lKid != NULL) updateTree(root->lKid, sender, receiver, balanceFromLeafs, this); 
           
     // if right child exists, check for leaf  
     // recursively 
-    if (root->rKid) returnLeafNodes(root->rKid, walId); 
+    if (root->rKid != NULL) updateTree(root->rKid, sender, receiver, balanceFromLeafs, this); 
 }  
 
 int unspent(btcTree* root){
-    if(!root) return NULL;
+    if(!root) return -1;
 
     // go all left till lkid is null
     // then return dollars of it
-    
+    return 0; // should return the money that is unspent
 }

@@ -34,12 +34,34 @@ void addNewUserBitcoin(wallet* this, userBitcoin* ubtc, int v){
     insertBEG(this->btcList, clone);
 }
 
-int ubtcFinder(void *data){
-    userBitcoin* temp = (userBitcoin *)data;
-}
 
-void deleteBitcoinFromUser(wallet* this, userBitcoin* ubtc){
-    SkipNode(this->btcList, ubtcFinder);
+int deleteBitcoinFromUser(wallet* wal, userBitcoin* ubtc){
+    LinkedList* list = wal->btcList;
+    listNode* temp = list->head;
+    listNode* prev;
+    userBitcoin* this;
+    // If head node itself holds the key to be deleted 
+    if(temp != NULL ){
+        this = (userBitcoin*) temp->data;
+        if(this->btc->_bitcoinID == ubtc->btc->_bitcoinID){
+            list->head = temp->next;
+            return SUCCESS;
+        }
+    }
+
+    // search the node to be deleted
+    while(temp != NULL && (this->btc->_bitcoinID != ubtc->btc->_bitcoinID)){
+        prev = temp;
+        temp = temp->next;
+    }
+
+    // If key was not present in linked list 
+    if (temp == NULL) return ERROR; 
+  
+    // Unlink the node from linked list 
+    prev->next = temp->next; 
+
+    return SUCCESS;
 }
 
 userBitcoin* findInReceiver(wallet* receiver, bitcoin* this){
@@ -59,116 +81,71 @@ userBitcoin* findInReceiver(wallet* receiver, bitcoin* this){
     return NULL;
 }
 
+int moneyToTakeFromUbtc(userBitcoin* this, int balanceToReach, int moneyGatheredAlready){
+    int thisMoney = this->amount;
+    int ineed = 0;
+    if(thisMoney + moneyGatheredAlready > balanceToReach){
+        ineed = balanceToReach - moneyGatheredAlready;
+    }
+    else{
+        ineed = thisMoney;
+    }
+    return ineed;
+}
+
 void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this){
-    int available = 0;
     int iNeed = 0;
     listNode *node = sender->btcList->head;
-    int adder = 0;
-    int flag = 0;
-    while (node != NULL && flag != 1)
-    {
-        userBitcoin* t;
-        t = (userBitcoin*) node->data;
+    // int money is the full balance to achieve
+    int balanceToReach = money;
+    int moneyGatheredAlready = 0;
+    int finished = NO;
 
-        if(t->amount == 0){
-            printf("this is an empty btc %d shouldn't be in this list\n", t->btc->_bitcoinID);
+    while (node != NULL && finished == NO)
+    {
+        userBitcoin* thisUbtc;
+        thisUbtc = (userBitcoin*) node->data;
+
+        if(thisUbtc->amount == 0){
+            printf("this is an empty btc %d shouldn't be in this list\n", thisUbtc->btc->_bitcoinID);
             return ;
         }
-        bitcoin* thisOne;
-        thisOne = t->btc;
 
-        while(flag != 1){
-            // check for nodes that have the sender as walletid
-            btcTree* tempo;
-            
-            tempo = returnLeafNodes(thisOne->btcTree->root, sender->_walletID);
-            if(tempo == NULL){
-                printf("No more leaf nodes\n");
-                break;
-                // no more leafs 
+        // first do wallet things
+        // check how much money should I take out of this ubtc
+        iNeed = moneyToTakeFromUbtc(thisUbtc, balanceToReach, moneyGatheredAlready);
+        moneyGatheredAlready += iNeed;
+        reduceUserBitcoin(thisUbtc, iNeed);
+        userBitcoin* temp;
+        temp = findInReceiver(receiver, thisUbtc->btc);
+        if(temp == NULL){
+            // rec doesn't have this btc in his list
+            printf("adding bitcoin %d to user %s\n", thisUbtc->btc->_bitcoinID, receiver->_walletID);
+            addNewUserBitcoin(receiver, thisUbtc, iNeed);
+        }
+        else{
+            // he has it so just increment amount
+            printf("he has the bitcoin %d  user %s already\n", thisUbtc->btc->_bitcoinID, receiver->_walletID);
+            incrementUserBitcoin(temp, iNeed);
+        }
+        
+        if(thisUbtc->amount == 0){
+            // delete it from sender
+            printf("I will delete %d from %s user\n", thisUbtc->btc->_bitcoinID, sender->_walletID);
+            if(deleteBitcoinFromUser(sender, thisUbtc) == ERROR){
+                printf("I got an error while trying to delete the bitcoin from sender's wallet\n");
             }
-            // here check amount available in this leaf
-            adder = tempo->node->dollars;
-            //
-
-            if((adder + available) > money ){
-                // which means if i get all of this bitcoin i will give more money
-                // i will only use a part of it and return
-                iNeed = money - available;
-                adder -= iNeed; 
-                // reduce this money needed from userbtc
-                reduceUserBitcoin(t, iNeed);
-                // add it to rec's list if it's not there
-                // check if btc is in rec's list
-                userBitcoin* temp;
-                temp = findInReceiver(receiver, t->btc);
-                if(temp == NULL){
-                    // rec doesn't have this btc in his list
-                    addNewUserBitcoin(receiver, t, iNeed);
-                }
-                else{
-                    // he has it so just increment amount
-                    incrementUserBitcoin(temp, iNeed);
-                }
-                flag = 1;
-            }
-            else if(adder + available == money){
-                // take all of it 
-                iNeed = adder;
-                adder=0;
-                reduceUserBitcoin(t, iNeed);
-                // add it to rec's list
-                userBitcoin* temp;
-                temp = findInReceiver(receiver, t->btc);
-                if(temp == NULL){
-                    // rec doesn't have this btc in his list
-                    addNewUserBitcoin(receiver, t, iNeed);
-                }
-                else{
-                    // he has it so just increment amount
-                    incrementUserBitcoin(temp, iNeed);
-                }
-                // take it out of the sender's btc list
-                deleteBitcoinFromUser(sender, t);
-                flag =1;
-            }
-            else if(adder + available < money){
-                // use all of it and got to the next one
-                iNeed = adder;
-                adder=0;
-                reduceUserBitcoin(t, iNeed);
-                // add this ineed to money available for next loops
-                available += iNeed;
-                // add it to rec's list
-                userBitcoin* temp;
-                temp = findInReceiver(receiver, t->btc);
-                if(temp == NULL){
-                    // rec doesn't have this btc in his list
-                    addNewUserBitcoin(receiver, t, iNeed);
-                }
-                else{
-                    // he has it so just increment amount
-                    incrementUserBitcoin(temp, iNeed);
-                }
-                // delete it from sender
-                deleteBitcoinFromUser(sender, t);
-                flag = 0;
-            }
-            else {
-                printf("Something weird happened here\n");
-            }
-            // and now it's a good time to add the kids in t's bitcoin tree
-            // a kid
-            btcNode* theleftKid; // receiver
-            btcNode* therightKid; // sender
-            theleftKid = newBTCNode(receiver, iNeed, this);
-            therightKid = newBTCNode(sender, adder, this);
-            addLeft(tempo, theleftKid);
-            addRight(tempo, therightKid);
-            // this bitcoin is used in one more trx
-            thisOne->noOfTrxUsed ++;
         }
 
+        if(moneyGatheredAlready == balanceToReach){
+            printf("all money is gathered by this ubtc so get it from it's leafs\n");
+            finished = YES;
+        }
+         
+        updateTree(thisUbtc->btc->btcTree->root, sender, receiver, iNeed, this);
+        
+        // this bitcoin is used in one more trx
+        thisUbtc->btc->noOfTrxUsed ++;
         node = node->next;
     }
 }
@@ -295,4 +272,6 @@ int processTrx(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* send
     // add it in both linked lists r and s
 
     // update all the structs
+
+    return SUCCESS;
 }

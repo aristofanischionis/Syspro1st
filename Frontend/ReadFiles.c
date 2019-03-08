@@ -150,7 +150,6 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
     // let's read trx file
     printf("Time to read the Transactions File!\n");
 
-    int i;
     char word[255];
     int counter = 0;
     int value = 0;

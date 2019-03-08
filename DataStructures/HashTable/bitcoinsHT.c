@@ -4,7 +4,7 @@
 #include "../../HeaderFiles/Structs.h"
 #include "../../HeaderFiles/Tree.h"
 
-static bitcoin DELETED_BITCOIN = {-1, NULL};
+static bitcoin DELETED_BITCOIN = {-1, -1, NULL};
 
 int HT_INITIAL_BASE_SIZE_BTC = 200; // a default number for the base HT
 

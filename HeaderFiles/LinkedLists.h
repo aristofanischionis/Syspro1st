@@ -26,12 +26,14 @@ struct LinkedList {
 };
 typedef struct LinkedList LinkedList;
 
+
+
 LinkedList* init(int size, freeFunction fn);
 int destroy(LinkedList* list);
 int insertBEG(LinkedList* list, void* newData);
 int insertEND(LinkedList* list, void* newData);
 int doForAll(LinkedList *list, repeator rep);
-int SkipNode(LinkedList *list, repeator rep);
+// int SkipNode(LinkedList *list, userBitcoin* ubtc);
 int listHead(LinkedList *list, void *item, int removal);
 int listTail(LinkedList* list, void *item);
 void printList(LinkedList *node, void (*fptr)(void *));

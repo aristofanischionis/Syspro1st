@@ -117,32 +117,34 @@ int doForAll(LinkedList *list, repeator rep)
     return SUCCESS;
 }
 
-int SkipNode(LinkedList *list, repeator rep){ // do not free the bitcoin
+// int SkipNode(LinkedList *list, userBitcoin* ubtc){ // do not free the bitcoin
 
-    listNode* temp = list->head;
-    listNode* prev;
-    // If head node itself holds the key to be deleted 
-    if(temp != NULL && rep(temp->data)){
-        list->head = temp->next;
-        // free(temp);
-        return SUCCESS;
-    }
+//     listNode* temp = list->head;
+//     listNode* prev;
+//     userBitcoin* this;
+//     // If head node itself holds the key to be deleted 
+//     if(temp != NULL ){
+//         this = (userBitcoin*) temp->data;
+//         if(this->btc->_bitcoinID == ubtc->btc->_bitcoinID){
+//             list->head = temp->next;
+//             return SUCCESS;
+//         }
+//     }
 
-    // search the node to be deleted
-    while(temp != NULL && !rep(temp->data)){
-        prev = temp;
-        temp = temp->next;
-    }
+//     // search the node to be deleted
+//     while(temp != NULL && (this->btc->_bitcoinID != ubtc->btc->_bitcoinID)){
+//         prev = temp;
+//         temp = temp->next;
+//     }
 
-    // If key was not present in linked list 
-    if (temp == NULL) return ERROR; 
+//     // If key was not present in linked list 
+//     if (temp == NULL) return ERROR; 
   
-    // Unlink the node from linked list 
-    prev->next = temp->next; 
+//     // Unlink the node from linked list 
+//     prev->next = temp->next; 
 
-    // free(temp);  // Free memory 
-    return SUCCESS;
-}
+//     return SUCCESS;
+// }
 
 int listHead(LinkedList *list, void *item, int removal)
 {
