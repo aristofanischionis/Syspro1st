@@ -90,10 +90,9 @@ void printLeafNodes(btcTree* root){
     // if node is null, return 
     if (root == NULL) return;  
     // if node is leaf node, print its data
-    if (root->lKid = NULL && root->rKid == NULL)
+    if (root->lKid == NULL && root->rKid == NULL)
     { 
         printf("This is a leaf! %s, %d \n", root->node->walletID->_walletID, root->node->dollars);
-        return; 
     } 
   
     // if left child exists, check for leaf  

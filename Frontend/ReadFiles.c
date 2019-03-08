@@ -205,6 +205,10 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
     }
 
     printf("Done reading both files Successfully!\n");
+
+    
+    printBTC(bht);
+    
     free(line);
     fclose(input);
     free(walletID);
