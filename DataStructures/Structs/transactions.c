@@ -4,6 +4,7 @@
 #include <time.h>
 #include "../../HeaderFiles/Structs.h"
 #include "../../HeaderFiles/LinkedLists.h"
+#include "../../HeaderFiles/Input.h"
 
 int MAX = 36374; // random big int
 int Unique = YES;
@@ -93,7 +94,7 @@ int moneyToTakeFromUbtc(userBitcoin* this, int balanceToReach, int moneyGathered
     return ineed;
 }
 
-void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this){
+void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, int btcVal){
     int iNeed = 0;
     listNode *node = sender->btcList->head;
     // int money is the full balance to achieve
@@ -105,6 +106,7 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this){
     {
         userBitcoin* thisUbtc;
         thisUbtc = (userBitcoin*) node->data;
+        printf("I am doin this loop again id : %d, amount %d\n", thisUbtc->btc->_bitcoinID, thisUbtc->amount);
 
         if(thisUbtc->amount == 0){
             printf("this is an empty btc %d shouldn't be in this list\n", thisUbtc->btc->_bitcoinID);
@@ -121,6 +123,11 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this){
         if(temp == NULL){
             // rec doesn't have this btc in his list
             printf("adding bitcoin %d to user %s\n", thisUbtc->btc->_bitcoinID, receiver->_walletID);
+            // before adding to receiver check if it his first btc
+            // if yes first initialize the btc list
+            if(receiver->balance == 0){
+                initializeBitcoinTrees(receiver, btcVal);
+            }
             addNewUserBitcoin(receiver, thisUbtc, iNeed);
         }
         else{
@@ -147,6 +154,8 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this){
         // this bitcoin is used in one more trx
         thisUbtc->btc->noOfTrxUsed ++;
         node = node->next;
+
+        // printLeafNodes(thisUbtc->btc->btcTree->root);
     }
 }
 
@@ -207,7 +216,7 @@ struct tm* checkDateTime(char* date, char* _time){
 }
 
 
-int processTrx(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char* _trxId, char* senderID, char* receiverID, int value, char* date, char* _time){
+int processTrx(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char* _trxId, char* senderID, char* receiverID, int value, char* date, char* _time, int btcVal){
 
     if(wHT == NULL || bht == NULL || sender == NULL || receiver == NULL || senderID == NULL || receiverID == NULL){
         printf("processTrx got wrong input \n");
@@ -266,12 +275,33 @@ int processTrx(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* send
     // change 
     // find which ones to give to each other
     //take the sender's btc's trees and add kids
-    findBitcoins(temp1, temp2, value, this);
+    findBitcoins(temp1, temp2, value, this, btcVal);
     printf("findBitcoins executed successfully!\n");
     
-    // add it in both linked lists r and s
 
-    // update all the structs
+    // add it in both linked lists r and s
+    // bucketNode* bkt1;
+    // bucketNode* bkt2;
+    // searchSRHT(sender, senderID, bkt1);
+    // searchSRHT(receiver, receiverID, bkt2);
+
+    // if(bkt1 == NULL){
+    //     // first trx for sender
+    //     // so
+    //     LinkedList* newList = newTRXList();
+    //     bkt1 = newBucketNode(senderID, wHT, newList);
+    // }
+    // if(bkt2 == NULL){
+    //     // first trx for rec
+    //     // so
+    //     LinkedList* newList = newTRXList();
+    //     bkt2 = newBucketNode(receiverID, wHT, newList);
+    // }
+    
+    // insertSRHT(sender, bkt1, senderID);
+    // insertSRHT(receiver, bkt2, receiverID);
+
+    // update all the structs done (I guess)
 
     return SUCCESS;
 }

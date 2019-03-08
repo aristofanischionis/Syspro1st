@@ -16,6 +16,7 @@ SRHashT* initSRHT(int h1, int numOfBucketNodes){
     int i;
     for(i=0; i<h1; i++){
         ht->myBuckets[i] = init(sizeof(bucket*), deleteBucket);
+        // ht->myBuckets[i] = NULL;
     }
     return ht;
 }
@@ -51,7 +52,7 @@ static int getHash1( const char* s, const int size) {
 }
 
 void traverseLL(LinkedList* listofBuckets, bucket* result){
-    listNode* h = listofBuckets->head;
+    listNode* h = listofBuckets->tail;
     bucket* temp;
     while (h != NULL)
     {
@@ -65,6 +66,7 @@ void traverseLL(LinkedList* listofBuckets, bucket* result){
         // this is just a full bucket
         h = h->next;
     }
+    result = NULL;
     return;
 }
 
@@ -95,16 +97,30 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
     if(bkt == NULL || ht == NULL || _id == NULL) return ERROR;
 
     int index = getHash1(_id, ht->size);
-    bucket* curItem = NULL;
+    // bucket* curItem = NULL;
+    bucket* curItem;
     // go through the list and find the first not full bucket* of the list
+    // linked list of bucket*
     traverseLL(ht->myBuckets[index], curItem);
 
-    if(curItem == NULL ) printf("everything was full \n");
-    curItem = (bucket*) ht->myBuckets[index]->head->data;
-    if(curItem == NULL) {
-        printf("something is really wrong\n");
-        return ERROR;
-    }
+    if(curItem == NULL ){
+        printf("last bucket full \n");
+         // then that means we have to make a new bucket in this list
+        bucket* newBuck;
+        // malloc the new
+        newBuck = newBucket(ht->bucketNodesNum);
+        // insert the bucknode
+        insertNodeinBucket(newBuck, bkt);
+        // insert bucket in list
+        insertEND(ht->myBuckets[index], newBuck);
+        return SUCCESS;
+    } 
+
+    // curItem = (bucket*) ht->myBuckets[index]->head->data;
+    // if(curItem == NULL) {
+    //     printf("something is really wrong\n");
+    //     return ERROR;
+    // }
 
     
     if(curItem->count == ht->bucketNodesNum){

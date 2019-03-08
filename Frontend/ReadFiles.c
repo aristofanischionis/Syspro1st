@@ -192,13 +192,15 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
             // // push it in i position
             // strcpy(allTrxIDs[i], _trxId);
             // id is unique let's process the trx
-            if(processTrx(AllTrxs, wHT, bht, sender, receiver, _trxId, senderID, receiverID, value, date, _time) == ERROR){
+            if(processTrx(AllTrxs, wHT, bht, sender, receiver, _trxId, senderID, receiverID, value, date, _time, btcVal) == ERROR){
                 // printf("Program crashed while reading the TransactionsFile\n");
                 // printf("Exiting....\n");
                 // exit(EXIT_FAILURE);
                 printf("Wrong transaction details, Transaction will be ignored\n");
                 continue;
             }
+            // print the tree to see that it is correctly updated
+            
         }
     }
 

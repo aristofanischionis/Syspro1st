@@ -87,7 +87,7 @@ struct BitcoinHT {
 struct SRHashT {
     int size;
     int bucketNodesNum; // how many bucketNodes in each bucket
-    LinkedList** myBuckets; // this is an array of size size and its one is a pointer to a LL of buckets
+    LinkedList** myBuckets; // this is an array of size size and each one is a pointer to a LL of buckets
 };
 
 // bucket is a LL of bucket Nodes, pointer to next bucket should be included in b size
