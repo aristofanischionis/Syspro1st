@@ -5,7 +5,7 @@
 
 void deleteNode(btcTree* node);
 void printLeafNodes(btcTree* root);
-
+void printGivenLevel(btcTree *root, int level);
 // create a new node & set default nodes
 Tree* createTree(){
     Tree* r;
@@ -115,7 +115,7 @@ void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFrom
     { 
         if(root->node->dollars >= balanceFromLeafs){
             //after I get money from this leaf I am basically done
-            printf("This is a final leaf! %s, %d , money needed to finish %d\n", root->node->walletID->_walletID, root->node->dollars, balanceFromLeafs);
+            // printf("This is a final leaf! %s, %d , money needed to finish %d\n", root->node->walletID->_walletID, root->node->dollars, balanceFromLeafs);
             rec = balanceFromLeafs; // this is how sender will give
             send = root->node->dollars - balanceFromLeafs;
             btcNode* theleftKid; // receiver
@@ -160,34 +160,56 @@ int unspent(btcTree* root){
     return 0; // should return the money that is unspent
 }
 
-
+int height(btcTree* node) 
+{ 
+    if (node==NULL) 
+        return 0; 
+    else
+    { 
+        /* compute the height of each subtree */
+        int lheight = height(node->lKid); 
+        int rheight = height(node->rKid); 
+  
+        /* use the larger one */
+        if (lheight > rheight) 
+            return(lheight+1); 
+        else return(rheight+1); 
+    } 
+} 
+/* Function to line by line print level order traversal a tree*/
 void printTRXs(btcTree *root){ 
-    // Base case 
+    int h = height(root); 
+    int i;
+    // if(h == 0){
+    //     printf("This bitcoin hasn't participated in any transactions yet\n");
+    // }
+    for (i=1; i<=h; i++) 
+    {
+        printGivenLevel(root, i); 
+        printf("\n"); 
+    }
+} 
+  
+/* Print nodes at a given level */
+void printGivenLevel(btcTree *root, int level){ 
     if (root == NULL) 
         return; 
-
-    // Process right child first 
-    if(root->rKid){
-        printTRXs(root->rKid); 
-    }
-
-    trxObject* this;
-    if(root->node != NULL){
-        this = root->node->thisTrx;
-        if(this != NULL){
-            printf("%s %s %s %d ", this->_trxID, this->sender->_walletID, this->receiver->_walletID, this->value); 
-            // print time formated
-            char buffer[26];
-            strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", this->_time);
-            puts(buffer);
-            
-            printf("\n"); 
+    if (level == 1){
+        trxObject* this;
+        if(root->node != NULL){
+            this = root->node->thisTrx;
+            if(this != NULL){
+                printf("%s %s %s %d ", this->_trxID, this->sender->_walletID, this->receiver->_walletID, this->value); 
+                // print time formated
+                printf("%02d-%02d-%d %02d:%02d",this->_time->tm_mday, this->_time->tm_mon, this->_time->tm_year, this->_time->tm_hour, this->_time->tm_min );
+                // printf("\n"); 
+            }
         }
     }
-    
-    
-    // Process left child 
-    if(root->lKid){
-        printTRXs(root->lKid); 
-    }
+    else if (level > 1) { 
+        printGivenLevel(root->lKid, level-1);
+        // I only need to print out the transactions from one of the kids each time because they are showing to the same transaction 
+        // which is correct cause the same transaction caused the break of the tree
+        // printGivenLevel(root->rKid, level-1); 
+    } 
 } 

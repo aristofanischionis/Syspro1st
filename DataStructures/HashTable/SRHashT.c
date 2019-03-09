@@ -84,7 +84,7 @@ bucketNode* searchinLL(LinkedList* listofBuckets, char* _walletID){
     while (h != NULL)
     {
         temp = (bucket*) h->data ;
-        printf("this bucket has got %d items\n", temp->count);
+        // printf("this bucket has got %d items\n", temp->count);
         for(i=0; i<temp->count ; i++){
             if(!strcmp(temp->array[i]->walletID->_walletID, _walletID)){
                 printf("Found the walletID! %s\n", temp->array[i]->walletID->_walletID);
@@ -117,7 +117,7 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
     }
 
     if(curItem == NULL ){
-        printf("I have to make a new bucket! \n");
+        // printf("I have to make a new bucket! \n");
         // then that means we have to make a new bucket in this list
         bucket* newBuck;
         // malloc the new
@@ -137,7 +137,7 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
 
     
     if(curItem->count == ht->bucketNodesNum){
-        printf("I have to make a new bucket!!!!!\n");
+        // printf("I have to make a new bucket!!!!!\n");
         // then that means we have to make a new bucket in this list
         bucket* newBuck;
         // malloc the new

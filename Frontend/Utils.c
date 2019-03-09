@@ -24,5 +24,6 @@ int traceCoin(int btcID, BitcoinHT* bHT){
         return ERROR;
     }
     printTRXs(this->btcTree->root);
+    printf("\n");
     return SUCCESS;
 }
