@@ -10,5 +10,5 @@ void initializeBitcoinTrees(wallet* this, int btcval);
 FILE* FileRead (char *in);
 void ExitProgram();
 int traceCoin(int btcID, BitcoinHT* bHT);
-
+int walletStatus(char* _id, walletHT* wHT);
 #endif

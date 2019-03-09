@@ -73,12 +73,12 @@ userBitcoin* findInReceiver(wallet* receiver, bitcoin* this){
         t = (userBitcoin*) node->data;
 
         if(t->btc->_bitcoinID == this->_bitcoinID){
-            printf("I found btc id %d in receiver\n", t->btc->_bitcoinID);
+            // printf("I found btc id %d in receiver\n", t->btc->_bitcoinID);
             return t;
         }
         node = node->next;
     }
-    printf("I couldn't find in receiver the requested id %d\n", this->_bitcoinID);
+    // printf("I couldn't find in receiver the requested id %d\n", this->_bitcoinID);
     return NULL;
 }
 
@@ -106,10 +106,10 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, 
     {
         userBitcoin* thisUbtc;
         thisUbtc = (userBitcoin*) node->data;
-        printf("I am doin this loop again id : %d, amount %d\n", thisUbtc->btc->_bitcoinID, thisUbtc->amount);
+        // printf("I am doin this loop again id : %d, amount %d\n", thisUbtc->btc->_bitcoinID, thisUbtc->amount);
 
         if(thisUbtc->amount == 0){
-            printf("this is an empty btc %d shouldn't be in this list\n", thisUbtc->btc->_bitcoinID);
+            // printf("this is an empty btc %d shouldn't be in this list\n", thisUbtc->btc->_bitcoinID);
             return ;
         }
 
@@ -122,7 +122,7 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, 
         temp = findInReceiver(receiver, thisUbtc->btc);
         if(temp == NULL){
             // rec doesn't have this btc in his list
-            printf("adding bitcoin %d to user %s\n", thisUbtc->btc->_bitcoinID, receiver->_walletID);
+            // printf("adding bitcoin %d to user %s\n", thisUbtc->btc->_bitcoinID, receiver->_walletID);
             // before adding to receiver check if it his first btc
             // if yes first initialize the btc list
             if(receiver->balance == 0){
@@ -132,20 +132,20 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, 
         }
         else{
             // he has it so just increment amount
-            printf("he has the bitcoin %d  user %s already\n", thisUbtc->btc->_bitcoinID, receiver->_walletID);
+            // printf("he has the bitcoin %d  user %s already\n", thisUbtc->btc->_bitcoinID, receiver->_walletID);
             incrementUserBitcoin(temp, iNeed);
         }
         
         if(thisUbtc->amount == 0){
             // delete it from sender
-            printf("I will delete %d from %s user\n", thisUbtc->btc->_bitcoinID, sender->_walletID);
+            // printf("I will delete %d from %s user\n", thisUbtc->btc->_bitcoinID, sender->_walletID);
             if(deleteBitcoinFromUser(sender, thisUbtc) == ERROR){
                 printf("I got an error while trying to delete the bitcoin from sender's wallet\n");
             }
         }
 
         if(moneyGatheredAlready == balanceToReach){
-            printf("all money is gathered by this ubtc so get it from it's leafs\n");
+            // printf("all money is gathered by this ubtc so get it from it's leafs\n");
             finished = YES;
         }
         // if(thisUbtc->btc->btcTree->root == NULL){
@@ -287,7 +287,7 @@ int processTrx(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* send
     // find which ones to give to each other
     //take the sender's btc's trees and add kids
     findBitcoins(temp1, temp2, value, this, btcVal);
-    printf("findBitcoins executed successfully!\n");
+    // printf("findBitcoins executed successfully!\n");
     
 
     // add it in both linked lists r and s

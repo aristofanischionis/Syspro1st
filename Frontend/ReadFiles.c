@@ -75,7 +75,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
     char *line = NULL;
     size_t len = 0;
     size_t nread;
-    const char s[2] = " ";
+    const char s[2] = " \n";
     char *token;
 
     _trxId = (char*) malloc(15);
@@ -127,10 +127,10 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
         // printf("list's id of head is %d\n", temp->btc->_bitcoinID);
         // doForAll(ll, printuserBTC);
         balance = calculateBalance(ll);
-        if(balance == 0){
-            // for user that don't have any bitcoins at first ignore whitespace at the end
-            walletID[strlen(walletID) - 1] = 0;
-        }
+        // if(balance == 0){
+        //     // for user that don't have any bitcoins at first ignore whitespace at the end
+        //     walletID[strlen(walletID) - 1] = 0;
+        // }
         wal = newWallet(walletID, ll, balance);
         insert(wHT, wal);
         printf("The insertion of wallet in HT is ok! \n");
@@ -288,7 +288,9 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 }
                 else if(!strcmp(command[0], "/walletStatus")){
                     ///walletStatus walletid
-                    printf("/walletStatus walletid-> %s,%s\n", command[0], command[1]);
+                    // printf("/walletStatus walletid-> %s,%s\n", command[0], command[1]);
+
+                    walletStatus(command[1], wHT);
                 }
                 else if(!strcmp(command[0], "/requestTransactions")){
                     ///requestTransactions inputfile

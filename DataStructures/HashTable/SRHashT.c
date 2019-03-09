@@ -87,15 +87,15 @@ bucketNode* searchinLL(LinkedList* listofBuckets, char* _walletID){
         // printf("this bucket has got %d items\n", temp->count);
         for(i=0; i<temp->count ; i++){
             if(!strcmp(temp->array[i]->walletID->_walletID, _walletID)){
-                printf("Found the walletID! %s\n", temp->array[i]->walletID->_walletID);
+                // printf("Found the walletID! %s\n", temp->array[i]->walletID->_walletID);
                 // result = temp->array[i];
                 return temp->array[i];
             }
         }
-        printf("I couldn't find the walletID %s in this bucket\n", _walletID);
+        // printf("I couldn't find the walletID %s in this bucket\n", _walletID);
         h = h->next;
     }
-    printf("I wasn't able to find walletID %s in this LL\n", _walletID);
+    // printf("I wasn't able to find walletID %s in this LL\n", _walletID);
     return NULL;
 }
 
