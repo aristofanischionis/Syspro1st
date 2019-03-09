@@ -26,7 +26,10 @@ int bucketCalculator(int b){
     // and inside we have to put an array of buckets
     int sizeOfBucketNodeArray = 0;
     sizeOfBucketNodeArray = (int)((b - 2 * sizeof(int)) / sizeof(bucketNode*));
-    printf("I calculated the bucketnodes in each bucket will be %d", sizeOfBucketNodeArray);
+    if(sizeOfBucketNodeArray < 1){
+        sizeOfBucketNodeArray = 1;
+    }
+    printf("I calculated the bucketnodes in each bucket will be %d\n", sizeOfBucketNodeArray);
     return sizeOfBucketNodeArray;
 }
 

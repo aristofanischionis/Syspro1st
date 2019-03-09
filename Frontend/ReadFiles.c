@@ -205,23 +205,187 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
     }
 
     printf("Done reading both files Successfully!\n");
-
+    fclose(input);
+    fclose(input1);
     
     // printBTC(bht);
-    bucketNode* bkt1 = NULL;
-    bkt1 = searchSRHT(sender, "richard");
-    if(bkt1 != NULL){
-        printf("%s found in sender hash table and balance he has is %d\n", bkt1->walletID->_walletID, bkt1->walletID->balance);
+    // bucketNode* bkt1 = NULL;
+    // bkt1 = searchSRHT(sender, "richard");
+    // if(bkt1 != NULL){
+    //     printf("%s found in sender hash table and balance he has is %d\n", bkt1->walletID->_walletID, bkt1->walletID->balance);
+    // }
+    // let's now start reading input from user
+    printf("I am available to process any commands you give me: \n");
+    // Managing Input from user here:
+    char **command;
+    char *buffer;
+     char *pos;
+    size_t bufsize = 100;
+    buffer = (char *)malloc(bufsize * sizeof(char));
+    if( buffer == NULL){
+        perror("Unable to allocate buffer\n");
+        exit(1);
     }
-    
-    free(line);
-    fclose(input);
-    free(walletID);
-    free(bitcoinID);
-    free(senderID);
-    free(receiverID);
-    free(date);
-    free(_time);
+    int maxWordsInCommand = 10; // change to 6 afterwards
+    //---------------->
+    while(1){
+        int i =0;
+        command = (char **)malloc(maxWordsInCommand * sizeof(char*));
+        if( getline(&buffer,&bufsize,stdin) == -1){
+            //exits program
+            ExitProgram();
+            free(command);
+            free(buffer);
+            free(line);
+            //
+            free(walletID);
+            free(bitcoinID);
+            free(senderID);
+            free(receiverID);
+            free(date);
+            free(_time);
+            return 0;
+        }
+        token = strtok(buffer, s);
+        // taking all words in command
+        while( token != NULL ) {
+            command[i++] = token;
+            token = strtok(NULL, s);
+        }
+        // Analyzing the command given by user
+        switch(i){
+            case 1:
+                // one argument given
+                if ((pos=strchr(command[0], '\n')) != NULL) *pos = '\0';
+                if(!strcmp(command[0], "/exit")){ 
+                    //exits program
+                    ExitProgram();
+                    free(command);
+                    free(buffer);
+                    free(line);
+                    //
+                    free(walletID);
+                    free(bitcoinID);
+                    free(senderID);
+                    free(receiverID);
+                    free(date);
+                    free(_time);
+                    return 0;
+                }
+                else fprintf(stderr, "Unknown Command Starting with:%s \n",command[0]);
+                break;
+            case 2:
+                // two arguments given
+                if(!strcmp(command[0], "/traceCoin")){
+                    ///traceCoin bitCoinID
+                    // printf("/traceCoin bitCoinID -> %s,%s\n", command[0], command[1]);
+                    int _id = atoi(command[1]);
+                    traceCoin(_id, bht);
+                }
+                else if(!strcmp(command[0], "/bitCoinStatus")){
+                    ///bitCoinStatus bitCoinID
+                    printf("/bitCoinStatus bitCoinID-> %s,%s\n", command[0], command[1]);
+                }
+                else if(!strcmp(command[0], "/walletStatus")){
+                    ///walletStatus walletid
+                    printf("/walletStatus walletid-> %s,%s\n", command[0], command[1]);
+                }
+                else if(!strcmp(command[0], "/requestTransactions")){
+                    ///requestTransactions inputfile
+                    printf("/requestTransactions inputfile-> %s,%s\n", command[0], command[1]);
+                }
+                else if(!strcmp(command[0], "/findPayments")){
+                    ///findPayments walletid 
+                    printf("/findPayments walletid -> %s,%s\n", command[0], command[1]);
+                }
+                else if(!strcmp(command[0], "/findEarnings")){
+                    ///findEarnings walletid
+                    printf("/findEarnings walletid-> %s,%s\n", command[0], command[1]);
+                }
+                else fprintf(stderr, "Unknown Command Starting with: %s \n",command[0]);
+                break;
+            case 3:
+                // three arguments given
+                fprintf(stderr, "3 Words Unknown Command Starting with: %s \n",command[0]);
+                break;
+            case 4:
+                //four arguments given
+                if(!strcmp(command[0], "/requestTransaction")){
+                    ///requestTransaction sender receiver amount
+                    printf("/requestTransaction -> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
+                    // int w = atoi(command[3]);
+                }
+                else if(!strcmp(command[0], "/requestTransactions")){
+                    // /requestTransactions senderWalletID receiverWalletID amount
+                    printf("/requestTransactions-> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
+                }
+                else if(!strcmp(command[0], "/findEarnings")){
+                    // /findEarnings
+                    printf("/findEarnings -> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
+                }
+                else if(!strcmp(command[0], "/findPayments")){
+                    // /findPayments
+                    printf("/findPayments-> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
+                }
+                else fprintf(stderr, "Unknown Command Starting with: %s \n",command[0]);
+                break;
+            case 5:
+                //five arguments given
+                fprintf(stderr, "5 Words Unknown Command Starting with: %s \n",command[0]);
+                break;
+            case 6:
+                //six arguments given
+                if(!strcmp(command[0], "/requestTransaction")){
+                    ///requestTransaction
+                    printf("/requestTransaction-> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);
+                }
+                else if(!strcmp(command[0], "/requestTransactions")){
+                    // /requestTransactions
+                    printf("/requestTransactions -> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);  
+                }
+                else if(!strcmp(command[0], "/findEarnings")){
+                    // /findEarnings
+                    printf("/findEarnings-> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);
+                }
+                else if(!strcmp(command[0], "/findPayments")){
+                    // /findPayments
+                    printf("/findPayments-> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);
+                }
+                fprintf(stderr, "6 Words Unknown Command Starting with: %s \n",command[0]);
+                break;
+            default:
+                fprintf(stderr,"Unknown Command given with %d words\n", i);
+        }
+        free(command);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // free(line);
+    // fclose(input);
+    // free(walletID);
+    // free(bitcoinID);
+    // free(senderID);
+    // free(receiverID);
+    // free(date);
+    // free(_time);
     // maybe i also need to free btc, ubtc, wal, destroy ll
     return SUCCESS;
 }

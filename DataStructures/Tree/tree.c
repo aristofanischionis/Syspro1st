@@ -5,6 +5,7 @@
 
 void deleteNode(btcTree* node);
 void printLeafNodes(btcTree* root);
+
 // create a new node & set default nodes
 Tree* createTree(){
     Tree* r;
@@ -45,17 +46,17 @@ btcTree* newTreeNode(btcNode* value){
 	return n;
 }
 
-btcTree* TreeSearch(btcTree* root, char* walId){
-		if(!root)
-			return NULL;
-		else if (!strcmp(root->node->walletID->_walletID, walId))
-			return root;
-		else if(root->rKid)
-			TreeSearch(root->rKid, walId);	     
-		else
-			TreeSearch(root->lKid, walId);
+// btcTree* TreeSearch(btcTree* root, char* walId){
+// 		if(!root)
+// 			return NULL;
+// 		else if (!strcmp(root->node->walletID->_walletID, walId))
+// 			return root;
+// 		else if(root->rKid)
+// 			TreeSearch(root->rKid, walId);	     
+// 		else
+// 			TreeSearch(root->lKid, walId);
         
-}
+// }
 
 void addLeft(btcTree* node, btcNode* value){
     if(!node) return;
@@ -158,3 +159,35 @@ int unspent(btcTree* root){
     // then return dollars of it
     return 0; // should return the money that is unspent
 }
+
+
+void printTRXs(btcTree *root){ 
+    // Base case 
+    if (root == NULL) 
+        return; 
+
+    // Process right child first 
+    if(root->rKid){
+        printTRXs(root->rKid); 
+    }
+
+    trxObject* this;
+    if(root->node != NULL){
+        this = root->node->thisTrx;
+        if(this != NULL){
+            printf("%s %s %s %d ", this->_trxID, this->sender->_walletID, this->receiver->_walletID, this->value); 
+            // print time formated
+            char buffer[26];
+            strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", this->_time);
+            puts(buffer);
+            
+            printf("\n"); 
+        }
+    }
+    
+    
+    // Process left child 
+    if(root->lKid){
+        printTRXs(root->lKid); 
+    }
+} 

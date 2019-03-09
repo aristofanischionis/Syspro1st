@@ -1,8 +1,8 @@
-OBJS 	= main.o ReadParameters.o ReadFiles.o bitcoinsHT.o SRHashT.o walletHT.o list.o structs.o transactions.o tree.o
-SOURCE	= main.c Frontend/ReadParameters.c Frontend/ReadFiles.c DataStructures/HashTable/bitcoinsHT.c DataStructures/HashTable/SRHashT.c DataStructures/HashTable/walletHT.c DataStructures/List/list.c DataStructures/Structs/structs.c DataStructures/Structs/transactions.c DataStructures/Tree/tree.c
+OBJS 	= main.o ReadParameters.o ReadFiles.o bitcoinsHT.o SRHashT.o walletHT.o list.o structs.o transactions.o tree.o Utils.o
+SOURCE	= main.c Frontend/ReadParameters.c Frontend/ReadFiles.c DataStructures/HashTable/bitcoinsHT.c DataStructures/HashTable/SRHashT.c DataStructures/HashTable/walletHT.c DataStructures/List/list.c DataStructures/Structs/structs.c DataStructures/Structs/transactions.c DataStructures/Tree/tree.c Frontend/Utils.c
 HEADER  = HeaderFiles/Input.h HeaderFiles/Structs.h HeaderFiles/HashTables.h HeaderFiles/LinkedLists.h HeaderFiles/Tree.h HeaderFiles/Transactions.h
 OUT  	= bitcoin
-CC	= gcc
+CC		= gcc
 FLAGS   = -g -c -Wall
 # -g option enables debugging mode 
 # -c flag generates object code for separate files
@@ -16,6 +16,9 @@ main.o: main.c
 
 ReadParameters.o: Frontend/ReadParameters.c
 	$(CC) $(FLAGS) Frontend/ReadParameters.c
+
+Utils.o: Frontend/Utils.c
+	$(CC) $(FLAGS) Frontend/Utils.c
 
 ReadFiles.o: Frontend/ReadFiles.c
 	$(CC) $(FLAGS) Frontend/ReadFiles.c
