@@ -46,7 +46,7 @@ bitcoin* newBitcoin(int _bitcoinID){
     bitcoin* b;
     b = malloc(sizeof(bitcoin));
     b->_bitcoinID = _bitcoinID;
-    b->noOfTrxUsed = 0;
+    // b->noOfTrxUsed = 0;
     b->btcTree = createTree();
     return b;
 }

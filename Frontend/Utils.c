@@ -42,3 +42,19 @@ int walletStatus(char* _id, walletHT* wHT){
     printf("Wallet with ID : %s has %d money remaining in his wallet\n", _id, this->balance);
     return SUCCESS;
 }
+
+int bitcoinStatus(int btcID, BitcoinHT* bHT){
+    if(bHT == NULL){
+        printf("the Bitcoin Hashtable is NULL\n");
+        return ERROR;   
+    }
+    bitcoin* this;
+    this = searchBTC(bHT, btcID);
+    if(this == NULL){
+        printf("the Bitcoin is not in HashTable\n");
+        return ERROR;
+    }
+    int unsp = unspent(this->btcTree->root);
+    printf("%d %d %d\n", this->_bitcoinID, this->btcTree->noOfTrxUsed, unsp);
+    return SUCCESS;
+}

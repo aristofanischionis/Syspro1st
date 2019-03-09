@@ -153,9 +153,13 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, 
         // }
         // else printf("the btc trees are initializedddd!!!!!!!11\n");
         updateTree(thisUbtc->btc->btcTree->root, sender, receiver, iNeed, this);
-        
+        thisUbtc->btc->btcTree->noOfTrxUsed = thisUbtc->btc->btcTree->noOfTrxUsed + 1;
         // this bitcoin is used in one more trx
-        thisUbtc->btc->noOfTrxUsed ++;
+        // thisUbtc->btc->noOfTrxUsed ++;
+        // bitcoin* btc;
+        // btc = thisUbtc->btc;
+        // btc->noOfTrxUsed = btc->noOfTrxUsed + 1;
+        // printf("-------------->no of trx used %d \n", btc->noOfTrxUsed);
         node = node->next;
 
         // printLeafNodes(thisUbtc->btc->btcTree->root);

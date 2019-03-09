@@ -13,6 +13,7 @@ struct btcTree {
 
 struct Tree {
     struct btcTree* root;
+    int noOfTrxUsed;
 };
 
 Tree* createTree();
@@ -27,5 +28,6 @@ void addRight(btcTree* node, btcNode* value);
 void deleteNode(btcTree* node);
 void printLeafNodes(btcTree* root);
 void printTRXs(btcTree* root);
+int unspent(btcTree* root);
 
 #endif

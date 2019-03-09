@@ -11,4 +11,5 @@ FILE* FileRead (char *in);
 void ExitProgram();
 int traceCoin(int btcID, BitcoinHT* bHT);
 int walletStatus(char* _id, walletHT* wHT);
+int bitcoinStatus(int btcID, BitcoinHT* bHT);
 #endif

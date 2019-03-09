@@ -231,6 +231,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
     while(1){
         int i =0;
         command = (char **)malloc(maxWordsInCommand * sizeof(char*));
+        printf("> ");
         if( getline(&buffer,&bufsize,stdin) == -1){
             //exits program
             ExitProgram();
@@ -284,12 +285,13 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 }
                 else if(!strcmp(command[0], "/bitCoinStatus")){
                     ///bitCoinStatus bitCoinID
-                    printf("/bitCoinStatus bitCoinID-> %s,%s\n", command[0], command[1]);
+                    // printf("/bitCoinStatus bitCoinID-> %s,%s\n", command[0], command[1]);
+                    int _id = atoi(command[1]);
+                    bitcoinStatus(_id, bht);
                 }
                 else if(!strcmp(command[0], "/walletStatus")){
                     ///walletStatus walletid
                     // printf("/walletStatus walletid-> %s,%s\n", command[0], command[1]);
-
                     walletStatus(command[1], wHT);
                 }
                 else if(!strcmp(command[0], "/requestTransactions")){

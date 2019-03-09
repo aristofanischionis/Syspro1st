@@ -35,7 +35,6 @@ struct userBitcoin {
 
 struct bitcoin {
     int _bitcoinID;
-    int noOfTrxUsed;
     struct Tree* btcTree;
 };
 

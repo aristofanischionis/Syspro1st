@@ -6,12 +6,15 @@
 void deleteNode(btcTree* node);
 void printLeafNodes(btcTree* root);
 void printGivenLevel(btcTree *root, int level);
+int height(btcTree* node);
+int moneyAtGivenLevel(btcTree *root, int level);
 // create a new node & set default nodes
 Tree* createTree(){
     Tree* r;
     r = malloc(sizeof(Tree));
     r->root = malloc(sizeof(btcTree));
     r->root = NULL;
+    r->noOfTrxUsed = 0;
     return r;
 }
 
@@ -128,7 +131,7 @@ void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFrom
         }
         else{
             //after I get money from this leaf I am not done yet
-            printf("This is a leaf! %s, %d \n", root->node->walletID->_walletID, root->node->dollars);
+            // printf("This is a leaf! %s, %d \n", root->node->walletID->_walletID, root->node->dollars);
             rec = root->node->dollars; // receiver will get all money from sender
             send = 0; // sender will have no money
             balanceFromLeafs -= rec; 
@@ -150,14 +153,32 @@ void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFrom
     // if right child exists, check for leaf  
     // recursively 
     if (root->rKid != NULL) updateTree(root->rKid, sender, receiver, balanceFromLeafs, this); 
-}  
+}
 
 int unspent(btcTree* root){
     if(!root) return -1;
-
-    // go all left till lkid is null
+    // btcTree* temp;
+    // temp = root->lKid;
+    // if(temp == NULL){
+    //     return root->node->dollars;
+    // }
+    // while (1){
+    //     temp = root->lKid;
+    //     if(temp == NULL){
+    //         break;
+    //     }
+        
+    // }
+    // // i found it 
+    // return root->node->dollars;
+    // go all right till lkid is null
+    // right is my sender 
     // then return dollars of it
-    return 0; // should return the money that is unspent
+
+    int h = height(root);
+    int res = moneyAtGivenLevel(root, h);   
+    printf("money is -> %d\n", res);
+    return res;  
 }
 
 int height(btcTree* node) 
@@ -211,5 +232,28 @@ void printGivenLevel(btcTree *root, int level){
         // I only need to print out the transactions from one of the kids each time because they are showing to the same transaction 
         // which is correct cause the same transaction caused the break of the tree
         // printGivenLevel(root->rKid, level-1); 
+    } 
+}
+
+int moneyAtGivenLevel(btcTree *root, int level){ 
+    if (root == NULL) 
+        return 0; 
+    if (level == 1){
+        // trxObject* this;
+        // if(root->node != NULL){
+        //     this = root->node->thisTrx;
+        //     if(this != NULL){
+        //         printf("%s %s %s %d ", this->_trxID, this->sender->_walletID, this->receiver->_walletID, this->value); 
+        //         // print time formated
+        //         printf("%02d-%02d-%d %02d:%02d",this->_time->tm_mday, this->_time->tm_mon, this->_time->tm_year, this->_time->tm_hour, this->_time->tm_min );
+        //         // printf("\n"); 
+        //     }
+        // }
+
+        return root->node->dollars;
+    }
+    else if (level > 1) { 
+        return moneyAtGivenLevel(root->rKid, level-1);
+        // i need all right to go
     } 
 } 
