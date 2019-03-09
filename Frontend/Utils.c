@@ -58,3 +58,19 @@ int bitcoinStatus(int btcID, BitcoinHT* bHT){
     printf("%d %d %d\n", this->_bitcoinID, this->btcTree->noOfTrxUsed, unsp);
     return SUCCESS;
 }
+
+void reqTrxFile(char* fileName){
+    // read file
+    // and put each line in reqtrxs
+
+}
+
+void reqTrxs(){
+
+}
+
+void reqTrx(char* senderID, char* receiverID, int amount, char* date, char* _time){
+    // generate a trxid
+    // processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char* _trxId, char* senderID, char* receiverID, int value, char* date, char* _time, int btcVal);
+
+}

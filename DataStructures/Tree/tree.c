@@ -49,18 +49,6 @@ btcTree* newTreeNode(btcNode* value){
 	return n;
 }
 
-// btcTree* TreeSearch(btcTree* root, char* walId){
-// 		if(!root)
-// 			return NULL;
-// 		else if (!strcmp(root->node->walletID->_walletID, walId))
-// 			return root;
-// 		else if(root->rKid)
-// 			TreeSearch(root->rKid, walId);	     
-// 		else
-// 			TreeSearch(root->lKid, walId);
-        
-// }
-
 void addLeft(btcTree* node, btcNode* value){
     if(!node) return;
     if(node->lKid){
@@ -157,27 +145,8 @@ void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFrom
 
 int unspent(btcTree* root){
     if(!root) return -1;
-    // btcTree* temp;
-    // temp = root->lKid;
-    // if(temp == NULL){
-    //     return root->node->dollars;
-    // }
-    // while (1){
-    //     temp = root->lKid;
-    //     if(temp == NULL){
-    //         break;
-    //     }
-        
-    // }
-    // // i found it 
-    // return root->node->dollars;
-    // go all right till lkid is null
-    // right is my sender 
-    // then return dollars of it
-
     int h = height(root);
     int res = moneyAtGivenLevel(root, h);   
-    printf("money is -> %d\n", res);
     return res;  
 }
 
@@ -239,17 +208,6 @@ int moneyAtGivenLevel(btcTree *root, int level){
     if (root == NULL) 
         return 0; 
     if (level == 1){
-        // trxObject* this;
-        // if(root->node != NULL){
-        //     this = root->node->thisTrx;
-        //     if(this != NULL){
-        //         printf("%s %s %s %d ", this->_trxID, this->sender->_walletID, this->receiver->_walletID, this->value); 
-        //         // print time formated
-        //         printf("%02d-%02d-%d %02d:%02d",this->_time->tm_mday, this->_time->tm_mon, this->_time->tm_year, this->_time->tm_hour, this->_time->tm_min );
-        //         // printf("\n"); 
-        //     }
-        // }
-
         return root->node->dollars;
     }
     else if (level > 1) { 

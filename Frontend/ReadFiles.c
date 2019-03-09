@@ -191,8 +191,14 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
             // // if i made it till here and this id is unique
             // // push it in i position
             // strcpy(allTrxIDs[i], _trxId);
+            // check uniqueness in ll
+            if(checkUniqueness(AllTrxs, _trxId) == NO){
+                printf("The id: %s is not unique\n", _trxId);
+                printf("Wrong transaction details, Transaction will be ignored\n");
+                continue;
+            }
             // id is unique let's process the trx
-            if(processTrx(AllTrxs, wHT, bht, sender, receiver, _trxId, senderID, receiverID, value, date, _time, btcVal) == ERROR){
+            if(processTrx(wHT, bht, sender, receiver, _trxId, senderID, receiverID, value, date, _time, btcVal) == ERROR){
                 // printf("Program crashed while reading the TransactionsFile\n");
                 // printf("Exiting....\n");
                 // exit(EXIT_FAILURE);
@@ -205,6 +211,8 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
     }
 
     printf("Done reading both files Successfully!\n");
+    findMax(AllTrxs);
+    // destroy(AllTrxs);
     fclose(input);
     fclose(input1);
     
@@ -297,6 +305,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 else if(!strcmp(command[0], "/requestTransactions")){
                     ///requestTransactions inputfile
                     printf("/requestTransactions inputfile-> %s,%s\n", command[0], command[1]);
+
                 }
                 else if(!strcmp(command[0], "/findPayments")){
                     ///findPayments walletid 

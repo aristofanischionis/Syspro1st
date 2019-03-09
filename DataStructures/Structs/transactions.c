@@ -2,12 +2,36 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 #include "../../HeaderFiles/Structs.h"
 #include "../../HeaderFiles/LinkedLists.h"
 #include "../../HeaderFiles/Input.h"
 
-int MAX = 36374; // random big int
-int Unique = YES;
+int MAX ;
+
+void findMax(LinkedList* list){
+    MAX = -1;
+    listNode* temp = list->head;
+    char* this;
+    int myNum = 0;
+    while (temp != NULL){
+    
+        this = (char*) temp->data;
+        for(size_t i = 0; this[i] != '\0'; ++i) {
+            if(!isdigit(this[i])) {                
+                break;
+            }
+        }
+        myNum = atoi(this);
+        if(myNum > MAX){
+            MAX = myNum;
+        }
+        temp = temp->next;
+    }
+    MAX ++;
+    return;
+}
+
 
 char* getNextTrxID(){
     // change it to be more efficient
@@ -167,7 +191,6 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, 
 }
 
 
-
 int checkUniqueness(LinkedList* AllTrxs, char* _id){
     // return YES if unique, NO if not
     listNode *node = AllTrxs->head;
@@ -231,7 +254,7 @@ struct tm* checkDateTime(char* date, char* _time){
 }
 
 
-int processTrx(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char* _trxId, char* senderID, char* receiverID, int value, char* date, char* _time, int btcVal){
+int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char* _trxId, char* senderID, char* receiverID, int value, char* date, char* _time, int btcVal){
 
     if(wHT == NULL || bht == NULL || sender == NULL || receiver == NULL || senderID == NULL || receiverID == NULL){
         printf("processTrx got wrong input \n");
@@ -253,11 +276,11 @@ int processTrx(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* send
         printf("receiver id doesn't have a wallet in the Hashtable\n");
         return ERROR;
     }
-    // check uniqueness in ll
-    if(checkUniqueness(AllTrxs, _trxId) == NO){
-        printf("The id: %s is not unique\n", _trxId);
-        return ERROR;
-    }
+    // // check uniqueness in ll
+    // if(checkUniqueness(AllTrxs, _trxId) == NO){
+    //     printf("The id: %s is not unique\n", _trxId);
+    //     return ERROR;
+    // }
 
     // secondly check if it's possible
     if(possibleTrx(temp1, value) == NO){
