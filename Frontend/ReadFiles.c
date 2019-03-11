@@ -227,7 +227,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
     // Managing Input from user here:
     char **command;
     char *buffer;
-     char *pos;
+    char *pos;
     size_t bufsize = 100;
     buffer = (char *)malloc(bufsize * sizeof(char));
     if( buffer == NULL){
@@ -325,12 +325,59 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 //four arguments given
                 if(!strcmp(command[0], "/requestTransaction")){
                     ///requestTransaction sender receiver amount
-                    printf("/requestTransaction -> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
-                    // int w = atoi(command[3]);
+                    // printf("/requestTransaction -> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
+                    int amount = atoi(command[3]);
+                    reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, NULL, NULL, btcVal);
                 }
                 else if(!strcmp(command[0], "/requestTransactions")){
                     // /requestTransactions senderWalletID receiverWalletID amount
                     printf("/requestTransactions-> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
+                    if ((pos=strchr(command[3], ';')) != NULL) *pos = '\0';
+                    // if we got here i can assume that the last argument has a ; and then there is a \n
+                    // i will get all the info of the first transaction given to me
+                    // i will execute it
+                    int amount = atoi(command[3]);
+                    reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, NULL, NULL, btcVal);
+                    // and read next line if it starts with something else than a / and the last char in input is ;
+                    // i will continue making trxs
+                    while(1){
+                        int i =0;
+                        // read next line
+                        command = (char **)malloc(6 * sizeof(char*));
+                        getline(&buffer,&bufsize,stdin);
+                        token = strtok(buffer, s);
+                        // taking all words in command
+                        while( token != NULL ) {
+                            command[i++] = token;
+                            token = strtok(NULL, s);
+                        }
+                        // check if first argument is q then quit this command and continue with the rest
+                        if ((pos=strchr(command[0], '\n')) != NULL) *pos = '\0';
+                        // say it in readme
+                        if (!strcmp(command[0], "q")){
+                            break;
+                        }
+                        if(i == 3){
+                            if ((pos=strchr(command[2], ';')) != NULL) *pos = '\0';
+                            int amount = atoi(command[2]);
+                            // take of the ;
+                            reqTrx(wHT, bht, sender, receiver, command[0], command[1], amount, NULL, NULL, btcVal);
+                        }
+                        else if(i == 4){
+                            if ((pos=strchr(command[3], ';')) != NULL) *pos = '\0';
+                            int amount = atoi(command[2]);
+                            reqTrx(wHT, bht, sender, receiver, command[0], command[1], amount, command[3], NULL, btcVal);
+                        }
+                        else if(i == 5){
+                            if ((pos=strchr(command[4], ';')) != NULL) *pos = '\0';
+                            int amount = atoi(command[2]);
+                            reqTrx(wHT, bht, sender, receiver, command[0], command[1], amount, command[3], command[5], btcVal);
+                        }
+                        else {
+                            printf("I didn't understand this command--> %s\n", command[0]);
+                            break;
+                        }
+                    }
                 }
                 else if(!strcmp(command[0], "/findEarnings")){
                     // /findEarnings

@@ -8,6 +8,11 @@
 #include "../../HeaderFiles/Input.h"
 
 int MAX ;
+int lDay = 0;
+int lMonth = 0;
+int lYear = 0;
+int lHour = 0;
+int lMin = 0;
 
 void findMax(LinkedList* list){
     MAX = -1;
@@ -15,7 +20,6 @@ void findMax(LinkedList* list){
     char* this;
     int myNum = 0;
     while (temp != NULL){
-    
         this = (char*) temp->data;
         for(size_t i = 0; this[i] != '\0'; ++i) {
             if(!isdigit(this[i])) {                
@@ -32,9 +36,7 @@ void findMax(LinkedList* list){
     return;
 }
 
-
 char* getNextTrxID(){
-    // change it to be more efficient
     // check if there is any number in the LL and then take the biggest and then add +1
     // and after reading the file they are not going to give me any trxids
     char* res = malloc(15);
@@ -213,41 +215,102 @@ int checkUniqueness(LinkedList* AllTrxs, char* _id){
 }
 
 struct tm* checkDateTime(char* date, char* _time){
-    // struct tm* res;
+    
     struct tm* res = malloc(sizeof(struct tm));
-    // if(date == NULL || _time == NULL){
-    //     time_t rawtime;
-    //     char buffer[80];
+    if(date == NULL){
+        time_t rawtime;
+        struct tm * timeinfo;
+        time ( &rawtime );
+        timeinfo = localtime ( &rawtime );
+        // printf ( "1Current local time and date: %s\n", asctime (timeinfo));
+        res->tm_year = timeinfo->tm_year;
+        res->tm_mon = timeinfo->tm_mon;
+        res->tm_mday = timeinfo->tm_mday;
+    }
+    else {
+        struct tm * parsedTime; 
+        int year, month, day;
+        if(sscanf(date, "%d-%d-%d", &day, &month, &year) != EOF){ 
+            time_t rawTime;
+            time(&rawTime);
+            parsedTime = localtime(&rawTime);
 
-    //     time(&rawtime);
-    //     res = localtime(&rawtime);
-
-    //     strftime(buffer,80,"Now it's %y/%m/%d.",res);
-    //     puts(buffer);
+            parsedTime->tm_year = year;
+            parsedTime->tm_mon = month;
+            parsedTime->tm_mday = day;
+            // -->
+            res->tm_year = parsedTime->tm_year;
+            res->tm_mon = parsedTime->tm_mon;
+            res->tm_mday = parsedTime->tm_mday;
+        }
+    }
+    if(_time == NULL){
+        time_t rawtime;
+        struct tm * timeinfo;
+        time ( &rawtime );
+        timeinfo = localtime ( &rawtime );
+        // printf ( "2Current local time and date: %s\n", asctime (timeinfo));
+        res->tm_hour = timeinfo->tm_hour;
+        res->tm_min = timeinfo->tm_min;
+    }
+    else {
+        int hours, minutes;
+        // printf("---> %s\n", _time);
+        if(sscanf(_time, "%d:%d", &hours, &minutes) != EOF){
+            // printf("%d : %d what i read\n", hours, minutes);
+            res->tm_hour = hours;
+            res->tm_min = minutes;
+        }
+    }
+    // check that the time i have is later than the latest time
+    if(res->tm_year < lYear){
+        printf("Year given is before the latest transaction year \n");
+        return NULL;
+    }
+    if(res->tm_mon < lMonth){
+        printf("month given is before the latest transaction month \n");
+        return NULL;
+    }
+    if(res->tm_mday < lDay){
+        printf("day given is before the latest transaction day \n");
+        return NULL;
+    }
+    if(res->tm_hour < lHour){
+        printf("Hour given is before the latest transaction hour \n");
+        return NULL;
+    }
+    if(res->tm_min < lMin){
+        printf("min given is before the latest transaction min \n");
+        return NULL;
+    }
+    // change the latest date time
+    lYear = res->tm_year;
+    lMonth = res->tm_mon;
+    lDay = res->tm_mday;
+    lHour = res->tm_hour;
+    lMin = res->tm_min;
+    // int hours, minutes;
+    // // printf("---> %s\n", _time);
+    // if(sscanf(_time, "%d:%d", &hours, &minutes) != EOF){
+    //     // printf("%d : %d what i read\n", hours, minutes);
+    //     res->tm_hour = hours;
+    //     res->tm_min = minutes;
     // }
+    // struct tm * parsedTime; 
+    // int year, month, day;
+    // if(sscanf(date, "%d-%d-%d", &day, &month, &year) != EOF){ 
+    //     time_t rawTime;
+    //     time(&rawTime);
+    //     parsedTime = localtime(&rawTime);
 
-    int hours, minutes;
-    // printf("---> %s\n", _time);
-    if(sscanf(_time, "%d:%d", &hours, &minutes) != EOF){
-        // printf("%d : %d what i read\n", hours, minutes);
-        res->tm_hour = hours;
-        res->tm_min = minutes;
-    }
-    struct tm * parsedTime; 
-    int year, month, day;
-    if(sscanf(date, "%d-%d-%d", &day, &month, &year) != EOF){ 
-        time_t rawTime;
-        time(&rawTime);
-        parsedTime = localtime(&rawTime);
-
-        parsedTime->tm_year = year;
-        parsedTime->tm_mon = month;
-        parsedTime->tm_mday = day;
-        // -->
-        res->tm_year = parsedTime->tm_year;
-        res->tm_mon = parsedTime->tm_mon;
-        res->tm_mday = parsedTime->tm_mday;
-    }
+    //     parsedTime->tm_year = year;
+    //     parsedTime->tm_mon = month;
+    //     parsedTime->tm_mday = day;
+    //     // -->
+    //     res->tm_year = parsedTime->tm_year;
+    //     res->tm_mon = parsedTime->tm_mon;
+    //     res->tm_mday = parsedTime->tm_mday;
+    // }
     // res->tm_hour = hours;
     // res->tm_min = minutes;
     return res;
@@ -258,8 +321,17 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
 
     if(wHT == NULL || bht == NULL || sender == NULL || receiver == NULL || senderID == NULL || receiverID == NULL){
         printf("processTrx got wrong input \n");
+        return ERROR;
     }
     // firstly check if trx is valid
+    if(!strcmp(senderID, receiverID)){
+        printf("Sender and Receiver cannot be the same person\n");
+        return ERROR;
+    }
+    if(value == 0){
+        printf("The amount transfered from one to another cannot be zero\n");
+        return ERROR;
+    }
     //check if sender and rec ids are valid wallets
     wallet* temp1;
     wallet* temp2;
@@ -276,11 +348,6 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
         printf("receiver id doesn't have a wallet in the Hashtable\n");
         return ERROR;
     }
-    // // check uniqueness in ll
-    // if(checkUniqueness(AllTrxs, _trxId) == NO){
-    //     printf("The id: %s is not unique\n", _trxId);
-    //     return ERROR;
-    // }
 
     // secondly check if it's possible
     if(possibleTrx(temp1, value) == NO){
@@ -290,7 +357,10 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
 
     // check date and time validity
     _timeStruct = checkDateTime(date, _time);
-    // printf("--> I have in my struct : %d-%d-%d and time -> %d:%d\n", _timeStruct->tm_mday, _timeStruct->tm_mon, _timeStruct->tm_year, _timeStruct->tm_hour, _timeStruct->tm_min );
+    if(_timeStruct == NULL){
+        return ERROR;
+    }
+    printf("--> I have in my struct : %d-%d-%d and time -> %d:%d\n", _timeStruct->tm_mday, _timeStruct->tm_mon, _timeStruct->tm_year, _timeStruct->tm_hour, _timeStruct->tm_min );
     //do it
     printf("Transaction with id %s is going to be executed right now!\n", _trxId);
 
@@ -347,7 +417,7 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     insertSRHT(sender, bkt1, senderID);
     insertSRHT(receiver, bkt2, receiverID);
 
-    // update all the structs done (I guess)
+    // update all the structs done (I hope)
 
     return SUCCESS;
 }

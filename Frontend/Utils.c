@@ -65,12 +65,15 @@ void reqTrxFile(char* fileName){
 
 }
 
-void reqTrxs(){
 
-}
-
-void reqTrx(char* senderID, char* receiverID, int amount, char* date, char* _time){
+int reqTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char* senderID, char* receiverID, int amount, char* date, char* _time, int btcVal){
     // generate a trxid
-    // processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char* _trxId, char* senderID, char* receiverID, int value, char* date, char* _time, int btcVal);
-
+    char* _trxId;
+    _trxId = getNextTrxID();
+    // printf("The trx id generated for this trx is %s\n", _trxId);
+    if(processTrx(wHT, bht, sender, receiver, _trxId, senderID, receiverID, amount, date, _time, btcVal) == ERROR){
+        printf("RequestTransaction faced an error\n");
+        return ERROR;
+    }
+    return SUCCESS;
 }
