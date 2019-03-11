@@ -56,9 +56,9 @@ void addLeft(btcTree* node, btcNode* value){
         exit(EXIT_FAILURE);
     }
     node->lKid = newTreeNode(value);
-    if(!node->rKid){
-        node->rKid = NULL;
-    }
+    // if(!node->rKid){
+    //     node->rKid = NULL;
+    // }
 }
 
 void addRight(btcTree* node, btcNode* value){
@@ -68,9 +68,9 @@ void addRight(btcTree* node, btcNode* value){
         exit(EXIT_FAILURE);
     }
     node->rKid = newTreeNode(value);
-    if(!node->lKid){
-        node->lKid = NULL;
-    }
+    // if(!node->lKid){
+    //     node->lKid = NULL;
+    // }
 }
 
 void printTree(Tree t){

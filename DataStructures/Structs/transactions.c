@@ -8,11 +8,7 @@
 #include "../../HeaderFiles/Input.h"
 
 int MAX ;
-int lDay = 0;
-int lMonth = 0;
-int lYear = 0;
-int lHour = 0;
-int lMin = 0;
+struct tm* latest;
 
 void findMax(LinkedList* list){
     MAX = -1;
@@ -192,6 +188,9 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, 
     }
 }
 
+void initLatest(){
+    latest = NULL;
+}
 
 int checkUniqueness(LinkedList* AllTrxs, char* _id){
     // return YES if unique, NO if not
@@ -215,33 +214,24 @@ int checkUniqueness(LinkedList* AllTrxs, char* _id){
 }
 
 struct tm* checkDateTime(char* date, char* _time){
-    
+    // diff time initialize sec to 0
     struct tm* res = malloc(sizeof(struct tm));
     if(date == NULL){
         time_t rawtime;
         struct tm * timeinfo;
-        time ( &rawtime );
-        timeinfo = localtime ( &rawtime );
+        time(&rawtime);
+        timeinfo = localtime(&rawtime);
         // printf ( "1Current local time and date: %s\n", asctime (timeinfo));
-        res->tm_year = timeinfo->tm_year;
+        res->tm_year = timeinfo->tm_year + 1900;
         res->tm_mon = timeinfo->tm_mon;
         res->tm_mday = timeinfo->tm_mday;
     }
     else {
-        struct tm * parsedTime; 
         int year, month, day;
         if(sscanf(date, "%d-%d-%d", &day, &month, &year) != EOF){ 
-            time_t rawTime;
-            time(&rawTime);
-            parsedTime = localtime(&rawTime);
-
-            parsedTime->tm_year = year;
-            parsedTime->tm_mon = month;
-            parsedTime->tm_mday = day;
-            // -->
-            res->tm_year = parsedTime->tm_year;
-            res->tm_mon = parsedTime->tm_mon;
-            res->tm_mday = parsedTime->tm_mday;
+            res->tm_year = year;
+            res->tm_mon = month;
+            res->tm_mday = day;
         }
     }
     if(_time == NULL){
@@ -252,6 +242,7 @@ struct tm* checkDateTime(char* date, char* _time){
         // printf ( "2Current local time and date: %s\n", asctime (timeinfo));
         res->tm_hour = timeinfo->tm_hour;
         res->tm_min = timeinfo->tm_min;
+        res->tm_sec = timeinfo->tm_sec;
     }
     else {
         int hours, minutes;
@@ -260,60 +251,33 @@ struct tm* checkDateTime(char* date, char* _time){
             // printf("%d : %d what i read\n", hours, minutes);
             res->tm_hour = hours;
             res->tm_min = minutes;
+            res->tm_sec = 0;
         }
     }
     // check that the time i have is later than the latest time
-    if(res->tm_year < lYear){
-        printf("Year given is before the latest transaction year \n");
-        return NULL;
+    if(latest == NULL){
+        // first transaction so it is the latest
+        latest = res;
+        return res;
     }
-    if(res->tm_mon < lMonth){
-        printf("month given is before the latest transaction month \n");
-        return NULL;
-    }
-    if(res->tm_mday < lDay){
-        printf("day given is before the latest transaction day \n");
-        return NULL;
-    }
-    if(res->tm_hour < lHour){
-        printf("Hour given is before the latest transaction hour \n");
-        return NULL;
-    }
-    if(res->tm_min < lMin){
-        printf("min given is before the latest transaction min \n");
-        return NULL;
-    }
-    // change the latest date time
-    lYear = res->tm_year;
-    lMonth = res->tm_mon;
-    lDay = res->tm_mday;
-    lHour = res->tm_hour;
-    lMin = res->tm_min;
-    // int hours, minutes;
-    // // printf("---> %s\n", _time);
-    // if(sscanf(_time, "%d:%d", &hours, &minutes) != EOF){
-    //     // printf("%d : %d what i read\n", hours, minutes);
-    //     res->tm_hour = hours;
-    //     res->tm_min = minutes;
-    // }
-    // struct tm * parsedTime; 
-    // int year, month, day;
-    // if(sscanf(date, "%d-%d-%d", &day, &month, &year) != EOF){ 
-    //     time_t rawTime;
-    //     time(&rawTime);
-    //     parsedTime = localtime(&rawTime);
+    double diffT;
+        // printf("--> latest : %d-%d-%d and time -> %d:%d\n", latest->tm_mday, latest->tm_mon, latest->tm_year, latest->tm_hour, latest->tm_min );
 
-    //     parsedTime->tm_year = year;
-    //     parsedTime->tm_mon = month;
-    //     parsedTime->tm_mday = day;
-    //     // -->
-    //     res->tm_year = parsedTime->tm_year;
-    //     res->tm_mon = parsedTime->tm_mon;
-    //     res->tm_mday = parsedTime->tm_mday;
-    // }
-    // res->tm_hour = hours;
-    // res->tm_min = minutes;
-    return res;
+        // printf("--> current : %d-%d-%d and time -> %d:%d\n", res->tm_mday, res->tm_mon, res->tm_year, res->tm_hour, res->tm_min );
+
+    diffT = difftime(mktime(res), mktime(latest));
+    // if < 0 prwto mikrotero
+    // change the latest date time
+    if(diffT > 0){
+        // res is later than latest
+        // accepted and put as latest
+        latest = res;
+        return res;
+    }
+    else {
+        return NULL;
+    }
+    
 }
 
 
@@ -360,7 +324,7 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     if(_timeStruct == NULL){
         return ERROR;
     }
-    printf("--> I have in my struct : %d-%d-%d and time -> %d:%d\n", _timeStruct->tm_mday, _timeStruct->tm_mon, _timeStruct->tm_year, _timeStruct->tm_hour, _timeStruct->tm_min );
+    // printf("--> I have in my struct : %d-%d-%d and time -> %d:%d\n", _timeStruct->tm_mday, _timeStruct->tm_mon, _timeStruct->tm_year, _timeStruct->tm_hour, _timeStruct->tm_min );
     //do it
     printf("Transaction with id %s is going to be executed right now!\n", _trxId);
 
