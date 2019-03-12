@@ -15,6 +15,8 @@ wallet* newWallet(char* _walletID, LinkedList* btcList, int balance){
     strcpy(wal->_walletID, _walletID);
     
     wal->balance = balance;
+    wal->moneyReceived = 0;
+    wal->moneySent = 0;
     wal->btcList = btcList;
     return wal;
 }
@@ -72,9 +74,15 @@ trxObject* newTrxObj(wallet* sendID, wallet* recID, char* id, int val, struct tm
     trx->_trxID = malloc(15);
     strcpy(trx->_trxID, id);
     trx->value = val;
-    trx->_time = t;
-    trx->sender = sendID;
-    trx->receiver = recID;
+    // trx->_time = t;
+    // trx->sender = sendID;
+    // trx->receiver = recID;
+    trx->_time = malloc(sizeof(struct tm));
+    memcpy(trx->_time, t, sizeof(struct tm));
+    trx->sender = malloc(sizeof(wallet));
+    memcpy(trx->sender, sendID, sizeof(wallet));
+    trx->receiver = malloc(sizeof(wallet));
+    memcpy(trx->receiver, recID, sizeof(wallet));
 
     return trx;
 }

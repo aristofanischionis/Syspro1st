@@ -75,7 +75,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
     char *line = NULL;
     size_t len = 0;
     size_t nread;
-    const char s[3] = " \n";
+    const char s[2] = " \n";
     char *token;
 
     _trxId = (char*) malloc(15);
@@ -85,7 +85,9 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
     receiverID = (char *)malloc(50);
     date = (char *)malloc(50);
     _time = (char *)malloc(50);
-    initLatest();
+    
+    struct tm* latest;
+    latest = initLatest();
     // init latest date and time
     // let's read trx file
     printf("Time to read the Bitcoin Balances File!\n");
@@ -200,7 +202,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 continue;
             }
             // id is unique let's process the trx
-            if(processTrx(wHT, bht, sender, receiver, _trxId, senderID, receiverID, value, date, _time, btcVal) == ERROR){
+            if(processTrx(wHT, bht, sender, receiver, _trxId, senderID, receiverID, value, date, _time, btcVal, latest) == ERROR){
                 // printf("Program crashed while reading the TransactionsFile\n");
                 // printf("Exiting....\n");
                 // exit(EXIT_FAILURE);
@@ -312,7 +314,8 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 }
                 else if(!strcmp(command[0], "findPayments")){
                     ///findPayments walletid 
-                    printf("/findPayments walletid -> %s,%s\n", command[0], command[1]);
+                    // printf("/findPayments walletid -> %s,%s\n", command[0], command[1]);
+                    findPayments(wHT, command[1], sender, NULL, NULL, NULL, NULL);
                 }
                 else if(!strcmp(command[0], "findEarnings")){
                     ///findEarnings walletid
@@ -328,59 +331,22 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 //four arguments given
                 if(!strcmp(command[0], "requestTransaction")){
                     ///requestTransaction sender receiver amount
-                    printf("/requestTransaction -> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
+                    // printf("/requestTransaction -> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
                     int amount = atoi(command[3]);
-                    reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, NULL, NULL, btcVal);
+                    reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, NULL, NULL, btcVal, latest);
                 }
                 else if(!strcmp(command[0], "requestTransactions")){
                     // /requestTransactions senderWalletID receiverWalletID amount
-                    printf("/requestTransactions-> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
+                    // printf("/requestTransactions-> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
                     if ((pos=strchr(command[3], ';')) != NULL) *pos = '\0';
                     // if we got here i can assume that the last argument has a ; and then there is a \n
                     // i will get all the info of the first transaction given to me
                     // i will execute it
                     int amount = atoi(command[3]);
-                    reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, NULL, NULL, btcVal);
-                    // and read next line if it starts with something else than a / and the last char in input is ;
-                    // i will continue making trxs
-                    while(1){
-                        int j =0;
-                        // read next line
-                        command = (char **)malloc(6 * sizeof(char*));
-                        getline(&buffer,&bufsize,stdin);
-                        token = strtok(buffer, s);
-                        // taking all words in command
-                        while( token != NULL ) {
-                            command[j++] = token;
-                            token = strtok(NULL, s);
-                        }
-                        // check if first argument is q then quit this command and continue with the rest
-                        if ((pos=strchr(command[0], '\n')) != NULL) *pos = '\0';
-                        // say it in readme
-                        if (!strcmp(command[0], "q")){
-                            break;
-                        }
-                        if(j == 3){
-                            if ((pos=strchr(command[2], ';')) != NULL) *pos = '\0';
-                            int amount = atoi(command[2]);
-                            // take of the ;
-                            reqTrx(wHT, bht, sender, receiver, command[0], command[1], amount, NULL, NULL, btcVal);
-                        }
-                        else if(j == 4){
-                            if ((pos=strchr(command[3], ';')) != NULL) *pos = '\0';
-                            int amount = atoi(command[2]);
-                            reqTrx(wHT, bht, sender, receiver, command[0], command[1], amount, command[3], NULL, btcVal);
-                        }
-                        else if(j == 5){
-                            if ((pos=strchr(command[4], ';')) != NULL) *pos = '\0';
-                            int amount = atoi(command[2]);
-                            reqTrx(wHT, bht, sender, receiver, command[0], command[1], amount, command[3], command[5], btcVal);
-                        }
-                        else {
-                            printf("I didn't understand this command--> %s\n", command[0]);
-                            break;
-                        }
-                    }
+                    reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, NULL, NULL, btcVal, latest);
+                    // process all other trxs
+                    reqTrxs(wHT, bht, sender, receiver, btcVal, latest);
+                    
                 }
                 else if(!strcmp(command[0], "findEarnings")){
                     // /findEarnings
@@ -388,23 +354,86 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 }
                 else if(!strcmp(command[0], "findPayments")){
                     // /findPayments
-                    printf("findPayments-> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
+                    // printf("findPayments-> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
+                    // check if i got two times or two dates
+                    // if command 2 has : or -
+                    if(strstr(command[2], ":") != NULL){
+                        // then i have time
+                        findPayments(wHT, command[1], sender, command[2], NULL, command[3], NULL);
+                    }
+                    else if(strstr(command[2], "-") != NULL){
+                        // then i have date
+                        findPayments(wHT, command[1], sender, NULL, command[2], NULL, command[3]);
+                    }
+                    else {
+                        printf("The arguments given are not date or time %s, %s\n", command[2], command[3]);
+                    }
                 }
                 else fprintf(stderr, "Unknown Command Starting with: %s \n",command[0]);
                 break;
             case 5:
                 //five arguments given
-                fprintf(stderr, "5 Words Unknown Command Starting with: %s \n",command[0]);
+                if(!strcmp(command[0], "requestTransaction")){
+                    ///requestTransaction
+                    int amount = atoi(command[3]);
+                    // if command 4 has : or -
+                    if(strstr(command[4], ":") != NULL){
+                        // then i have time
+                        reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, NULL, command[4], btcVal, latest);
+                    }
+                    else if(strstr(command[4], "-") != NULL){
+                        // then i have date
+                        reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, command[4], NULL, btcVal, latest);
+                    }
+                    else {
+                        printf("The arguments given are not date or time %s, %s\n", command[2], command[3]);
+                    } 
+                }
+                else if(!strcmp(command[0], "requestTransactions")){
+                    // /requestTransactions
+                    // printf("/requestTransactions -> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);
+                    if ((pos=strchr(command[5], ';')) != NULL) *pos = '\0';
+                    // if we got here i can assume that the last argument has a ; and then there is a \n
+                    // i will get all the info of the first transaction given to me
+                    // i will execute it
+                    int amount = atoi(command[3]);
+                    // if command 4 has : or -
+                    if(strstr(command[4], ":") != NULL){
+                        // then i have time
+                        reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, NULL, command[4], btcVal, latest);
+                    }
+                    else if(strstr(command[4], "-") != NULL){
+                        // then i have date
+                        reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, command[4], NULL, btcVal, latest);
+                    }
+                    else {
+                        printf("The arguments given are not date or time %s, %s\n", command[2], command[3]);
+                    }
+                    
+                    // process all other trxs
+                    reqTrxs(wHT, bht, sender, receiver, btcVal, latest);  
+                }
+                else fprintf(stderr, "5 Words Unknown Command Starting with: %s\n",command[0]);
                 break;
             case 6:
                 //six arguments given
                 if(!strcmp(command[0], "requestTransaction")){
                     ///requestTransaction
-                    printf("/requestTransaction-> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);
+                    // printf("/requestTransaction-> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);
+                    int amount = atoi(command[3]);
+                    reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, command[4], command[5], btcVal, latest);
                 }
                 else if(!strcmp(command[0], "requestTransactions")){
                     // /requestTransactions
-                    printf("/requestTransactions -> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);  
+                    // printf("/requestTransactions -> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);
+                    if ((pos=strchr(command[5], ';')) != NULL) *pos = '\0';
+                    // if we got here i can assume that the last argument has a ; and then there is a \n
+                    // i will get all the info of the first transaction given to me
+                    // i will execute it
+                    int amount = atoi(command[3]);
+                    reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, command[4], command[5], btcVal, latest);
+                    // process all other trxs
+                    reqTrxs(wHT, bht, sender, receiver, btcVal, latest);  
                 }
                 else if(!strcmp(command[0], "findEarnings")){
                     // /findEarnings
@@ -412,7 +441,8 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 }
                 else if(!strcmp(command[0], "findPayments")){
                     // /findPayments
-                    printf("/findPayments-> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);
+                    // printf("/findPayments-> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);
+                    findPayments(wHT, command[1], sender, command[2], command[3], command[4], command[5]);
                 }
                 fprintf(stderr, "6 Words Unknown Command Starting with: %s \n",command[0]);
                 break;

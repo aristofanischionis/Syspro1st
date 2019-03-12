@@ -4,7 +4,7 @@
 #include "../../HeaderFiles/Structs.h"
 #include "../../HeaderFiles/LinkedLists.h"
 
-static wallet DELETED_WALLET = {NULL, NULL, -1};
+static wallet DELETED_WALLET = {NULL, NULL, -1, -1, -1};
 
 int HT_INITIAL_BASE_SIZE_WAL = 200;
 

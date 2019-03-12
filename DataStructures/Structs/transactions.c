@@ -8,7 +8,6 @@
 #include "../../HeaderFiles/Input.h"
 
 int MAX ;
-struct tm* latest;
 
 void findMax(LinkedList* list){
     MAX = -1;
@@ -176,6 +175,7 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, 
         // else printf("the btc trees are initializedddd!!!!!!!11\n");
         updateTree(thisUbtc->btc->btcTree->root, sender, receiver, iNeed, this);
         thisUbtc->btc->btcTree->noOfTrxUsed = thisUbtc->btc->btcTree->noOfTrxUsed + 1;
+
         // this bitcoin is used in one more trx
         // thisUbtc->btc->noOfTrxUsed ++;
         // bitcoin* btc;
@@ -188,8 +188,16 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, 
     }
 }
 
-void initLatest(){
-    latest = NULL;
+struct tm* initLatest(){
+    struct tm* latest;
+    latest = malloc(sizeof(struct tm));
+    latest->tm_year = 1900;
+    latest->tm_mon = 1;
+    latest->tm_mday = 1;
+    latest->tm_hour = 1;
+    latest->tm_min = 1;
+    latest->tm_sec = 1;
+    return latest;
 }
 
 int checkUniqueness(LinkedList* AllTrxs, char* _id){
@@ -213,7 +221,7 @@ int checkUniqueness(LinkedList* AllTrxs, char* _id){
     return YES;
 }
 
-struct tm* checkDateTime(char* date, char* _time){
+struct tm* checkDateTime(char* date, char* _time, struct tm* latest){
     // diff time initialize sec to 0
     struct tm* res = malloc(sizeof(struct tm));
     if(date == NULL){
@@ -255,11 +263,11 @@ struct tm* checkDateTime(char* date, char* _time){
         }
     }
     // check that the time i have is later than the latest time
-    if(latest == NULL){
-        // first transaction so it is the latest
-        latest = res;
-        return res;
-    }
+    // if(latest == NULL){
+    //     // first transaction so it is the latest
+    //     latest = res;
+    //     return res;
+    // }
     double diffT;
         // printf("--> latest : %d-%d-%d and time -> %d:%d\n", latest->tm_mday, latest->tm_mon, latest->tm_year, latest->tm_hour, latest->tm_min );
 
@@ -271,7 +279,8 @@ struct tm* checkDateTime(char* date, char* _time){
     if(diffT > 0){
         // res is later than latest
         // accepted and put as latest
-        latest = res;
+        memcpy(latest, res, sizeof(struct tm));
+        // latest = res;
         return res;
     }
     else {
@@ -281,7 +290,7 @@ struct tm* checkDateTime(char* date, char* _time){
 }
 
 
-int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char* _trxId, char* senderID, char* receiverID, int value, char* date, char* _time, int btcVal){
+int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char* _trxId, char* senderID, char* receiverID, int value, char* date, char* _time, int btcVal, struct tm* latest){
 
     if(wHT == NULL || bht == NULL || sender == NULL || receiver == NULL || senderID == NULL || receiverID == NULL){
         printf("processTrx got wrong input \n");
@@ -320,7 +329,7 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     }
 
     // check date and time validity
-    _timeStruct = checkDateTime(date, _time);
+    _timeStruct = checkDateTime(date, _time, latest);
     if(_timeStruct == NULL){
         return ERROR;
     }
@@ -331,20 +340,25 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     // make the trx object
 
     this = newTrxObj(temp1, temp2, _trxId, value, _timeStruct);
+
     if(this == NULL){
         printf("trxobj is null \n");
         return ERROR;
     }
+    
     // check if everything is correct with this trx obj
     // struct tm *temptime = this->_time;
     // printf("------> id %s,v %d send %s rec %s \n", this->_trxID, this->value, this->sender->_walletID, this->receiver->_walletID);
     // printf("trxobj time : %d-%d-%d and time -> %d:%d\n", temptime->tm_mday, temptime->tm_mon, temptime->tm_year, temptime->tm_hour, temptime->tm_min );
     // check done successfully
     // exchange bitcoins between two parties
-    // chenge balances of wallets
+    // change balances of wallets
     temp1->balance -= value;
     temp2->balance += value;
-    // change 
+    // sender just sent an amount
+    temp1->moneySent += value;
+    // receiver just received an amount
+    temp2->moneyReceived += value;
     // find which ones to give to each other
     //take the sender's btc's trees and add kids
     findBitcoins(temp1, temp2, value, this, btcVal);
@@ -382,6 +396,9 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     insertSRHT(receiver, bkt2, receiverID);
 
     // update all the structs done (I hope)
-
+    bucketNode* tempobkt;
+    tempobkt = searchSRHT(sender, senderID);
+    trxObject* tempotempo = (trxObject*) tempobkt->headofList->head->data ;
+    printf("----> %s \n", tempotempo->receiver->_walletID);
     return SUCCESS;
 }

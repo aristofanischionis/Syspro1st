@@ -25,7 +25,9 @@ typedef struct SRHashT SRHashT;
 struct wallet {
     char* _walletID;
     struct LinkedList* btcList;  // this is a LL of userBitcoin*
-    int balance; // i will use this
+    int balance;
+    int moneyReceived;
+    int moneySent;
 };
 
 struct userBitcoin {
