@@ -312,7 +312,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 else if(!strcmp(command[0], "requestTransactions")){
                     ///requestTransactions inputfile
                     printf("/requestTransactions inputfile-> %s,%s\n", command[0], command[1]);
-
+                    // to be implemented
                 }
                 else if(!strcmp(command[0], "findPayments")){
                     ///findPayments walletid 
@@ -321,7 +321,8 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 }
                 else if(!strcmp(command[0], "findEarnings")){
                     ///findEarnings walletid
-                    printf("/findEarnings walletid-> %s,%s\n", command[0], command[1]);
+                    // printf("/findEarnings walletid-> %s,%s\n", command[0], command[1]);
+                    findEarnings(wHT, command[1], receiver, NULL, NULL, NULL, NULL);
                 }
                 else fprintf(stderr, "Unknown Command Starting with: %s \n",command[0]);
                 break;
@@ -333,7 +334,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 //four arguments given
                 if(!strcmp(command[0], "requestTransaction")){
                     ///requestTransaction sender receiver amount
-                    printf("/requestTransaction -> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
+                    // printf("/requestTransaction -> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
                     int amount = atoi(command[3]);
                     reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, NULL, NULL, btcVal, latest);
                 }
@@ -348,11 +349,21 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                     reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, NULL, NULL, btcVal, latest);
                     // process all other trxs
                     reqTrxs(wHT, bht, sender, receiver, btcVal, latest);
-                    
                 }
                 else if(!strcmp(command[0], "findEarnings")){
                     // /findEarnings
-                    printf("findEarnings -> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
+                    // printf("findEarnings -> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
+                    if(strstr(command[2], ":") != NULL){
+                        // then i have time
+                        findEarnings(wHT, command[1], receiver, command[2], NULL, command[3], NULL);
+                    }
+                    else if(strstr(command[2], "-") != NULL){
+                        // then i have date
+                        findEarnings(wHT, command[1], receiver, NULL, command[2], NULL, command[3]);
+                    }
+                    else {
+                        printf("The arguments given are not date or time %s, %s\n", command[2], command[3]);
+                    }
                 }
                 else if(!strcmp(command[0], "findPayments")){
                     // /findPayments
@@ -439,7 +450,8 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 }
                 else if(!strcmp(command[0], "findEarnings")){
                     // /findEarnings
-                    printf("/findEarnings-> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);
+                    // printf("/findEarnings-> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);
+                    findEarnings(wHT, command[1], receiver, command[2], command[3], command[4], command[5]);
                 }
                 else if(!strcmp(command[0], "findPayments")){
                     // /findPayments

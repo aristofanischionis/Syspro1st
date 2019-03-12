@@ -313,3 +313,36 @@ int findPayments(walletHT* wHT, char* senderID, SRHashT* sender, char* fromTime,
     return SUCCESS;
 }
 
+int findEarnings(walletHT* wHT, char* receiverID, SRHashT* receiver, char* fromTime, char* fromYear, char* toTime, char* toYear){
+    wallet* this;
+    this = search(wHT, receiverID);
+    if(this == NULL){
+        printf("This receiver name: %s doesn't exist in wallet Hashtable\n", receiverID);
+        return ERROR;
+    }
+    if(checkValidityofDates(fromTime, fromYear, toTime, toYear) == ERROR){
+        printf("The dates given in findPayments are not correct\n");
+        return ERROR;
+    }
+
+    printf("receiver %s, has received in total %d money in all of his transactions\n",this->_walletID, this->moneyReceived);
+    // let's find all suitable trxs
+    bucketNode* receiverBuck;
+    receiverBuck = searchSRHT(receiver, receiverID);
+    listNode *node = receiverBuck->headofList->head ;
+    
+    while (node != NULL){
+        trxObject* t;
+        t = (trxObject*) node->data;
+        // i get all trx objects from ll and if they are good with the given dates/years i print them
+        if(betweenDates(fromTime, fromYear, toTime, toYear, t->_time) == YES){
+            printf("%s %s %s %d ",t->_trxID, t->receiver, t->receiver, t->value);
+            // print time formated
+            printf("%02d-%02d-%d %02d:%02d",t->_time->tm_mday, t->_time->tm_mon, t->_time->tm_year, t->_time->tm_hour, t->_time->tm_min );
+            printf("\n"); 
+        }
+        node = node->next;
+    }
+    return SUCCESS;
+}
+
