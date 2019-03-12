@@ -194,6 +194,6 @@ void printTRXobj(void *t)
     
     printf("TRX id is:  %s\n", id);
 
-    printf("receiver is: %s and sender is: %s\n ", tr->receiver->_walletID, tr->sender->_walletID);
+    printf("receiver is: %s and sender is: %s\n ", tr->receiver, tr->sender);
     free(id);
 }

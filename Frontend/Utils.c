@@ -303,7 +303,7 @@ int findPayments(walletHT* wHT, char* senderID, SRHashT* sender, char* fromTime,
         t = (trxObject*) node->data;
         // i get all trx objects from ll and if they are good with the given dates/years i print them
         if(betweenDates(fromTime, fromYear, toTime, toYear, t->_time) == YES){
-            printf("%s %s %s %d ",t->_trxID, t->sender->_walletID, t->receiver->_walletID, t->value);
+            printf("%s %s %s %d ",t->_trxID, t->sender, t->receiver, t->value);
             // print time formated
             printf("%02d-%02d-%d %02d:%02d",t->_time->tm_mday, t->_time->tm_mon, t->_time->tm_year, t->_time->tm_hour, t->_time->tm_min );
             printf("\n"); 

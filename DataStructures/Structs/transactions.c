@@ -339,7 +339,7 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
 
     // make the trx object
 
-    this = newTrxObj(temp1, temp2, _trxId, value, _timeStruct);
+    this = newTrxObj(senderID, receiverID, _trxId, value, _timeStruct);
 
     if(this == NULL){
         printf("trxobj is null \n");
@@ -399,6 +399,6 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     bucketNode* tempobkt;
     tempobkt = searchSRHT(sender, senderID);
     trxObject* tempotempo = (trxObject*) tempobkt->headofList->head->data ;
-    printf("----> %s \n", tempotempo->receiver->_walletID);
+    printf("----> %s \n", tempotempo->receiver);
     return SUCCESS;
 }

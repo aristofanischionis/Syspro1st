@@ -67,7 +67,7 @@ LinkedList* newBtcList(){
     return init(sizeof(userBitcoin), destroyUserBitcoin);
 }
 
-trxObject* newTrxObj(wallet* sendID, wallet* recID, char* id, int val, struct tm* t){
+trxObject* newTrxObj(char* sendID, char* recID, char* id, int val, struct tm* t){
     trxObject* trx;
     trx = malloc(sizeof(trxObject));
 
@@ -77,12 +77,10 @@ trxObject* newTrxObj(wallet* sendID, wallet* recID, char* id, int val, struct tm
     // trx->_time = t;
     // trx->sender = sendID;
     // trx->receiver = recID;
-    trx->_time = malloc(sizeof(struct tm));
-    memcpy(trx->_time, t, sizeof(struct tm));
-    trx->sender = malloc(sizeof(wallet));
-    memcpy(trx->sender, sendID, sizeof(wallet));
-    trx->receiver = malloc(sizeof(wallet));
-    memcpy(trx->receiver, recID, sizeof(wallet));
+    trx->sender = malloc(50);
+    strcpy(trx->sender, sendID);
+    trx->receiver = malloc(50);
+    strcpy(trx->receiver, recID);
 
     return trx;
 }

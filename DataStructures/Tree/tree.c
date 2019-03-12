@@ -189,7 +189,7 @@ void printGivenLevel(btcTree *root, int level){
         if(root->node != NULL){
             this = root->node->thisTrx;
             if(this != NULL){
-                printf("%s %s %s %d ", this->_trxID, this->sender->_walletID, this->receiver->_walletID, this->value); 
+                printf("%s %s %s %d ", this->_trxID, this->sender, this->receiver, this->value); 
                 // print time formated
                 printf("%02d-%02d-%d %02d:%02d",this->_time->tm_mday, this->_time->tm_mon, this->_time->tm_year, this->_time->tm_hour, this->_time->tm_min );
                 // printf("\n"); 
@@ -213,5 +213,6 @@ int moneyAtGivenLevel(btcTree *root, int level){
     else if (level > 1) { 
         return moneyAtGivenLevel(root->rKid, level-1);
         // i need all right to go
-    } 
+    }
+    else return -1;
 } 

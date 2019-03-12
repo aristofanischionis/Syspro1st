@@ -48,16 +48,11 @@ struct btcNode {
 
 struct trxObject {
     char* _trxID;
-    struct wallet* sender;
-    struct wallet* receiver;
+    char* sender;
+    char* receiver;
     int value;
     struct tm* _time; // time
 };
-
-// struct trxinLL {
-//     struct trxObject* trx;
-//     struct wallet* walletinTRX;
-// };
 
 struct bucketNode {
     struct wallet* walletID;
@@ -105,7 +100,7 @@ void destroyUserBitcoin(void* data);
 bitcoin* newBitcoin(int _bitcoinID);
 btcNode* newBTCNode(wallet* walletID, int dollars, trxObject* txID);
 LinkedList* newBtcList();
-trxObject* newTrxObj(wallet* sendID, wallet* recID, char* id, int val, struct tm* t);
+trxObject* newTrxObj(char* sendID, char* recID, char* id, int val, struct tm* t);
 LinkedList* newTRXList();
 bucketNode* newBucketNode(char* wal, walletHT* ht, LinkedList* trxList);
 bucket* newBucket(int size);
