@@ -74,7 +74,7 @@ trxObject* newTrxObj(char* sendID, char* recID, char* id, int val, struct tm* t)
     trx->_trxID = malloc(15);
     strcpy(trx->_trxID, id);
     trx->value = val;
-    // trx->_time = t;
+    trx->_time = t;
     // trx->sender = sendID;
     // trx->receiver = recID;
     trx->sender = malloc(50);
@@ -90,17 +90,17 @@ void destroyTRXlist(void* data){
 }
 
 LinkedList* newTRXList(){
-    return init(sizeof(trxObject*), destroyTRXlist);
+    return init(sizeof(trxObject), destroyTRXlist);
 }
 
-bucketNode* newBucketNode(char* wal, walletHT* ht, LinkedList* trxList){
+bucketNode* newBucketNode(char* wal, walletHT* ht){
     bucketNode* bkt;
     bkt = malloc(sizeof(bucketNode));
     wallet* res;
     res = search(ht, wal);
     if (res == NULL) return NULL;
     bkt->walletID = res;
-    bkt->headofList = trxList;
+    bkt->headofList = newTRXList();
     return bkt;
 }
 
@@ -151,7 +151,7 @@ void destroyBucketlist(void* data){
 }
 
 LinkedList* newBucketList(){
-    return init(sizeof(bucket*), destroyBucketlist);
+    return init(sizeof(bucket), destroyBucketlist);
 }
 // ll of buckets
 // full balance of a user

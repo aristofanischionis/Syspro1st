@@ -75,7 +75,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
     char *line = NULL;
     size_t len = 0;
     size_t nread;
-    const char s[2] = " \n";
+    const char s[3] = " \n";
     char *token;
 
     _trxId = (char*) malloc(15);
@@ -233,6 +233,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
     char **command;
     char *buffer;
     char *pos;
+    const char kat[2] = " ";
     size_t bufsize = 100;
     buffer = (char *)malloc(bufsize * sizeof(char));
     if( buffer == NULL){
@@ -260,17 +261,18 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
             free(_time);
             return 0;
         }
-        token = strtok(buffer, s);
+        token = strtok(buffer, kat);
         // taking all words in command
         while( token != NULL ) {
             command[i++] = token;
-            token = strtok(NULL, s);
+            token = strtok(NULL, kat);
         }
+        if ((pos=strchr(command[i-1], '\n')) != NULL) *pos = '\0';
         // Analyzing the command given by user
         switch(i){
             case 1:
                 // one argument given
-                if ((pos=strchr(command[0], '\n')) != NULL) *pos = '\0';
+                // if ((pos=strchr(command[0], '\n')) != NULL) *pos = '\0';
                 if(!strcmp(command[0], "exit")){ 
                     //exits program
                     ExitProgram();
@@ -331,7 +333,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 //four arguments given
                 if(!strcmp(command[0], "requestTransaction")){
                     ///requestTransaction sender receiver amount
-                    // printf("/requestTransaction -> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
+                    printf("/requestTransaction -> %s,%s,%s,%s\n", command[0], command[1], command[2],command[3]);
                     int amount = atoi(command[3]);
                     reqTrx(wHT, bht, sender, receiver, command[1], command[2], amount, NULL, NULL, btcVal, latest);
                 }

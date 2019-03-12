@@ -15,9 +15,9 @@ SRHashT* initSRHT(int h1, int numOfBucketNodes){
     ht->myBuckets = (LinkedList**)malloc(h1 * sizeof(LinkedList*)); // this is a dynamic array of h1 elements of type LL* bucket
     int i;
     for(i=0; i<h1; i++){
-        // ht->myBuckets[i] = init(sizeof(bucket*), deleteBucket);
-
-        ht->myBuckets[i] = NULL;
+        ht->myBuckets[i] = init(sizeof(bucket), deleteBucket);
+        // ht->myBuckets[i]->head
+        // ht->myBuckets[i] = NULL;
         // ht->myBuckets[i] = newBucketList();
     }
     return ht;
@@ -174,7 +174,7 @@ bucketNode* searchSRHT(SRHashT* ht, char* _id){
     LinkedList* curItem = ht->myBuckets[index];
 
     res = searchinLL(curItem, _id);
-    
+
     return res;
 }
 
@@ -186,3 +186,18 @@ void deleteSRHT(SRHashT* ht){
     free(ht);
 }
 
+void insertTransaction(walletHT* wHT, SRHashT* ht, char* _id, trxObject* trx){
+    bucketNode* bkt1;
+    bkt1 = searchSRHT(ht, _id);
+
+    if(bkt1 == NULL){
+        // first trx for sender
+        // so
+        bkt1 = newBucketNode(_id, wHT);
+        insertBEG(bkt1->headofList, trx);
+        insertSRHT(ht, bkt1, _id);
+    }
+    else{
+        insertBEG(bkt1->headofList, trx);
+    }
+}

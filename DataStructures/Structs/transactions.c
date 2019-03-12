@@ -191,6 +191,7 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, 
 struct tm* initLatest(){
     struct tm* latest;
     latest = malloc(sizeof(struct tm));
+    memset(latest, 0, sizeof(struct tm));
     latest->tm_year = 1900;
     latest->tm_mon = 1;
     latest->tm_mday = 1;
@@ -224,6 +225,8 @@ int checkUniqueness(LinkedList* AllTrxs, char* _id){
 struct tm* checkDateTime(char* date, char* _time, struct tm* latest){
     // diff time initialize sec to 0
     struct tm* res = malloc(sizeof(struct tm));
+    memset(res, 0, sizeof(struct tm));
+
     if(date == NULL){
         time_t rawtime;
         struct tm * timeinfo;
@@ -272,7 +275,6 @@ struct tm* checkDateTime(char* date, char* _time, struct tm* latest){
         // printf("--> latest : %d-%d-%d and time -> %d:%d\n", latest->tm_mday, latest->tm_mon, latest->tm_year, latest->tm_hour, latest->tm_min );
 
         // printf("--> current : %d-%d-%d and time -> %d:%d\n", res->tm_mday, res->tm_mon, res->tm_year, res->tm_hour, res->tm_min );
-
     diffT = difftime(mktime(res), mktime(latest));
     // if < 0 prwto mikrotero
     // change the latest date time
@@ -344,8 +346,7 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     if(this == NULL){
         printf("trxobj is null \n");
         return ERROR;
-    }
-    
+    }   
     // check if everything is correct with this trx obj
     // struct tm *temptime = this->_time;
     // printf("------> id %s,v %d send %s rec %s \n", this->_trxID, this->value, this->sender->_walletID, this->receiver->_walletID);
@@ -363,42 +364,8 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     //take the sender's btc's trees and add kids
     findBitcoins(temp1, temp2, value, this, btcVal);
     // printf("findBitcoins executed successfully!\n");
-    
-
     // add it in both linked lists r and s
-    bucketNode* bkt1;
-    bucketNode* bkt2;
-    bkt1 = searchSRHT(sender, senderID);
-    bkt2 = searchSRHT(receiver, receiverID);
-
-    if(bkt1 == NULL){
-        // first trx for sender
-        // so
-        LinkedList* newList = newTRXList();
-        insertBEG(newList, this);
-        bkt1 = newBucketNode(senderID, wHT, newList);
-    }
-    else{
-        insertBEG(bkt1->headofList, this);
-    }
-    if(bkt2 == NULL){
-        // first trx for rec
-        // so
-        LinkedList* newList = newTRXList();
-        insertBEG(newList, this);
-        bkt2 = newBucketNode(receiverID, wHT, newList);
-    }
-    else{
-        insertBEG(bkt2->headofList, this);
-    }
-    
-    insertSRHT(sender, bkt1, senderID);
-    insertSRHT(receiver, bkt2, receiverID);
-
-    // update all the structs done (I hope)
-    bucketNode* tempobkt;
-    tempobkt = searchSRHT(sender, senderID);
-    trxObject* tempotempo = (trxObject*) tempobkt->headofList->head->data ;
-    printf("----> %s \n", tempotempo->receiver);
+    insertTransaction(wHT, sender, senderID, this);
+    insertTransaction(wHT, receiver, receiverID, this);
     return SUCCESS;
 }

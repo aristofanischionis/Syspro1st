@@ -102,7 +102,7 @@ btcNode* newBTCNode(wallet* walletID, int dollars, trxObject* txID);
 LinkedList* newBtcList();
 trxObject* newTrxObj(char* sendID, char* recID, char* id, int val, struct tm* t);
 LinkedList* newTRXList();
-bucketNode* newBucketNode(char* wal, walletHT* ht, LinkedList* trxList);
+bucketNode* newBucketNode(char* wal, walletHT* ht);
 bucket* newBucket(int size);
 int insertNodeinBucket(bucket* b, bucketNode* bn);
 LinkedList* newBucketList();
@@ -127,5 +127,5 @@ SRHashT* initSRHT(int h1, int numOfBucketNodes);
 int insertSRHT(SRHashT* ht,  bucketNode* bkt, char* _id );
 bucketNode* searchSRHT(SRHashT* ht, char* _id);
 void deleteSRHT(SRHashT* ht);
-
+void insertTransaction(walletHT* wHT, SRHashT* ht, char* _id, trxObject* trx);
 #endif
