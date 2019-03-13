@@ -51,50 +51,18 @@ btcTree* newTreeNode(btcNode* value){
     // n->node = malloc(sizeof(btcNode));
     n->node = value;
 	n->lKid = NULL;
-    n->lKid = NULL;
+    n->rKid = NULL;
 	return n;
 }
 
 void addLeft(btcTree* node, btcNode* value){
-    // if(!node) return;
-    // // if(node->lKid){
-    // //     fprintf(stderr, "left kid already exists \n");
-    // //     exit(EXIT_FAILURE);
-    // // }
-    // node->lKid = newTreeNode(value);
-    // // if(!node->rKid){
-    // //     node->rKid = NULL;
-    // // }
     if(!node) return;
-    // if(node->lKid){
-    //     fprintf(stderr, "left kid already exists \n");
-    //     exit(EXIT_FAILURE);
-    // }
     node->lKid = newTreeNode(value);
-    // if(!node->rKid){
-    //     node->rKid = NULL;
-    // }
 }
 
 void addRight(btcTree* node, btcNode* value){
-    // if(!node) return;
-    // // if(node->rKid){
-    // //     fprintf(stderr, "right kid already exists \n");
-    // //     exit(EXIT_FAILURE);
-    // // }
-    // node->rKid = newTreeNode(value);
-    // // if(!node->lKid){
-    // //     node->lKid = NULL;
-    // // }
     if(!node) return;
-    // if(node->rKid){
-    //     fprintf(stderr, "right kid already exists \n");
-    //     exit(EXIT_FAILURE);
-    // }
     node->rKid = newTreeNode(value);
-    // if(!node->lKid){
-    //     node->lKid = NULL;
-    // }
 }
 
 void printTree(Tree t){
@@ -140,6 +108,8 @@ void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFrom
                 therightKid = newBTCNode(sender->_walletID, send, this);
                 addLeft(root, theleftKid);
                 addRight(root, therightKid);
+                printf("1->>>>>>>>> lkid %s\n", root->lKid->node->walletID);
+                printf("1->>>>>>>>> rkid %s\n", root->rKid->node->walletID);
                 return;
             }
             else{
@@ -156,6 +126,8 @@ void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFrom
                 therightKid = newBTCNode(sender->_walletID, send, this);
                 addLeft(root, theleftKid);
                 addRight(root, therightKid);
+                printf("2->>>>>>>>> lkid %s\n", root->lKid->node->walletID);
+                printf("2->>>>>>>>> rkid %s\n", root->rKid->node->walletID);
             }        
         } 
     }
@@ -196,7 +168,7 @@ int height(btcTree* node)
             return(lheight+1); 
         else return(rheight+1); 
     } 
-} 
+}
 /* Function to line by line print level order traversal a tree*/
 void printTRXs(btcTree *root){ 
     int h = height(root); 
