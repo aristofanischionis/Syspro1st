@@ -311,8 +311,8 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 }
                 else if(!strcmp(command[0], "requestTransactions")){
                     ///requestTransactions inputfile
-                    printf("/requestTransactions inputfile-> %s,%s\n", command[0], command[1]);
-                    // to be implemented
+                    // printf("/requestTransactions inputfile-> %s,%s\n", command[0], command[1]);
+                    reqTrxFile(command[1], wHT, bht, sender, receiver, btcVal, latest);
                 }
                 else if(!strcmp(command[0], "findPayments")){
                     ///findPayments walletid 
@@ -465,25 +465,6 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
         }
         free(command);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     // free(line);
     // fclose(input);

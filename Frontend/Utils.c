@@ -71,10 +71,93 @@ int reqTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, ch
     return SUCCESS;
 }
 
-void reqTrxFile(char* fileName){
+int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, int btcVal, struct tm* latest){
     // read file
     // and put each line in reqtrxs
+    FILE* input = FileRead(fileName);
+    if(input == NULL){
+        printf("Couldn't Load the transaction file given with name %s\n", fileName);
+        return ERROR;
+    }
+    char *line = NULL;
+    size_t len = 0;
+    size_t nread;
+    const char s[3] = " \n";
+    char *token;
+    char* senderID;
+    char* receiverID;
+    char* date;
+    char* _time;
+    char* val;
+    int counter = 0;
+    int amount = 0;
 
+    senderID = (char *)malloc(50);
+    receiverID = (char *)malloc(50);
+    date = (char *)malloc(50);
+    _time = (char *)malloc(50);
+    val = (char *)malloc(8);
+    char *pos;
+    //
+    while ((nread = getline(&line, &len, input)) != -1) {
+        token = strtok(line, s);
+        counter = 1;
+        strcpy(senderID, token);
+        // walk through other tokens
+        while( token != NULL ){
+            if ((pos=strchr(token, ';')) != NULL) {
+                *pos = '\0';
+                break;
+            }
+            // --> do things
+            if(counter == 1){
+                // i have read only sender
+                strcpy(receiverID, token);
+                counter ++;
+            }
+            else if(counter == 2){
+                // i have read rec
+                strcpy(val, token);
+                amount = atoi(val);
+                counter ++;
+            }
+            else if(counter == 3){
+                // i have read amount
+                strcpy(date, token);
+                counter ++;
+            }
+            else if(counter == 4){
+                // i have read date
+                strcpy(_time, token);
+                counter ++;
+            }
+            else {
+                printf("I read one more thing %s\n", token );
+                return ERROR;
+            }
+            printf( " %s\n", token );
+            token = strtok(NULL, s);
+            // finish
+        }
+
+        if(counter == 3){
+            // send, rec, am
+            reqTrx(wHT, bht, sender, receiver, senderID, receiverID, amount, NULL, NULL,btcVal, latest);
+        }
+        else if(counter == 4){
+            reqTrx(wHT, bht, sender, receiver, senderID, receiverID, amount, date, NULL,btcVal, latest);
+        }
+        else if(counter == 5){
+            reqTrx(wHT, bht, sender, receiver, senderID, receiverID, amount, date, _time,btcVal, latest);
+        }
+        else {
+            printf("counter is %d\n", counter );
+            return ERROR;
+        }
+        
+        counter = 0;
+    }
+    return SUCCESS;
 }
 
 int reqTrxs(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, int btcVal, struct tm* latest){
