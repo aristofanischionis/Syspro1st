@@ -16,7 +16,7 @@ struct Tree {
     int noOfTrxUsed;
 };
 
-Tree* createTree();
+Tree* createTree(int btcVal, char* this);
 void destroyTree(Tree* r);
 btcTree* newTreeNode(btcNode* value);
 // btcTree* TreeSearch(btcTree* root, char* walId);

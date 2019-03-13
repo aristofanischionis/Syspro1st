@@ -44,21 +44,21 @@ userBitcoin* newUserBitcoin(int amount, bitcoin* b){
     return bcoin;
 }
 
-bitcoin* newBitcoin(int _bitcoinID){
+bitcoin* newBitcoin(int _bitcoinID, int btcVal, char* this){
     bitcoin* b;
     b = malloc(sizeof(bitcoin));
     b->_bitcoinID = _bitcoinID;
-    // b->noOfTrxUsed = 0;
-    b->btcTree = createTree();
+    b->btcTree = createTree(btcVal, this);
     return b;
 }
 
-btcNode* newBTCNode(wallet* walletID, int dollars, trxObject* txID){
+btcNode* newBTCNode(char* walletID, int dollars, trxObject* txID){
     btcNode* b;
     b = malloc(sizeof(btcNode));
 
     b->dollars = dollars;
-    b->walletID = walletID;
+    b->walletID = malloc(50);
+    strcpy(b->walletID, walletID);
     b->thisTrx = txID;
     return b;
 }

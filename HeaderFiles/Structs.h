@@ -41,7 +41,7 @@ struct bitcoin {
 };
 
 struct btcNode {
-    struct wallet* walletID;
+    char* walletID;
     int dollars;
     struct trxObject* thisTrx;
 };
@@ -97,8 +97,8 @@ struct SRHashT {
 wallet* newWallet(char* _walletID, LinkedList* btcList, int balance);
 userBitcoin* newUserBitcoin(int amount, bitcoin* b);
 void destroyUserBitcoin(void* data);
-bitcoin* newBitcoin(int _bitcoinID);
-btcNode* newBTCNode(wallet* walletID, int dollars, trxObject* txID);
+bitcoin* newBitcoin(int _bitcoinID, int btcVal, char* this);
+btcNode* newBTCNode(char* walletID, int dollars, trxObject* txID);
 LinkedList* newBtcList();
 trxObject* newTrxObj(char* sendID, char* recID, char* id, int val, struct tm* t);
 LinkedList* newTRXList();

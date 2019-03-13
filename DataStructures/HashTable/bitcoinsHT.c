@@ -54,7 +54,10 @@ static int getHashBTC(int key, const int size, const int attempt) {
 }
 
 void insertBTC(BitcoinHT* ht, bitcoin* item) {
-    if(item == NULL) printf("bitcoin is NULL\n");
+    if(item == NULL){
+        printf("bitcoin is NULL\n");
+        return;
+    } 
     int index = getHashBTC(item->_bitcoinID, ht->size, 0);
     bitcoin* curItem = NULL;
     curItem = ht->nodes[index];

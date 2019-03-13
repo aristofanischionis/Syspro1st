@@ -34,7 +34,7 @@ int printuserBTC(void *t)
 void initializeBitcoinTrees(wallet* this, int btcval){
 
     btcNode* t;
-    t= newBTCNode(this, btcval, NULL);
+    t= newBTCNode(this->_walletID, btcval, NULL);
 
     listNode* node = this->btcList->head;
 
@@ -113,7 +113,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
             strcpy(bitcoinID, token);
             _id = atoi(bitcoinID);
             // make a new bitcoin
-            btc = newBitcoin(_id);
+            btc = newBitcoin(_id, btcVal, walletID);
             // i have to put it to the ht
             insertBTC(bht, btc);
             // make a userbitcoin

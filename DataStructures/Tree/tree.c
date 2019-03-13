@@ -9,11 +9,17 @@ void printGivenLevel(btcTree *root, int level);
 int height(btcTree* node);
 int moneyAtGivenLevel(btcTree *root, int level);
 // create a new node & set default nodes
-Tree* createTree(){
+Tree* createTree(int btcVal, char* this){
     Tree* r;
     r = malloc(sizeof(Tree));
     r->root = malloc(sizeof(btcTree));
-    r->root = NULL;
+    r->root->node = newBTCNode(this, btcVal, NULL);
+    // r->root->node->walletID = malloc(50);
+    // strcpy(r->root->node->walletID, this);
+    // r->root->node->thisTrx = NULL;
+    // r->root->node->dollars = btcVal;
+    r->root->lKid = NULL;
+    r->root->rKid = NULL;
     r->noOfTrxUsed = 0;
     return r;
 }
@@ -36,7 +42,7 @@ void deleteNode(btcTree* node){
     deleteNode(node->rKid);
 
     // then delete the node
-    printf("Deleting node with walID %s and dols %d\n", node->node->walletID->_walletID, node->node->dollars);  
+    printf("Deleting node with walID %s and dols %d\n", node->node->walletID, node->node->dollars);  
     free(node);
 }
 
@@ -50,6 +56,15 @@ btcTree* newTreeNode(btcNode* value){
 }
 
 void addLeft(btcTree* node, btcNode* value){
+    // if(!node) return;
+    // // if(node->lKid){
+    // //     fprintf(stderr, "left kid already exists \n");
+    // //     exit(EXIT_FAILURE);
+    // // }
+    // node->lKid = newTreeNode(value);
+    // // if(!node->rKid){
+    // //     node->rKid = NULL;
+    // // }
     if(!node) return;
     // if(node->lKid){
     //     fprintf(stderr, "left kid already exists \n");
@@ -62,6 +77,15 @@ void addLeft(btcTree* node, btcNode* value){
 }
 
 void addRight(btcTree* node, btcNode* value){
+    // if(!node) return;
+    // // if(node->rKid){
+    // //     fprintf(stderr, "right kid already exists \n");
+    // //     exit(EXIT_FAILURE);
+    // // }
+    // node->rKid = newTreeNode(value);
+    // // if(!node->lKid){
+    // //     node->lKid = NULL;
+    // // }
     if(!node) return;
     // if(node->rKid){
     //     fprintf(stderr, "right kid already exists \n");
@@ -80,20 +104,20 @@ void printTree(Tree t){
 // nodes from left to right 
 void printLeafNodes(btcTree* root){
     // if node is null, return 
-    if (root == NULL) return;  
+    if (!root) return;  
     // if node is leaf node, print its data
-    if (root->lKid == NULL && root->rKid == NULL)
+    if (!root->lKid && !root->rKid)
     { 
-        printf("This is a leaf! %s, %d \n", root->node->walletID->_walletID, root->node->dollars);
+        printf("This is a leaf! %s, %d \n", root->node->walletID, root->node->dollars);
     } 
   
     // if left child exists, check for leaf  
     // recursively 
-    if (root->lKid != NULL) printLeafNodes(root->lKid); 
+    if (root->lKid) printLeafNodes(root->lKid); 
           
     // if right child exists, check for leaf  
     // recursively 
-    if (root->rKid != NULL) printLeafNodes(root->rKid); 
+    if (root->rKid) printLeafNodes(root->rKid); 
 }  
 
 void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFromLeafs, trxObject* this){
@@ -102,8 +126,9 @@ void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFrom
     int send = 0;
     int rec = 0;
     // if node is leaf node, and name is walid, get as much balance i can in order to reach balanceFromLeafs 
+    // printf("--------------------> |%s| \n", root->node->walletID->_walletID);
     if((root->lKid == NULL) && (root->rKid == NULL)){
-        if (!strcmp(root->node->walletID->_walletID, sender->_walletID)){ 
+        if (!strcmp(root->node->walletID, sender->_walletID)){ 
             if(root->node->dollars >= balanceFromLeafs){
                 //after I get money from this leaf I am basically done
                 // printf("This is a final leaf! %s, %d , money needed to finish %d\n", root->node->walletID->_walletID, root->node->dollars, balanceFromLeafs);
@@ -111,8 +136,8 @@ void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFrom
                 send = root->node->dollars - balanceFromLeafs;
                 btcNode* theleftKid; // receiver
                 btcNode* therightKid; // sender
-                theleftKid = newBTCNode(receiver, rec, this);
-                therightKid = newBTCNode(sender, send, this);
+                theleftKid = newBTCNode(receiver->_walletID, rec, this);
+                therightKid = newBTCNode(sender->_walletID, send, this);
                 addLeft(root, theleftKid);
                 addRight(root, therightKid);
                 return;
@@ -127,15 +152,14 @@ void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFrom
 
                 btcNode* theleftKid; // receiver
                 btcNode* therightKid; // sender
-                theleftKid = newBTCNode(receiver, rec, this);
-                therightKid = newBTCNode(sender, send, this);
+                theleftKid = newBTCNode(receiver->_walletID, rec, this);
+                therightKid = newBTCNode(sender->_walletID, send, this);
                 addLeft(root, theleftKid);
                 addRight(root, therightKid);
             }        
         } 
     }
     
-  
     // if left child exists, check for leaf  
     // recursively 
     if (root->lKid != NULL) updateTree(root->lKid, sender, receiver, balanceFromLeafs, this); 
@@ -154,14 +178,19 @@ int unspent(btcTree* root){
 
 int height(btcTree* node) 
 { 
-    if (node==NULL) 
+    if (node == NULL) 
         return 0; 
     else
     { 
         /* compute the height of each subtree */
-        int lheight = height(node->lKid); 
-        int rheight = height(node->rKid); 
-  
+        int lheight = 0;
+        int rheight = 0;
+        if(node->lKid != NULL){
+            lheight = height(node->lKid); 
+        }
+        if(node->rKid != NULL){
+            rheight = height(node->rKid); 
+        }
         /* use the larger one */
         if (lheight > rheight) 
             return(lheight+1); 
@@ -175,7 +204,7 @@ void printTRXs(btcTree *root){
     // if(h == 0){
     //     printf("This bitcoin hasn't participated in any transactions yet\n");
     // }
-    for (i=1; i<=h; i++) 
+    for (i=1; i<=h; i++)
     {
         printGivenLevel(root, i); 
         printf("\n"); 
@@ -184,11 +213,11 @@ void printTRXs(btcTree *root){
   
 /* Print nodes at a given level */
 void printGivenLevel(btcTree *root, int level){ 
-    if (root == NULL) 
+    if (!root) 
         return; 
     if (level == 1){
         trxObject* this;
-        if(root->node != NULL){
+        if(root->node){
             this = root->node->thisTrx;
             if(this != NULL){
                 printf("%s %s %s %d ", this->_trxID, this->sender, this->receiver, this->value); 
@@ -207,7 +236,7 @@ void printGivenLevel(btcTree *root, int level){
 }
 
 int moneyAtGivenLevel(btcTree *root, int level){ 
-    if (root == NULL) 
+    if (!root) 
         return 0; 
     if (level == 1){
         return root->node->dollars;
