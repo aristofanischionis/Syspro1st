@@ -15,8 +15,8 @@ wallet* newWallet(char* _walletID, LinkedList* btcList, int balance){
     strcpy(wal->_walletID, _walletID);
     
     wal->balance = balance;
-    wal->moneyReceived = 0;
-    wal->moneySent = 0;
+    // wal->moneyReceived = 0;
+    // wal->moneySent = 0;
     wal->btcList = btcList;
     return wal;
 }

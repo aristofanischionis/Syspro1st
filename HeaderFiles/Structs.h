@@ -26,8 +26,8 @@ struct wallet {
     char* _walletID;
     struct LinkedList* btcList;  // this is a LL of userBitcoin*
     int balance;
-    int moneyReceived;
-    int moneySent;
+    // int moneyReceived;
+    // int moneySent;
 };
 
 struct userBitcoin {

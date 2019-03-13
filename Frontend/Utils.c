@@ -11,7 +11,7 @@
 void ExitProgram(){
 
 }
-
+// needs fix
 int traceCoin(int btcID, BitcoinHT* bHT){
     if(bHT == NULL){
         printf("the Bitcoin Hashtable is NULL\n");
@@ -71,6 +71,7 @@ int reqTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, ch
     return SUCCESS;
 }
 
+// needs fixing
 int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, int btcVal, struct tm* latest){
     // read file
     // and put each line in reqtrxs
@@ -254,14 +255,14 @@ int betweenDates(char* fromTime, char* fromYear, char* toTime, char* toYear, str
                 return NO;
             }
             to->tm_hour = 23;
-            to->tm_min = 58;
-            to->tm_sec = 58;
+            to->tm_min = 59;
+            to->tm_sec = 59;
 
             diffT1 = difftime(mktime(from), mktime(current));
             diffT2 = difftime(mktime(to), mktime(current));
             // if < 0 prwto mikrotero
             // change the latest date time
-            if(diffT1 < 0 && diffT2 > 0){
+            if(diffT1 <= 0 && diffT2 >= 0){
                 // from is less than current 
                 // and to is more then current
                 // so it is a good on to be printed
@@ -278,18 +279,55 @@ int betweenDates(char* fromTime, char* fromYear, char* toTime, char* toYear, str
             // no year specified
             int fromHours, fromMinutes;
             int toHours, toMinutes;
-            if(sscanf(fromTime, "%d:%d", &fromHours, &fromMinutes) == EOF){
+            sscanf(fromTime, "%d:%d", &fromHours, &fromMinutes);
+            sscanf(toTime, "%d:%d", &toHours, &toMinutes);
+            
+            if(current->tm_hour < fromHours || current->tm_hour > toHours){
                 return NO;
             }
-            if(sscanf(toTime, "%d:%d", &toHours, &toMinutes) == EOF){
+            if(current->tm_min < fromMinutes || current->tm_min > toMinutes){
                 return NO;
             }
-            if((current->tm_hour > fromHours) && (current->tm_min > fromMinutes) && (current->tm_hour < toHours) && (current->tm_min < toHours)){
-                return YES;
-            }
-            else return NO;    
+            return YES;
+
+            // if((current->tm_hour >= fromHours) && (current->tm_min > fromMinutes) && (current->tm_hour < toHours) && (current->tm_min < toHours)){
+            //     return YES;
+            // }
+            // else return NO;    
         }
         else {
+            // year is specified
+
+            // int fyear, fmonth, fday, tyear, tmonth, tday;
+            // int fhours, fminutes, thours, tminutes;
+            // // printf("FFFF--> %s , %s \n", fromYear, fromTime);
+            // sscanf(fromYear, "%d-%d-%d", &fday, &fmonth, &fyear); 
+            // sscanf(fromTime, "%d:%d", &fhours, &fminutes);
+            
+            // // do the same for to
+            // // printf("TTTT--> %s , %s \n", toYear, toTime);
+            // sscanf(toYear, "%d-%d-%d", &tday, &tmonth, &tyear);
+            // sscanf(toTime, "%d:%d", &thours, &tminutes);
+
+            // // printf("fyear %d fmonth %d fday %d fhours %d fmin %d \n", fyear, fmonth, fday, fhours, fminutes);
+            // // printf("tyear %d tmonth %d tday %d thours %d tmin %d \n", tyear, tmonth, tday, thours, tminutes);
+            // // printf("cur %d, %d, %d, %d, %d\n", current->tm_year, current->tm_mon, current->tm_mday ,current->tm_hour, current->tm_min);
+            // if(current->tm_year < fyear || current->tm_hour > tyear){
+            //     return NO;
+            // }
+            // if(current->tm_mon < fmonth || current->tm_mon > tmonth){
+            //     return NO;
+            // }
+            // if(current->tm_mday < fday || current->tm_mday > tday){
+            //     return NO;
+            // }
+            // if(current->tm_hour < fhours || current->tm_hour > thours){
+            //     return NO;
+            // }
+            // if(current->tm_min < fminutes || current->tm_min > tminutes){
+            //     return NO;
+            // }
+            // return YES;
             // year is specified
             double diffT1, diffT2;
             struct tm* from = malloc(sizeof(struct tm));
@@ -324,7 +362,7 @@ int betweenDates(char* fromTime, char* fromYear, char* toTime, char* toYear, str
             if(sscanf(toTime, "%d:%d", &hours, &minutes) != EOF){
                 to->tm_hour = hours;
                 to->tm_min = minutes;
-                to->tm_sec = 0;
+                to->tm_sec = 59;
             }
             else {
                 return NO;
@@ -334,7 +372,7 @@ int betweenDates(char* fromTime, char* fromYear, char* toTime, char* toYear, str
             diffT2 = difftime(mktime(to), mktime(current));
             // if < 0 prwto mikrotero
             // change the latest date time
-            if(diffT1 < 0 && diffT2 > 0){
+            if(diffT1 <= 0 && diffT2 >= 0){
                 // from is less than current 
                 // and to is more then current
                 // so it is a good on to be printed
@@ -343,6 +381,7 @@ int betweenDates(char* fromTime, char* fromYear, char* toTime, char* toYear, str
             else {
                 return NO;
             }
+        
         }
     }
 }
@@ -365,6 +404,7 @@ int checkValidityofDates(char* fromTime, char* fromYear, char* toTime, char* toY
 
 int findPayments(walletHT* wHT, char* senderID, SRHashT* sender, char* fromTime, char* fromYear, char* toTime, char* toYear){
     wallet* this;
+    int money = 0;
     this = search(wHT, senderID);
     if(this == NULL){
         printf("This sender name: %s doesn't exist in wallet Hashtable\n", senderID);
@@ -375,7 +415,7 @@ int findPayments(walletHT* wHT, char* senderID, SRHashT* sender, char* fromTime,
         return ERROR;
     }
 
-    printf("Sender %s, has paid in total %d money in all of his transactions\n",this->_walletID, this->moneySent);
+    // printf("Sender %s, has paid in total %d money in all of his transactions\n",this->_walletID, this->moneySent);
     // let's find all suitable trxs
     bucketNode* senderBuck;
     senderBuck = searchSRHT(sender, senderID);
@@ -386,6 +426,7 @@ int findPayments(walletHT* wHT, char* senderID, SRHashT* sender, char* fromTime,
         t = (trxObject*) node->data;
         // i get all trx objects from ll and if they are good with the given dates/years i print them
         if(betweenDates(fromTime, fromYear, toTime, toYear, t->_time) == YES){
+            money += t->value;
             printf("%s %s %s %d ",t->_trxID, t->sender, t->receiver, t->value);
             // print time formated
             printf("%02d-%02d-%d %02d:%02d",t->_time->tm_mday, t->_time->tm_mon, t->_time->tm_year, t->_time->tm_hour, t->_time->tm_min );
@@ -393,11 +434,13 @@ int findPayments(walletHT* wHT, char* senderID, SRHashT* sender, char* fromTime,
         }
         node = node->next;
     }
+    printf("receiver %s, has received %d money in these transactions\n",this->_walletID, money);
     return SUCCESS;
 }
 
 int findEarnings(walletHT* wHT, char* receiverID, SRHashT* receiver, char* fromTime, char* fromYear, char* toTime, char* toYear){
     wallet* this;
+    int money = 0;
     this = search(wHT, receiverID);
     if(this == NULL){
         printf("This receiver name: %s doesn't exist in wallet Hashtable\n", receiverID);
@@ -408,7 +451,7 @@ int findEarnings(walletHT* wHT, char* receiverID, SRHashT* receiver, char* fromT
         return ERROR;
     }
 
-    printf("receiver %s, has received in total %d money in all of his transactions\n",this->_walletID, this->moneyReceived);
+    // printf("receiver %s, has received in total %d money in all of his transactions\n",this->_walletID, this->moneyReceived);
     // let's find all suitable trxs
     bucketNode* receiverBuck;
     receiverBuck = searchSRHT(receiver, receiverID);
@@ -419,13 +462,15 @@ int findEarnings(walletHT* wHT, char* receiverID, SRHashT* receiver, char* fromT
         t = (trxObject*) node->data;
         // i get all trx objects from ll and if they are good with the given dates/years i print them
         if(betweenDates(fromTime, fromYear, toTime, toYear, t->_time) == YES){
-            printf("%s %s %s %d ",t->_trxID, t->receiver, t->receiver, t->value);
+            money += t->value;
+            printf("%s %s %s %d ",t->_trxID, t->sender, t->receiver, t->value);
             // print time formated
             printf("%02d-%02d-%d %02d:%02d",t->_time->tm_mday, t->_time->tm_mon, t->_time->tm_year, t->_time->tm_hour, t->_time->tm_min );
             printf("\n"); 
         }
         node = node->next;
     }
+    printf("receiver %s, has received %d money in these transactions\n",this->_walletID, money);
     return SUCCESS;
 }
 

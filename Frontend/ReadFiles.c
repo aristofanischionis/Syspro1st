@@ -451,14 +451,36 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 else if(!strcmp(command[0], "findEarnings")){
                     // /findEarnings
                     // printf("/findEarnings-> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);
-                    findEarnings(wHT, command[1], receiver, command[2], command[3], command[4], command[5]);
+                    // findEarnings(wHT, command[1], receiver, command[2], command[3], command[4], command[5]);
+                    if(strstr(command[2], ":") != NULL){
+                        // then i have time
+                        findEarnings(wHT, command[1], receiver, command[2], command[3], command[4], command[5]);
+                    }
+                    else if(strstr(command[2], "-") != NULL){
+                        // then i have date first 2, 4 and 3,5 are times
+                        findEarnings(wHT, command[1], receiver, command[3], command[2], command[5], command[4]);
+                    }
+                    else {
+                        printf("Wrong dates times given \n");
+                    }
                 }
                 else if(!strcmp(command[0], "findPayments")){
                     // /findPayments
                     // printf("/findPayments-> %s,%s,%s,%s,%s,%s\n", command[0], command[1], command[2],command[3], command[4], command[5]);
-                    findPayments(wHT, command[1], sender, command[2], command[3], command[4], command[5]);
+                    if(strstr(command[2], ":") != NULL){
+                        // then i have time
+                        
+                        findPayments(wHT, command[1], sender, command[2], command[3], command[4], command[5]);
+                    }
+                    else if(strstr(command[2], "-") != NULL){
+                        // then i have date first 2, 4 and 3,5 are times
+                        findPayments(wHT, command[1], sender, command[3], command[2], command[5], command[4]);
+                    }
+                    else {
+                        printf("Wrong dates times given \n");
+                    }
                 }
-                fprintf(stderr, "6 Words Unknown Command Starting with: %s \n",command[0]);
+                else fprintf(stderr, "6 Words Unknown Command Starting with: %s \n",command[0]);
                 break;
             default:
                 fprintf(stderr,"Unknown Command given with %d words\n", i);

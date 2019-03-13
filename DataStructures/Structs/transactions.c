@@ -357,9 +357,9 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     temp1->balance -= value;
     temp2->balance += value;
     // sender just sent an amount
-    temp1->moneySent += value;
-    // receiver just received an amount
-    temp2->moneyReceived += value;
+    // temp1->moneySent += value;
+    // // receiver just received an amount
+    // temp2->moneyReceived += value;
     // find which ones to give to each other
     //take the sender's btc's trees and add kids
     findBitcoins(temp1, temp2, value, this, btcVal);
