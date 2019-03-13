@@ -96,7 +96,7 @@ void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFrom
     // if node is leaf node, and name is walid, get as much balance i can in order to reach balanceFromLeafs 
     // printf("--------------------> |%s| \n", root->node->walletID->_walletID);
     if((root->lKid == NULL) && (root->rKid == NULL)){
-        if (!strcmp(root->node->walletID, sender->_walletID)){ 
+        if (!strcmp(root->node->walletID, sender->_walletID)){
             if(root->node->dollars >= balanceFromLeafs){
                 //after I get money from this leaf I am basically done
                 // printf("This is a final leaf! %s, %d , money needed to finish %d\n", root->node->walletID->_walletID, root->node->dollars, balanceFromLeafs);
@@ -108,8 +108,6 @@ void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFrom
                 therightKid = newBTCNode(sender->_walletID, send, this);
                 addLeft(root, theleftKid);
                 addRight(root, therightKid);
-                printf("1->>>>>>>>> lkid %s\n", root->lKid->node->walletID);
-                printf("1->>>>>>>>> rkid %s\n", root->rKid->node->walletID);
                 return;
             }
             else{
@@ -126,8 +124,6 @@ void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFrom
                 therightKid = newBTCNode(sender->_walletID, send, this);
                 addLeft(root, theleftKid);
                 addRight(root, therightKid);
-                printf("2->>>>>>>>> lkid %s\n", root->lKid->node->walletID);
-                printf("2->>>>>>>>> rkid %s\n", root->rKid->node->walletID);
             }        
         } 
     }
