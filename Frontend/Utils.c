@@ -90,9 +90,11 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
     char* date;
     char* _time;
     char* val;
+    // the char can be 'd' or 't' and is the first token read, so if it is time we cannot read two times
+    char c ;
     int counter = 0;
     int amount = 0;
-
+    
     senderID = (char *)malloc(50);
     receiverID = (char *)malloc(50);
     date = (char *)malloc(50);
@@ -124,23 +126,59 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
             }
             else if(counter == 3){
                 // i have read amount
-                strcpy(date, token);
-                counter ++;
+                if(strstr(token, ":") != NULL){
+                    // this is time
+                    strcpy(_time, token);
+                    counter ++;
+                    c = 't';
+                }
+                else if(strstr(token, "-") != NULL){
+                    strcpy(date, token);
+                    counter ++;
+                    c = 'd';
+                }
+                else {
+                    printf("Unknown word \n");
+                    counter = 50;
+                    break;
+                }
             }
             else if(counter == 4){
-                // i have read date
-                strcpy(_time, token);
-                counter ++;
+                // i have read date or time
+                if(strstr(token, ":") != NULL){
+                    // this is time
+                    if(c == 't'){
+                        printf("you cannot give me two times, wrong input\n");
+                        counter = 51;
+                        break;
+                    }
+                    strcpy(_time, token);
+                    counter ++;
+                }
+                else if(strstr(token, "-") != NULL){
+                    if(c == 'd'){
+                        printf("you cannot give me two dates, wrong input\n");
+                        counter = 52;
+                        break;
+                    }
+                    strcpy(date, token);
+                    counter ++;
+                }
+                else {
+                    printf("Unknown word \n");
+                    counter = 50;
+                    break;
+                }
             }
             else {
                 printf("I read one more thing %s\n", token );
                 return ERROR;
             }
-            printf( " %s\n", token );
+            printf( "---> %s\n", token );
             token = strtok(NULL, s);
             // finish
         }
-
+        
         if(counter == 3){
             // send, rec, am
             reqTrx(wHT, bht, sender, receiver, senderID, receiverID, amount, NULL, NULL,btcVal, latest);
@@ -153,7 +191,7 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
         }
         else {
             printf("counter is %d\n", counter );
-            return ERROR;
+            // return ERROR;
         }
         
         counter = 0;
