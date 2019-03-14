@@ -278,7 +278,7 @@ struct tm* checkDateTime(char* date, char* _time, struct tm* latest){
     diffT = difftime(mktime(res), mktime(latest));
     // if < 0 prwto mikrotero
     // change the latest date time
-    if(diffT > 0){
+    if(diffT >= 0){
         // res is later than latest
         // accepted and put as latest
         memcpy(latest, res, sizeof(struct tm));

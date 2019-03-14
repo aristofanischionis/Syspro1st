@@ -1,6 +1,6 @@
 richard annie 20;
-imwatchingyou crystalsmith 20 17:00;
-richard annie 15 18:00;
+imwatchingyou crystalsmith 20;
+richard annie 15;
 annie richard 10 19:00;
 norvaldach hackerman 30 11-10-2019;
 richard annie;

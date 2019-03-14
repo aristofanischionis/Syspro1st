@@ -71,7 +71,6 @@ int reqTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, ch
     return SUCCESS;
 }
 
-// needs fixing
 int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, int btcVal, struct tm* latest){
     // read file
     // and put each line in reqtrxs
