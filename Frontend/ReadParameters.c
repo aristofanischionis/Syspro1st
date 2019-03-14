@@ -5,10 +5,7 @@
 #include "../HeaderFiles/Input.h"
 #include "../HeaderFiles/Structs.h"
 
-// void errorHandling(char* message){
-//     fprintf(stderr, message);
-//     exit(EXIT_FAILURE);
-// }
+
 int readLines(char* in){
     char *line = NULL;
     size_t len = 0;
@@ -19,6 +16,25 @@ int readLines(char* in){
         counter++;
     }
     return counter;
+}
+
+void NumberCalculator(char* btcBalances, int *btcNUM, int *WalNum){
+    // na einai to 70% otu hashtable
+    int counter = 1; // number of wallets
+    unsigned long spaces = 1; // number of bitcoins in file
+    int ch;
+    FILE* input = FileRead(btcBalances);
+    while ((ch = fgetc(input)) != EOF){
+        if(ch == ' ') spaces ++;
+        if(ch == '\n') counter ++;
+    }
+    fclose(input);
+    
+    // theoretically in a hashtable the load should be at max 70% of its size
+    float num = 1.42;
+    *btcNUM = (int)(num * spaces);
+    *WalNum = (int)(num * counter);
+    return;
 }
 
 int bucketCalculator(int b){
@@ -42,7 +58,7 @@ void paramChecker(int n, char* argv[], char* toCheck, char** result){
                     printf("After %s flag a - was read\n", toCheck);
                     // errorHandling("param not given1 \n");
                 }
-                printf("%s flag value is: %s\n", toCheck, argv[i+1]);
+                // printf("%s flag value is: %s\n", toCheck, argv[i+1]);
                 strcpy(*result, argv[i+1]);
                 return ;
             }
@@ -99,7 +115,7 @@ int InputReader(int argc, char *argv[]){
         printf("Exiting now...\n");
         return ERROR;
     }
-    printf("So the params list is %s, %s, %d, %d, %d, %d \n", bitCoinBalancesFile, trxFile, btcValue, h1Num, h2Num, bSize);
+    // printf("So the params list is %s, %s, %d, %d, %d, %d \n", bitCoinBalancesFile, trxFile, btcValue, h1Num, h2Num, bSize);
 
     // now let's make the walletHT and the Bitcoin HT
     walletHT* wHT;
@@ -111,9 +127,18 @@ int InputReader(int argc, char *argv[]){
     AllTrxs = init(sizeof(char*), freeString);
     // int trxiDs = readLines(trxFile);
     // printf("The trx file has got %d lines\n", trxiDs);
-    
-    wHT = new(WALLET_NUM);
-    bHT = newBTC(BITCOINS_NUM);
+    int walNum = 0;
+    int btcNum = 0;
+    if(!strcmp(bitCoinBalancesFile, "")){
+        printf("no bitcoin balances file is given \n");
+        return -1;
+    }
+    NumberCalculator(bitCoinBalancesFile, &btcNum, &walNum);
+
+    printf("Optimal btc and walnums are %d and %d\n", btcNum, walNum);
+
+    wHT = new(walNum);
+    bHT = newBTC(btcNum);
     int sizeOfBucketNodeArray = 0;
     sizeOfBucketNodeArray = bucketCalculator(bSize);
     //
@@ -125,10 +150,5 @@ int InputReader(int argc, char *argv[]){
     }
     else printf("Input File Name for bitCoinBalancesFile or Transactions File not given\n");
 
-    // printf("a random wid %s and balance %d \n", wHT->nodes[25]->_walletID, wHT->nodes[25]->balance);
-    // wallet *wal;
-    // wal = wHT->nodes[25];
-    // doForAll(wal->btcList, printuserBTC);
-    // and write the data to my structs
     return 0;
 }

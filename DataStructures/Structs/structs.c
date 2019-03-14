@@ -171,7 +171,7 @@ int calculateBalance(LinkedList* userBtc){
     if(doForAll(userBtc, currentAmount) == SUCCESS){
         // executed correctly
         temp = FullBalance;
-        printf("this list's balance is %d \n", temp);
+        // printf("this list's balance is %d \n", temp);
     }
     else{
         exit(1);

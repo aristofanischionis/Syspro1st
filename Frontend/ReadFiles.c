@@ -100,13 +100,12 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
         // get the first token
         token = strtok(line, s);
         // walletIDs
-        // token[strlen(token) - 1] = '\0';
         strcpy(walletID, token);
         // walk through other tokens
         while( token != NULL ){
             bitcoin* btc;
             userBitcoin* ubtc;
-            printf( " %s\n", token );
+            // printf( " %s\n", token );
             token = strtok(NULL, s);
             if(token == NULL) break;
             // bitcoinID
@@ -123,21 +122,11 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
         }
         // make a linked list of all bitcoins and add it to this wallet
         
-        // bitcoin* res = searchBTC(bht, 432);
-        // printf("insertion of btc %d is correctly execd\n", res->_bitcoinID);
-        // bitcoin* res1 = searchBTC(bht, 541);
-        // printf("insertion of btc %d is correctly execd\n", res1->_bitcoinID);
-        // userBitcoin* temp = (userBitcoin*)ll->head->data;
-        // printf("list's id of head is %d\n", temp->btc->_bitcoinID);
-        // doForAll(ll, printuserBTC);
         balance = calculateBalance(ll);
-        // if(balance == 0){
-        //     // for user that don't have any bitcoins at first ignore whitespace at the end
-        //     walletID[strlen(walletID) - 1] = 0;
-        // }
+        
         wal = newWallet(walletID, ll, balance);
         insert(wHT, wal);
-        printf("The insertion of wallet in HT is ok! \n");
+        // printf("The insertion of wallet in HT is ok! \n");
         wallet* temp = search(wHT, walletID);
         if(temp == NULL){
             printf("for some reason i got a null wallet for %s\n", walletID);
@@ -180,21 +169,6 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
         }
         counter++;
         if( counter % 6 == 0) {
-            // first check if id is unique
-            // check that the trxid is unique
-            // for(i=0;i < trxiDs;i++){
-            //     if(!strcmp(allTrxIDs[i], "")){
-            //         break;
-            //     }
-            //     if(!strcmp(allTrxIDs[i], _trxId)){
-            //         // this id already exists in the list
-            //         printf("This id is not unique %d \n", i);
-            //         return ERROR;
-            //     }
-            // }
-            // // if i made it till here and this id is unique
-            // // push it in i position
-            // strcpy(allTrxIDs[i], _trxId);
             // check uniqueness in ll
             if(checkUniqueness(AllTrxs, _trxId) == NO){
                 printf("The id: %s is not unique\n", _trxId);
@@ -203,9 +177,6 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
             }
             // id is unique let's process the trx
             if(processTrx(wHT, bht, sender, receiver, _trxId, senderID, receiverID, value, date, _time, btcVal, latest) == ERROR){
-                // printf("Program crashed while reading the TransactionsFile\n");
-                // printf("Exiting....\n");
-                // exit(EXIT_FAILURE);
                 printf("Wrong transaction details, Transaction will be ignored\n");
                 continue;
             }
@@ -221,12 +192,6 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
     fclose(input);
     fclose(input1);
     
-    // printBTC(bht);
-    // bucketNode* bkt1 = NULL;
-    // bkt1 = searchSRHT(sender, "richard");
-    // if(bkt1 != NULL){
-    //     printf("%s found in sender hash table and balance he has is %d\n", bkt1->walletID->_walletID, bkt1->walletID->balance);
-    // }
     // let's now start reading input from user
     printf("I am available to process any commands you give me: \n");
     // Managing Input from user here:
@@ -240,7 +205,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
         perror("Unable to allocate buffer\n");
         exit(1);
     }
-    int maxWordsInCommand = 10; // change to 6 afterwards
+    int maxWordsInCommand = 10;
     //---------------->
     while(1){
         int i =0;

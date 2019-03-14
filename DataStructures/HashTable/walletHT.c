@@ -65,7 +65,7 @@ void insert(walletHT* ht, wallet* item) {
     if(item == NULL) printf("wallet is NULL\n");
     int index = getHash(item->_walletID, ht->size, 0);
     
-    printf("index is %d \n", index);
+    
     wallet* curItem = ht->nodes[index];
     // printf("id that is given after newWallet %s\n", ht->nodes[index]);
     int i = 1;
@@ -89,6 +89,7 @@ void insert(walletHT* ht, wallet* item) {
     // ht->nodes[index] = item;
     ht->nodes[index] = malloc(sizeof(wallet));
     memcpy(ht->nodes[index], item, sizeof(wallet));
+    // printf("index is %d \n", index);
     ht->count++; // wallet inserted
     return;
 }
