@@ -82,7 +82,7 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
     char *line = NULL;
     size_t len = 0;
     size_t nread;
-    const char s[2] = " ;";
+    const char s[2] = " ";
     char *token;
     char* senderID;
     char* receiverID;
@@ -107,9 +107,9 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
         strcpy(senderID, token);
         // walk through other tokens
         while( token != NULL ){
+
             if ((pos=strchr(token, ';')) != NULL) {
                 *pos = '\0';
-                break;
             }
             // --> do things
             if(counter == 1){
@@ -134,7 +134,7 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
                     c = 'd';
                 }
                 else {
-                    printf("Unknown word \n");
+                    printf("Unknown word : %s\n", token);
                     counter = 50;
                     break;
                 }
@@ -159,12 +159,12 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
                     strcpy(date, token);
                 }
                 else {
-                    printf("Unknown word \n");
+                    printf("Unknown word : %s\n", token);
                     counter = 50;
                     break;
                 }
             }
-            
+
             token = strtok(NULL, s);
             counter ++;
             // finish
@@ -468,7 +468,7 @@ int findPayments(walletHT* wHT, char* senderID, SRHashT* sender, char* fromTime,
         }
         node = node->next;
     }
-    printf("receiver %s, has received %d money in these transactions\n",this->_walletID, money);
+    printf("receiver %s, has received %d dollars in these transactions\n",this->_walletID, money);
     return SUCCESS;
 }
 
@@ -504,7 +504,7 @@ int findEarnings(walletHT* wHT, char* receiverID, SRHashT* receiver, char* fromT
         }
         node = node->next;
     }
-    printf("receiver %s, has received %d money in these transactions\n",this->_walletID, money);
+    printf("receiver %s, has received %d dollars in these transactions\n",this->_walletID, money);
     return SUCCESS;
 }
 

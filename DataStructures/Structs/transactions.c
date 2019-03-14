@@ -286,6 +286,8 @@ struct tm* checkDateTime(char* date, char* _time, struct tm* latest){
         return res;
     }
     else {
+        printf("The time in this transaction is before the latest\n");
+        printf("Transaction will be ignored\n");
         return NULL;
     }
     
@@ -333,7 +335,7 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     // check date and time validity
     _timeStruct = checkDateTime(date, _time, latest);
     if(_timeStruct == NULL){
-        printf("Something went wrong with the date %s and time %s given \n", date, _time);
+        // printf("Something went wrong with the date %s and time %s given \n", date, _time);
         return ERROR;
     }
     // printf("--> I have in my struct : %d-%d-%d and time -> %d:%d\n", _timeStruct->tm_mday, _timeStruct->tm_mon, _timeStruct->tm_year, _timeStruct->tm_hour, _timeStruct->tm_min );
