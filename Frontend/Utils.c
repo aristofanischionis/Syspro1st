@@ -83,7 +83,7 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
     char *line = NULL;
     size_t len = 0;
     size_t nread;
-    const char s[3] = " \n";
+    const char s[2] = " ;";
     char *token;
     char* senderID;
     char* receiverID;
@@ -104,7 +104,7 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
     //
     while ((nread = getline(&line, &len, input)) != -1) {
         token = strtok(line, s);
-        counter = 1;
+        
         strcpy(senderID, token);
         // walk through other tokens
         while( token != NULL ){
@@ -116,25 +116,22 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
             if(counter == 1){
                 // i have read only sender
                 strcpy(receiverID, token);
-                counter ++;
+                // printf("send %s, rec %s, cou %d \n", senderID, receiverID, counter);
             }
             else if(counter == 2){
                 // i have read rec
                 strcpy(val, token);
                 amount = atoi(val);
-                counter ++;
             }
             else if(counter == 3){
                 // i have read amount
                 if(strstr(token, ":") != NULL){
                     // this is time
                     strcpy(_time, token);
-                    counter ++;
                     c = 't';
                 }
                 else if(strstr(token, "-") != NULL){
                     strcpy(date, token);
-                    counter ++;
                     c = 'd';
                 }
                 else {
@@ -153,7 +150,6 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
                         break;
                     }
                     strcpy(_time, token);
-                    counter ++;
                 }
                 else if(strstr(token, "-") != NULL){
                     if(c == 'd'){
@@ -162,7 +158,6 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
                         break;
                     }
                     strcpy(date, token);
-                    counter ++;
                 }
                 else {
                     printf("Unknown word \n");
@@ -170,27 +165,29 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
                     break;
                 }
             }
-            else {
-                printf("I read one more thing %s\n", token );
-                return ERROR;
-            }
-            printf( "---> %s\n", token );
+            
             token = strtok(NULL, s);
+            counter ++;
             // finish
         }
         
         if(counter == 3){
             // send, rec, am
-            reqTrx(wHT, bht, sender, receiver, senderID, receiverID, amount, NULL, NULL,btcVal, latest);
+            reqTrx(wHT, bht, sender, receiver, senderID, receiverID, amount, NULL, NULL, btcVal, latest);
         }
         else if(counter == 4){
-            reqTrx(wHT, bht, sender, receiver, senderID, receiverID, amount, date, NULL,btcVal, latest);
+            if(c == 'd'){
+                reqTrx(wHT, bht, sender, receiver, senderID, receiverID, amount, date, NULL, btcVal, latest);
+            }
+            else if(c == 't'){
+                reqTrx(wHT, bht, sender, receiver, senderID, receiverID, amount, NULL, _time, btcVal, latest);
+            }
         }
         else if(counter == 5){
-            reqTrx(wHT, bht, sender, receiver, senderID, receiverID, amount, date, _time,btcVal, latest);
+            reqTrx(wHT, bht, sender, receiver, senderID, receiverID, amount, date, _time, btcVal, latest);
         }
         else {
-            printf("counter is %d\n", counter );
+            printf("This transaction only has %d arguments, ignored\n", counter );
             // return ERROR;
         }
         

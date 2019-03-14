@@ -312,7 +312,7 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     wallet* temp2;
     struct tm* _timeStruct;
     trxObject* this;
-    printf("senderid is %s\n", senderID);
+
     temp1 = search(wHT, senderID);
     if(temp1 == NULL){
         printf("sender id doesn't have a wallet in the Hashtable\n");
@@ -333,6 +333,7 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     // check date and time validity
     _timeStruct = checkDateTime(date, _time, latest);
     if(_timeStruct == NULL){
+        printf("Something went wrong with the date %s and time %s given \n", date, _time);
         return ERROR;
     }
     // printf("--> I have in my struct : %d-%d-%d and time -> %d:%d\n", _timeStruct->tm_mday, _timeStruct->tm_mon, _timeStruct->tm_year, _timeStruct->tm_hour, _timeStruct->tm_min );
