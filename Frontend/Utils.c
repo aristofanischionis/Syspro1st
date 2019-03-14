@@ -468,7 +468,7 @@ int findPayments(walletHT* wHT, char* senderID, SRHashT* sender, char* fromTime,
         }
         node = node->next;
     }
-    printf("receiver %s, has received %d dollars in these transactions\n",this->_walletID, money);
+    printf("user %s, has paid %d dollars in these transactions\n",this->_walletID, money);
     return SUCCESS;
 }
 
@@ -504,7 +504,7 @@ int findEarnings(walletHT* wHT, char* receiverID, SRHashT* receiver, char* fromT
         }
         node = node->next;
     }
-    printf("receiver %s, has received %d dollars in these transactions\n",this->_walletID, money);
+    printf("user %s, has earned %d dollars in these transactions\n",this->_walletID, money);
     return SUCCESS;
 }
 
