@@ -7,8 +7,13 @@
 #include "../../HeaderFiles/LinkedLists.h"
 #include "../../HeaderFiles/Input.h"
 
+// global for current max trx id
 int MAX ;
 
+// will only be called once when the transaction file is read
+// it's goal is to find all the number trxids from the ll of all the trxs
+// compare them and find the max, add +1 and make it the max, which i will use later on
+// in order to get unique trx ids 
 void findMax(LinkedList* list){
     MAX = -1;
     listNode* temp = list->head;
@@ -31,32 +36,36 @@ void findMax(LinkedList* list){
     return;
 }
 
+// returns the next unique trx id in a string format
 char* getNextTrxID(){
-    // check if there is any number in the LL and then take the biggest and then add +1
-    // and after reading the file they are not going to give me any trxids
     char* res = malloc(15);
     sprintf(res, "%d", MAX);
     MAX++;
     return res;
 }
 
+// does the sender has the money needed for this trx?
 int possibleTrx(wallet* wal, int value){
     return ((wal->balance >= value) ? YES : NO );
 }
 
+// reducing the amount from the sender
 void reduceUserBitcoin(userBitcoin* this, int v){
     this->amount = this->amount - v;
 }
+
+// incrementing the amount in the receiver
 void incrementUserBitcoin(userBitcoin* this, int v){
     this->amount = this->amount + v;
 }
 
+// add the new bitcoin in the user's wallet
 void addNewUserBitcoin(wallet* this, userBitcoin* ubtc, int v){
     userBitcoin* clone = newUserBitcoin(v, ubtc->btc);
     insertEND(this->btcList, clone);
 }
 
-
+// stop having a bitcoin in his list for the sender if the amount is 0
 int deleteBitcoinFromUser(wallet* wal, userBitcoin* ubtc){
     LinkedList* list = wal->btcList;
     listNode* temp = list->head;
@@ -86,6 +95,7 @@ int deleteBitcoinFromUser(wallet* wal, userBitcoin* ubtc){
     return SUCCESS;
 }
 
+// check if the receiver already has this bitcoin in his wallet
 userBitcoin* findInReceiver(wallet* receiver, bitcoin* this){
     listNode *node = receiver->btcList->head;
 
@@ -94,15 +104,14 @@ userBitcoin* findInReceiver(wallet* receiver, bitcoin* this){
         t = (userBitcoin*) node->data;
 
         if(t->btc->_bitcoinID == this->_bitcoinID){
-            // printf("I found btc id %d in receiver\n", t->btc->_bitcoinID);
             return t;
         }
         node = node->next;
     }
-    // printf("I couldn't find in receiver the requested id %d\n", this->_bitcoinID);
     return NULL;
 }
 
+// calculate the money needed from a specific user bitcoin 
 int moneyToTakeFromUbtc(userBitcoin* this, int balanceToReach, int moneyGatheredAlready){
     int thisMoney = this->amount;
     int ineed = 0;
@@ -115,6 +124,8 @@ int moneyToTakeFromUbtc(userBitcoin* this, int balanceToReach, int moneyGathered
     return ineed;
 }
 
+// one of the most important functions i have
+// iterate through all of my user's bitcoins and find which ones are going to participate in this trx
 void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, int btcVal){
     int iNeed = 0;
     listNode *node = sender->btcList->head;
@@ -143,8 +154,8 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, 
         temp = findInReceiver(receiver, thisUbtc->btc);
         if(temp == NULL){
             // rec doesn't have this btc in his list
-            // printf("adding bitcoin %d to user %s\n", thisUbtc->btc->_bitcoinID, receiver->_walletID);
-            // before adding to receiver check if it his first btc
+            // before adding to receiver check if it his first btc to be inserted
+            // because then i first need to initialize the bitcoin tre of him
             // if yes first initialize the btc list
             if(receiver->balance == 0){
                 initializeBitcoinTrees(receiver, btcVal);
@@ -153,40 +164,30 @@ void findBitcoins(wallet* sender, wallet* receiver, int money, trxObject* this, 
         }
         else{
             // he has it so just increment amount
-            // printf("he has the bitcoin %d  user %s already\n", thisUbtc->btc->_bitcoinID, receiver->_walletID);
             incrementUserBitcoin(temp, iNeed);
         }
         
         if(thisUbtc->amount == 0){
             // delete it from sender
-            // printf("I will delete %d from %s user\n", thisUbtc->btc->_bitcoinID, sender->_walletID);
             if(deleteBitcoinFromUser(sender, thisUbtc) == ERROR){
                 printf("I got an error while trying to delete the bitcoin from sender's wallet\n");
             }
         }
 
         if(moneyGatheredAlready == balanceToReach){
-            // printf("all money is gathered by this ubtc so get it from it's leafs\n");
             finished = YES;
         }
-        // if(thisUbtc->btc->btcTree->root == NULL){
-        //     printf("I have an unitialized btc tree!!!!!!!!!!!!!!!\n");
-        // }
-        // else printf("the btc trees are initializedddd!!!!!!!11\n");
+        // and now the most important thing 
+        // go through the tree to find the leafs to participate in the trx
         updateTree(thisUbtc->btc->btcTree->root, sender, receiver, iNeed, this);
-        thisUbtc->btc->btcTree->noOfTrxUsed = thisUbtc->btc->btcTree->noOfTrxUsed + 1;
-
-        // this bitcoin is used in one more trx
-        // thisUbtc->btc->noOfTrxUsed ++;
-        // bitcoin* btc;
-        // btc = thisUbtc->btc;
-        // btc->noOfTrxUsed = btc->noOfTrxUsed + 1;
-        // printf("-------------->no of trx used %d \n", btc->noOfTrxUsed);
+        thisUbtc->btc->btcTree->noOfTrxUsed ++;
         node = node->next;
-
-        // printLeafNodes(thisUbtc->btc->btcTree->root);
     }
 }
+
+// initialize the latest date to be the smallest at first
+// i know that tm_year is supposed to have years from 1900 but in my implementation
+// i just put in there the value of the year i want and then print it like a %s
 
 struct tm* initLatest(){
     struct tm* latest;
@@ -201,6 +202,7 @@ struct tm* initLatest(){
     return latest;
 }
 
+// checks if the id i got is unique
 int checkUniqueness(LinkedList* AllTrxs, char* _id){
     // return YES if unique, NO if not
     listNode *node = AllTrxs->head;
@@ -222,6 +224,8 @@ int checkUniqueness(LinkedList* AllTrxs, char* _id){
     return YES;
 }
 
+// takes date and time string arguments transform them in struct tm* 
+// check if they are more than latest and return it
 struct tm* checkDateTime(char* date, char* _time, struct tm* latest){
     // diff time initialize sec to 0
     struct tm* res = malloc(sizeof(struct tm));
@@ -265,18 +269,10 @@ struct tm* checkDateTime(char* date, char* _time, struct tm* latest){
             res->tm_sec = 0;
         }
     }
-    // check that the time i have is later than the latest time
-    // if(latest == NULL){
-    //     // first transaction so it is the latest
-    //     latest = res;
-    //     return res;
-    // }
-    double diffT;
-        // printf("--> latest : %d-%d-%d and time -> %d:%d\n", latest->tm_mday, latest->tm_mon, latest->tm_year, latest->tm_hour, latest->tm_min );
 
-        // printf("--> current : %d-%d-%d and time -> %d:%d\n", res->tm_mday, res->tm_mon, res->tm_year, res->tm_hour, res->tm_min );
+    double diffT;
     diffT = difftime(mktime(res), mktime(latest));
-    // if < 0 prwto mikrotero
+    // if < 0 first is less
     // change the latest date time
     if(diffT >= 0){
         // res is later than latest
@@ -293,7 +289,10 @@ struct tm* checkDateTime(char* date, char* _time, struct tm* latest){
     
 }
 
-
+// one of the most fundamental functions
+// gets all the arguments
+// validates using other functions 
+// and executes the transaction
 int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, char* _trxId, char* senderID, char* receiverID, int value, char* date, char* _time, int btcVal, struct tm* latest){
 
     if(wHT == NULL || bht == NULL || sender == NULL || receiver == NULL || senderID == NULL || receiverID == NULL){
@@ -343,32 +342,23 @@ int processTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver
     printf("Transaction with id %s is going to be executed right now!\n", _trxId);
 
     // make the trx object
-
     this = newTrxObj(senderID, receiverID, _trxId, value, _timeStruct);
 
     if(this == NULL){
         printf("trxobj is null \n");
         return ERROR;
-    }   
-    // check if everything is correct with this trx obj
-    // struct tm *temptime = this->_time;
-    // printf("------> id %s,v %d send %s rec %s \n", this->_trxID, this->value, this->sender->_walletID, this->receiver->_walletID);
-    // printf("trxobj time : %d-%d-%d and time -> %d:%d\n", temptime->tm_mday, temptime->tm_mon, temptime->tm_year, temptime->tm_hour, temptime->tm_min );
-    // check done successfully
+    }
     // exchange bitcoins between two parties
     // change balances of wallets
     temp1->balance -= value;
     temp2->balance += value;
-    // sender just sent an amount
-    // temp1->moneySent += value;
-    // // receiver just received an amount
-    // temp2->moneyReceived += value;
+
     // find which ones to give to each other
     //take the sender's btc's trees and add kids
     findBitcoins(temp1, temp2, value, this, btcVal);
-    // printf("findBitcoins executed successfully!\n");
     // add it in both linked lists r and s
     insertTransaction(wHT, sender, senderID, this);
     insertTransaction(wHT, receiver, receiverID, this);
+    // transaction is completed successfully!
     return SUCCESS;
 }

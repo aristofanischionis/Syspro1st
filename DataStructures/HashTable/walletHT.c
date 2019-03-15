@@ -4,12 +4,9 @@
 #include "../../HeaderFiles/Structs.h"
 #include "../../HeaderFiles/LinkedLists.h"
 
-static wallet DELETED_WALLET = {NULL, NULL, -1};
-
-int HT_INITIAL_BASE_SIZE_WAL = 200;
-
 int iterateBitcoins(void *data);
 
+// new wallet HashTable very much alike with the bitcoin hash table
 static walletHT* newSize(const int baseSize) {
     walletHT* ht = malloc(sizeof(walletHT));
     ht->baseSize = baseSize;
@@ -24,8 +21,7 @@ static walletHT* newSize(const int baseSize) {
 }
 
 walletHT* new(const int size) {
-    HT_INITIAL_BASE_SIZE_WAL = size;
-    return newSize(HT_INITIAL_BASE_SIZE_WAL);
+    return newSize(size);
 }
 
 static void delNode(wallet* i) {
@@ -47,12 +43,14 @@ void delHT(walletHT* ht) {
     free(ht->nodes);
     free(ht);
 }
+
 // hash function
 static int hash(const char* str, const int m) {
     unsigned long hash = 5381;
     int c = (*str);
     while (c){
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+        // hash * 33 + c
+        hash = ((hash << 5) + hash) + c;
         c = (*str++) ;
     }
     return hash % m;
@@ -60,21 +58,23 @@ static int hash(const char* str, const int m) {
 
 static int getHash( const char* s, const int size, const int attempt) {
     int hashA = hash(s, size);
-    // const int hashB = hash(s, size);
     int result = (hashA + attempt) % size;
     return result;
 }
 
+// insert a wallet in the hashtable
 void insert(walletHT* ht, wallet* item) {
-    if(item == NULL) printf("wallet is NULL\n");
+    if(item == NULL){
+        printf("wallet is NULL\n");
+        return;
+    }
     int index = getHash(item->_walletID, ht->size, 0);
-    
     wallet* curItem = ht->nodes[index];
-    // printf("id that is given after newWallet %s\n", ht->nodes[index]);
     int i = 1;
+
     while ( curItem != NULL ) {
-        if (strcmp(curItem->_walletID, item->_walletID) == 0) {
-            // if an _id is given that it has already been given
+        if (!strcmp(curItem->_walletID, item->_walletID)) {
+            // if the _id given already exists here
             printf("Error this wallet id already exists in the Hashtable\n");
             exit(1);
             
@@ -83,10 +83,8 @@ void insert(walletHT* ht, wallet* item) {
         curItem = ht->nodes[index];
         i++;
     } // avoid collisions, trying to find the suitable index to place the wallet
-    // ht->nodes[index] = item;
     ht->nodes[index] = malloc(sizeof(wallet));
     memcpy(ht->nodes[index], item, sizeof(wallet));
-    // printf("index is %d \n", index);
     ht->count++; // wallet inserted
     return;
 }
@@ -96,44 +94,23 @@ wallet* search(walletHT* ht, char* _id) {
     wallet* item = ht->nodes[index];
     int i = 1;
     while (item != NULL) {
-        // printf("%s---searching---%s,---->%d\n",item->_id,_id, i);
         if (strcmp(item->_walletID, _id) == 0) {
             return item;
         }
         index = getHash(_id, ht->size, i);
         item = ht->nodes[index];
-        // if(item == NULL) printf("item is null %d\n", index);
         i++;
     } 
     return NULL;
 }
-// delete an item with HashTable resize if needed
 
-void delete(walletHT* ht, char* _id) {
-    int index = getHash(_id, ht->size, 0);
-    wallet* item = ht->nodes[index];
-    int i = 1;
-    while (item != NULL) {
-        if (item != &DELETED_WALLET) {
-            if (strcmp(item->_walletID, _id) == 0) {
-                delNode(item);
-                ht->nodes[index] = &DELETED_WALLET;
-            }
-        }
-        index = getHash(_id, ht->size, i);
-        item = ht->nodes[index];
-        i++;
-    } 
-    ht->count--;
-}
-
+// just for me to test in everything is inserted correctly
 void print(walletHT* ht){
     int i =0 ;
     while(i < ht->baseSize){
         if(ht->nodes[i] != NULL){
             printf("|%s|\n", ht->nodes[i]->_walletID);
             LinkedList *temp = ht->nodes[i]->btcList;
-
             doForAll(temp, iterateBitcoins); 
         }
         i++;

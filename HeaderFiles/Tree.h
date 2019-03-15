@@ -6,9 +6,9 @@ typedef struct btcTree btcTree;
 #include "Structs.h"
 
 struct btcTree {
-    struct btcNode* node;
-    struct btcTree* lKid;
-    struct btcTree* rKid;
+    struct btcNode* node; // data of the tree node
+    struct btcTree* lKid; // receiver of the trx
+    struct btcTree* rKid; // sender of the trx
 };
 
 struct Tree {
@@ -19,7 +19,6 @@ struct Tree {
 Tree* createTree(int btcVal, char* this);
 void destroyTree(Tree* r);
 btcTree* newTreeNode(btcNode* value);
-// btcTree* TreeSearch(btcTree* root, char* walId);
 void updateTree(btcTree* root, wallet* sender, wallet* receiver, int balanceFromLeafs, trxObject* this);
 
 void printTree(Tree t);

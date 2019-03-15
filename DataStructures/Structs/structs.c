@@ -7,59 +7,21 @@
 #include "../../HeaderFiles/Tree.h"
 #include "../../HeaderFiles/LinkedLists.h"
 
+// in this file I put a lot of initializing functions stuff
+// in most of them i allocate memory and return in a pointer of the specific type
+
+
+// -------------------------------- CONSTRUCTORS --------------------------------//
+//make a new wallet
 wallet* newWallet(char* _walletID, LinkedList* btcList, int balance){
     wallet* wal;
     wal = malloc(sizeof(wallet));
 
     wal->_walletID = (char *)malloc(50);
     strcpy(wal->_walletID, _walletID);
-    
     wal->balance = balance;
-    // wal->moneyReceived = 0;
-    // wal->moneySent = 0;
     wal->btcList = btcList;
     return wal;
-}
-
-void destroyBitcoin(void* data){
-    bitcoin* b = (bitcoin*) data;
-    if(b == NULL) return ;
-    if(b->btcTree != NULL){
-        destroyTree(b->btcTree);
-    }
-    // free(b);
-}
-
-void deleteTRX(trxObject* trx){
-    if(trx == NULL) return;
-    free(trx->receiver);
-    free(trx->sender);
-    free(trx->_time);
-    free(trx->_trxID);
-    // free(trx);
-}
-
-void deleteBTCnode(btcNode* node){
-    if(node == NULL) return;
-    if(node->thisTrx == NULL) return;
-    deleteTRX(node->thisTrx); 
-    // printf("this trx is : %s\n", node->thisTrx->_trxID);  
-    free(node->thisTrx);
-    // free(node->walletID);
-    // free(node);
-}
-
-
-void destroyUserBitcoin(void* data){
-    if(data == NULL) return ;
-    userBitcoin* d = (userBitcoin*)data;
-    if(d->btc == NULL) return;
-    destroyBitcoin(d->btc);
-}
-
-void freeString(void *data)
-{
-  free((char *)data);
 }
 
 userBitcoin* newUserBitcoin(int amount, bitcoin* b){
@@ -89,10 +51,6 @@ btcNode* newBTCNode(char* walletID, int dollars, trxObject* txID){
     return b;
 }
 
-LinkedList* newBtcList(){
-    return init(sizeof(userBitcoin), destroyUserBitcoin);
-}
-
 trxObject* newTrxObj(char* sendID, char* recID, char* id, int val, struct tm* t){
     trxObject* trx;
     trx = malloc(sizeof(trxObject));
@@ -102,22 +60,12 @@ trxObject* newTrxObj(char* sendID, char* recID, char* id, int val, struct tm* t)
     trx->value = val;
     trx->_time = t;
     trx->printed = NO;
-    // trx->sender = sendID;
-    // trx->receiver = recID;
     trx->sender = malloc(50);
     strcpy(trx->sender, sendID);
     trx->receiver = malloc(50);
     strcpy(trx->receiver, recID);
 
     return trx;
-}
-
-void destroyTRXlist(void* data){
-
-}
-
-LinkedList* newTRXList(){
-    return init(sizeof(trxObject), destroyTRXlist);
 }
 
 bucketNode* newBucketNode(char* wal, walletHT* ht){
@@ -145,12 +93,80 @@ bucket* newBucket(int size){
     return b;
 }
 
+// -------------------------------- DESTRUCTORS --------------------------------//
+// delete a bitcoin
+void destroyBitcoin(void* data){
+    bitcoin* b = (bitcoin*) data;
+    if(b == NULL) return ;
+    if(b->btcTree != NULL){
+        destroyTree(b->btcTree);
+    }
+    // free(b);
+}
+
+void deleteTRX(trxObject* trx){
+    if(trx == NULL) return;
+    free(trx->receiver);
+    free(trx->sender);
+    free(trx->_time);
+    free(trx->_trxID);
+    free(trx);
+}
+
+void deleteBTCnode(btcNode* node){
+    if(node == NULL) return;
+    if(node->thisTrx == NULL) return;
+    deleteTRX(node->thisTrx); 
+    // printf("this trx is : %s\n", node->thisTrx->_trxID);  
+    free(node->thisTrx);
+    // free(node->walletID);
+    // free(node);
+}
+
+void destroyUserBitcoin(void* data){
+    if(data == NULL) return ;
+    userBitcoin* d = (userBitcoin*)data;
+    if(d->btc == NULL) return;
+    destroyBitcoin(d->btc);
+}
+
+void freeString(void *data){
+  free((char *)data);
+}
+
+void destroyBucket(void* data){
+    if(data == NULL) return ;
+    bucket* b = (bucket*)data;
+    int i;
+    for(i=0; i< b->count ; i++){
+        if(b->array[i] == NULL) continue;
+        if(b->array[i]->headofList == NULL) continue;
+        destroy(b->array[i]->headofList);
+        free(b->array[i]);
+    }
+    free(b);
+}
+
+// -------------------------------- MAKE LISTS --------------------------------//
+LinkedList* newBtcList(){
+    return init(sizeof(userBitcoin), destroyUserBitcoin);
+}
+
+LinkedList* newTRXList(){
+    return init(sizeof(trxObject), deleteTRX);
+}
+
+LinkedList* newBucketList(){
+    return init(sizeof(bucket), destroyBucket);
+}
+
+// -------------------------------- OTHER FUNCTIONS --------------------------------//
+// take a bucketnode and find where to put it in a bucket
+// it has a trx in it
 int insertNodeinBucket(bucket* b, bucketNode* bn){
     if(b->count == b->size){
-        // printf("this bucket is full \n");
         return ERROR;
     } 
-    
     // check if the sender or receiver already exists in a bucketNode
     int i;
     for(i=0; i< b->count ;i++){
@@ -173,14 +189,6 @@ int insertNodeinBucket(bucket* b, bucketNode* bn){
     return SUCCESS;
 }
 
-void destroyBucketlist(void* data){
-
-}
-
-LinkedList* newBucketList(){
-    return init(sizeof(bucket), destroyBucketlist);
-}
-// ll of buckets
 // full balance of a user
 int FullBalance ;
 
@@ -190,9 +198,9 @@ int currentAmount(void* data){
     return 1;
 }
 
+// calculate the current balance of a wallet
 int calculateBalance(LinkedList* userBtc){
     if(userBtc == NULL) return ERROR;
-
     FullBalance = 0;
     int temp = 0;
     if(doForAll(userBtc, currentAmount) == SUCCESS){
@@ -201,7 +209,7 @@ int calculateBalance(LinkedList* userBtc){
         // printf("this list's balance is %d \n", temp);
     }
     else{
-        exit(1);
+        return ERROR;
     }
     FullBalance = 0;
     return temp;

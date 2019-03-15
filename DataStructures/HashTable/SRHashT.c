@@ -5,49 +5,69 @@
 #include "../../HeaderFiles/LinkedLists.h"
 
 void deleteBucket(void* t);
+// this is the requested hashtable with the lists of buckets
+// so I have a hashtable which contains an array of size h1, of pointers in LinkedLists of buckets
+// each bucket contains a fixed array of pointers in bucketNodes, a size and a count to easily check if it is full
+// each bucketNode contains a pointer to a wallet and a pointer in a linked list of his transactions
 
+// initialize the Hashtable
 SRHashT* initSRHT(int h1, int numOfBucketNodes){
     SRHashT* ht;
     if(h1 < 0) return NULL;
-    ht = (SRHashT*)malloc(sizeof(SRHashT)); // one ht
+    ht = (SRHashT*)malloc(sizeof(SRHashT));
     ht->size = h1;
     ht->bucketNodesNum = numOfBucketNodes;
-    ht->myBuckets = (LinkedList**)malloc(h1 * sizeof(LinkedList*)); // this is a dynamic array of h1 elements of type LL* bucket
+    // this is a dynamic array of h1 elements of type LL* bucket
+    ht->myBuckets = (LinkedList**)malloc(h1 * sizeof(LinkedList*));
     int i;
     for(i=0; i<h1; i++){
         ht->myBuckets[i] = init(sizeof(bucket), deleteBucket);
-        // ht->myBuckets[i]->head
-        // ht->myBuckets[i] = NULL;
-        // ht->myBuckets[i] = newBucketList();
     }
     return ht;
 }
 
+// deleting a bucketNode
 void deleteBucketNode(bucketNode* this){
-
-    // if(this->headofList == NULL){
-    //     free(this);
-    //     return;
-    // }
-    // destroy(this->headofList);
+    if(this->headofList == NULL){
+        free(this);
+        return;
+    }
+    destroy(this->headofList);
     free(this);
 }
 
+// deleting a bucket
 void deleteBucket(void* t){
     bucket* this = (bucket*) t;
+    if(this == NULL) return;
     int i;
-    for(i=0; i<this->size && this != NULL; i++){
-        deleteBucketNode(this->array[i]);
+    for(i=0; i<this->size; i++){
+        if(this->array[i] != NULL){
+            deleteBucketNode(this->array[i]);
+        }
     }
     free(this);
 }
 
-// hash function
+// deleting the hashtable
+void deleteSRHT(SRHashT* ht){
+    int i;
+    for(i=0;i<ht->size;i++){
+        destroy(ht->myBuckets[i]);
+    }
+    free(ht);
+}
+
+// hash function got from the web
+// best for hashing a string
+// using fast shifting operations and a good prime number
+// proven to give best results in hashing
 static int hash(const char* str, const int m) {
     unsigned long hash = 5381;
     int c = (*str);
     while (c){
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+        // hash * 33 + c
+        hash = ((hash << 5) + hash) + c;
         c = (*str++) ;
     }
     return hash % m;
@@ -58,6 +78,8 @@ static int getHash1( const char* s, const int size) {
     return (hashA + 1) % size;
 }
 
+// traverse the list of buckets to find if there is any bucket already allocated
+// with some space in it to put a new BucketNode
 bucket* traverseLL(LinkedList* listofBuckets){
     if(listofBuckets == NULL){
         return NULL;
@@ -71,13 +93,15 @@ bucket* traverseLL(LinkedList* listofBuckets){
             // this can fit more records in it
             return temp;
         }
-        
         // this is just a full bucket
         h = h->next;
     }
     return NULL;
 }
 // search in a ll of bucket*
+// try to find the specific wallet id if already exists in a bucketnode of a bucket
+// if exists i will put the transaction in his list
+// else i will try to find another place to put the wallet id and his transactions
 bucketNode* searchinLL(LinkedList* listofBuckets, char* _walletID){
     if(listofBuckets == NULL){
         return NULL;
@@ -104,6 +128,7 @@ bucketNode* searchinLL(LinkedList* listofBuckets, char* _walletID){
     return NULL;
 }
 
+// take a bucketnode, an id and put the in the hashtable if they don't already exist there
 int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
     // hash sender
     if(bkt == NULL || ht == NULL || _id == NULL) return ERROR;
@@ -111,18 +136,17 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
     int index = getHash1(_id, ht->size);
     // bucket* curItem = NULL;
     bucket* curItem;
-    // go through the list and find the first not full bucket* of the list
-    // linked list of bucket*
+    // check if in the index place there exists a bucket list
     if(ht->myBuckets[index] == NULL){
         ht->myBuckets[index] = newBucketList();
         curItem = NULL;
     }
     else{
+        // if there exists find if there is any free place to put my bucketNode
         curItem = traverseLL(ht->myBuckets[index]);
     }
-
+    // i couldn't find any free place so i have to allocate a new bucket
     if(curItem == NULL ){
-        // printf("I have to make a new bucket! \n");
         // then that means we have to make a new bucket in this list
         bucket* newBuck;
         // malloc the new
@@ -130,19 +154,11 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
         // insert the bucknode
         insertNodeinBucket(newBuck, bkt);
         // insert bucket in list
-        insertEND(ht->myBuckets[index], newBuck);
+        insertBEG(ht->myBuckets[index], newBuck);
         return SUCCESS;
     } 
 
-    // curItem = (bucket*) ht->myBuckets[index]->head->data;
-    // if(curItem == NULL) {
-    //     printf("something is really wrong\n");
-    //     return ERROR;
-    // }
-
-    
     if(curItem->count == ht->bucketNodesNum){
-        // printf("I have to make a new bucket!!!!!\n");
         // then that means we have to make a new bucket in this list
         bucket* newBuck;
         // malloc the new
@@ -150,7 +166,7 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
         // insert the bucknode
         insertNodeinBucket(newBuck, bkt);
         // insert bucket in list
-        insertEND(ht->myBuckets[index], newBuck);
+        insertBEG(ht->myBuckets[index], newBuck);
         return SUCCESS;
     }
     else if(curItem->count < curItem->size){
@@ -159,37 +175,25 @@ int insertSRHT(SRHashT* ht, bucketNode* bkt, char* _id ){
         return SUCCESS;
     }
     else {
+        // should never see that
         printf("Some weird magic happened here! \n");
         return ERROR;
     }
-    // did that logic in insertNodeinBucket function
-    // index uparxei
-        // an uparxei sender
-            // addsthn arxh trx
-        // an oxi sender
-            // koitaw an exei xwro to bucket
-                // kai to bazw
-                // alliws den to bazw
 }
 
+// return the bucketnode of this user id
 bucketNode* searchSRHT(SRHashT* ht, char* _id){
     if(ht == NULL || _id == NULL) return NULL;
     bucketNode* res;
     int index = getHash1(_id, ht->size);
     LinkedList* curItem = ht->myBuckets[index];
-
+    // find the requested id in this list of buckets*
     res = searchinLL(curItem, _id);
-
     return res;
 }
 
-void deleteSRHT(SRHashT* ht){
-    int i;
-    for(i=0;i<ht->size;i++){
-        destroy(ht->myBuckets[i]);
-    }
-    free(ht);
-}
+// main function to be used outside of this file
+// this is taking care of everything needed in order to place a trx in this hash table
 
 void insertTransaction(walletHT* wHT, SRHashT* ht, char* _id, trxObject* trx){
     bucketNode* bkt1;

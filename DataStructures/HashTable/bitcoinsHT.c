@@ -4,11 +4,7 @@
 #include "../../HeaderFiles/Structs.h"
 #include "../../HeaderFiles/Tree.h"
 
-static bitcoin DELETED_BITCOIN = {-1, NULL};
-
-int HT_INITIAL_BASE_SIZE_BTC = 200; // a default number for the base HT
-
-
+//make the bitcoin hashtable
 static BitcoinHT* newSizeBTC(const int baseSize){
     BitcoinHT* ht = malloc(sizeof(BitcoinHT));
     ht->baseSize = baseSize;
@@ -17,15 +13,13 @@ static BitcoinHT* newSizeBTC(const int baseSize){
     ht->nodes = malloc((size_t)ht->size * sizeof(bitcoin*));
     int i;
     for(i=0;i<baseSize;i++){
-        // ht->nodes[i] = malloc(sizeof(bitcoin));
         ht->nodes[i] = NULL;
     }
     return ht;
 }
 
 BitcoinHT* newBTC(const int size){
-    HT_INITIAL_BASE_SIZE_BTC = size;
-    return newSizeBTC(HT_INITIAL_BASE_SIZE_BTC);
+    return newSizeBTC(size);
 }
 
 static void delNodeBTC(bitcoin* i){
@@ -34,7 +28,7 @@ static void delNodeBTC(bitcoin* i){
     }
     free(i);
 }
-
+// deleting HashTable
 void delHTBTC(BitcoinHT* ht) {
     for (int i = 0; i < ht->size; i++) {
         bitcoin* item = ht->nodes[i];
@@ -45,7 +39,10 @@ void delHTBTC(BitcoinHT* ht) {
     free(ht->nodes);
     free(ht);
 }
+
 // hash function got from the web
+// best for hashing integers
+// good because of the xor shifting operations used
 static int getHashBTC(int key, const int size, const int attempt) {
     unsigned long x = (unsigned long) key;
     x = ((x >> 16) ^ x) * 0x45d9f3b;
@@ -55,6 +52,7 @@ static int getHashBTC(int key, const int size, const int attempt) {
     return ((temp + attempt) % size);
 }
 
+// insert in hashtable using linear probing
 void insertBTC(BitcoinHT* ht, bitcoin* item) {
     if(item == NULL){
         printf("bitcoin is NULL\n");
@@ -67,7 +65,7 @@ void insertBTC(BitcoinHT* ht, bitcoin* item) {
     int i = 1;
     while ( curItem != NULL ){
         if (curItem->_bitcoinID == item->_bitcoinID) {
-            // if an _id is given that it has already been given
+            // if the _id given already exists here
             printf("Error this bitcoin id already exists in the Hashtable\n");
             exit(1);
         }
@@ -75,7 +73,8 @@ void insertBTC(BitcoinHT* ht, bitcoin* item) {
         curItem = ht->nodes[index];
         i++;
     }
-    // ht->nodes[index] = item;
+    // found a place to put my new bitcoin
+    // malloc space for it
     ht->nodes[index] = malloc(sizeof(bitcoin));
     memcpy(ht->nodes[index], item, sizeof(bitcoin));
     ht->count++; // bitcoin inserted
@@ -87,38 +86,15 @@ bitcoin* searchBTC(BitcoinHT* ht, int _id) {
     bitcoin* item = ht->nodes[index];
     int i = 1;
     while (item != NULL) {
-        // printf("%s---searching---%s,---->%d\n",item->_id,_id, i);
-        // if (item != &DELETED_BITCOIN) { 
-            if (item->_bitcoinID == _id) {
-                // printf("search to %s kai brhka %s as epistrepsw %d \n",_id, item->_id, index);
-                return item;
-            }
-        // }
-        index = getHashBTC(_id, ht->size, i);
-        item = ht->nodes[index];
-        // if(item == NULL) printf("item is null %d\n", index);
-        i++;
-    } 
-    return NULL;
-}
-
-// delete an item with HashTable resizeBTC if needed
-void deleteBTC(BitcoinHT* ht, int _id) {
-    int index = getHashBTC(_id, ht->size, 0);
-    bitcoin* item = ht->nodes[index];
-    int i = 1;
-    while (item != NULL) {
-        if (item != &DELETED_BITCOIN) {
-            if (item->_bitcoinID == _id){
-                delNodeBTC(item);
-                ht->nodes[index] = &DELETED_BITCOIN;
-            }
+        // found the item
+        if (item->_bitcoinID == _id) {
+            return item;
         }
         index = getHashBTC(_id, ht->size, i);
         item = ht->nodes[index];
         i++;
     } 
-    ht->count--;
+    return NULL;
 }
 
 void printBTC(BitcoinHT* ht){

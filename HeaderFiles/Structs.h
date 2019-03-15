@@ -4,11 +4,8 @@
 #include "LinkedLists.h"
 #define ERROR -1
 #define SUCCESS 0
-#define WALLET_NUM 100
-#define BITCOINS_NUM 100
 #define YES 2
 #define NO 3
-
 
 typedef struct wallet wallet;
 typedef struct bitcoin bitcoin;
@@ -64,7 +61,6 @@ struct bucket {
     struct bucketNode** array;
 };
 
-
 struct walletHT {
     int size;
     int count;
@@ -85,30 +81,26 @@ struct SRHashT {
     LinkedList** myBuckets; // this is an array of size size and each one is a pointer to a LL of buckets
 };
 
-// bucket is a LL of bucket Nodes, pointer to next bucket should be included in b size
-
-
-
-// 1 for rec 1 for send and one for wallet
-// hash table --> of all bitcoins , btcID and pointer in the tree
-// but user will have a ll of bitcoins and amount he has
-
+// ----------------------- FUNCTIONS ------------------------------- //
 wallet* newWallet(char* _walletID, LinkedList* btcList, int balance);
 userBitcoin* newUserBitcoin(int amount, bitcoin* b);
-void destroyUserBitcoin(void* data);
 bitcoin* newBitcoin(int _bitcoinID, int btcVal, char* this);
 btcNode* newBTCNode(char* walletID, int dollars, trxObject* txID);
-void deleteBTCnode(btcNode* node);
-LinkedList* newBtcList();
 trxObject* newTrxObj(char* sendID, char* recID, char* id, int val, struct tm* t);
-LinkedList* newTRXList();
 bucketNode* newBucketNode(char* wal, walletHT* ht);
 bucket* newBucket(int size);
-int insertNodeinBucket(bucket* b, bucketNode* bn);
+//-------------------------------->
+void destroyUserBitcoin(void* data);
+void deleteBTCnode(btcNode* node);
+void freeString(void *data);
+//-------------------------------->
+LinkedList* newBtcList();
+LinkedList* newTRXList();
 LinkedList* newBucketList();
+//-------------------------------->
+int insertNodeinBucket(bucket* b, bucketNode* bn);
 int currentAmount(void* data);
 int calculateBalance(LinkedList* userBtc);
-void freeString(void *data);
 //
 // wallet HT
 walletHT* new(const int size);
@@ -128,4 +120,5 @@ int insertSRHT(SRHashT* ht,  bucketNode* bkt, char* _id );
 bucketNode* searchSRHT(SRHashT* ht, char* _id);
 void deleteSRHT(SRHashT* ht);
 void insertTransaction(walletHT* wHT, SRHashT* ht, char* _id, trxObject* trx);
+
 #endif

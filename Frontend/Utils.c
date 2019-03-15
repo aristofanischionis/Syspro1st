@@ -6,15 +6,16 @@
 #include "../HeaderFiles/LinkedLists.h"
 #include "../HeaderFiles/Input.h"
 #include "../HeaderFiles/Transactions.h"
+// ---------------------------- HIGH-LEVEL FUNCTIONS --------------------------------// 
 
-
+// not working properly yet
 void ExitProgram(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver){
     delHT(wHT);
     delHTBTC(bht);
     deleteSRHT(sender);
     deleteSRHT(receiver);
 }
-// needs fix
+
 int traceCoin(int btcID, BitcoinHT* bHT){
     if(bHT == NULL){
         printf("the Bitcoin Hashtable is NULL\n");
@@ -66,7 +67,6 @@ int reqTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, ch
     // generate a trxid
     char* _trxId;
     _trxId = getNextTrxID();
-    // printf("The trx id generated for this trx is %s\n", _trxId);
     if(processTrx(wHT, bht, sender, receiver, _trxId, senderID, receiverID, amount, date, _time, btcVal, latest) == ERROR){
         printf("RequestTransaction faced an error\n");
         return ERROR;
@@ -74,6 +74,7 @@ int reqTrx(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, ch
     return SUCCESS;
 }
 
+// reading file and calling the reqTRX function with arguments read
 int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, int btcVal, struct tm* latest){
     // read file
     // and put each line in reqtrxs
@@ -106,7 +107,7 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
     //
     while ((nread = getline(&line, &len, input)) != -1) {
         token = strtok(line, s);
-        
+
         strcpy(senderID, token);
         // walk through other tokens
         while( token != NULL ){
@@ -118,7 +119,6 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
             if(counter == 1){
                 // i have read only sender
                 strcpy(receiverID, token);
-                // printf("send %s, rec %s, cou %d \n", senderID, receiverID, counter);
             }
             else if(counter == 2){
                 // i have read rec
@@ -174,7 +174,6 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
         }
         
         if(counter == 3){
-            // send, rec, am
             reqTrx(wHT, bht, sender, receiver, senderID, receiverID, amount, NULL, NULL, btcVal, latest);
         }
         else if(counter == 4){
@@ -190,7 +189,6 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
         }
         else {
             printf("This transaction only has %d arguments, ignored\n", counter );
-            // return ERROR;
         }
         
         counter = 0;
@@ -198,6 +196,8 @@ int reqTrxFile(char* fileName, walletHT* wHT, BitcoinHT* bht, SRHashT* sender, S
     return SUCCESS;
 }
 
+// reading trxs one after the other until "q" is pressed
+// calling reqTrx as well
 int reqTrxs(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, int btcVal, struct tm* latest){
     char **command;
     char *buffer;
@@ -212,8 +212,7 @@ int reqTrxs(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, i
         exit(1);
     }
     command = (char **)malloc(6 * sizeof(char*));
-    // and read next line if it starts with something else than a / and the last char in input is ;
-    // i will continue making trxs
+
     while(1){
         j = 0;
         // read next line
@@ -255,6 +254,9 @@ int reqTrxs(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver, i
     return SUCCESS;
 }
 
+// taking dates and times in string format and the current in struct tm*
+// cheching if current is in between in all of the cases, given or not some dates
+// returns YES or NO
 int betweenDates(char* fromTime, char* fromYear, char* toTime, char* toYear, struct tm* current){
     //returns YES or NO
     if(fromTime == NULL){
@@ -297,9 +299,8 @@ int betweenDates(char* fromTime, char* fromYear, char* toTime, char* toYear, str
 
             diffT1 = difftime(mktime(from), mktime(current));
             diffT2 = difftime(mktime(to), mktime(current));
-            // if < 0 prwto mikrotero
             // change the latest date time
-            if(diffT1 <= 0 && diffT2 >= 0){
+            if((diffT1 <= 0) && (diffT2 >= 0)){
                 // from is less than current 
                 // and to is more then current
                 // so it is a good on to be printed
@@ -326,45 +327,8 @@ int betweenDates(char* fromTime, char* fromYear, char* toTime, char* toYear, str
                 return NO;
             }
             return YES;
-
-            // if((current->tm_hour >= fromHours) && (current->tm_min > fromMinutes) && (current->tm_hour < toHours) && (current->tm_min < toHours)){
-            //     return YES;
-            // }
-            // else return NO;    
         }
         else {
-            // year is specified
-
-            // int fyear, fmonth, fday, tyear, tmonth, tday;
-            // int fhours, fminutes, thours, tminutes;
-            // // printf("FFFF--> %s , %s \n", fromYear, fromTime);
-            // sscanf(fromYear, "%d-%d-%d", &fday, &fmonth, &fyear); 
-            // sscanf(fromTime, "%d:%d", &fhours, &fminutes);
-            
-            // // do the same for to
-            // // printf("TTTT--> %s , %s \n", toYear, toTime);
-            // sscanf(toYear, "%d-%d-%d", &tday, &tmonth, &tyear);
-            // sscanf(toTime, "%d:%d", &thours, &tminutes);
-
-            // // printf("fyear %d fmonth %d fday %d fhours %d fmin %d \n", fyear, fmonth, fday, fhours, fminutes);
-            // // printf("tyear %d tmonth %d tday %d thours %d tmin %d \n", tyear, tmonth, tday, thours, tminutes);
-            // // printf("cur %d, %d, %d, %d, %d\n", current->tm_year, current->tm_mon, current->tm_mday ,current->tm_hour, current->tm_min);
-            // if(current->tm_year < fyear || current->tm_hour > tyear){
-            //     return NO;
-            // }
-            // if(current->tm_mon < fmonth || current->tm_mon > tmonth){
-            //     return NO;
-            // }
-            // if(current->tm_mday < fday || current->tm_mday > tday){
-            //     return NO;
-            // }
-            // if(current->tm_hour < fhours || current->tm_hour > thours){
-            //     return NO;
-            // }
-            // if(current->tm_min < fminutes || current->tm_min > tminutes){
-            //     return NO;
-            // }
-            // return YES;
             // year is specified
             double diffT1, diffT2;
             struct tm* from = malloc(sizeof(struct tm));
@@ -407,7 +371,6 @@ int betweenDates(char* fromTime, char* fromYear, char* toTime, char* toYear, str
             // now i have my structs ready 
             diffT1 = difftime(mktime(from), mktime(current));
             diffT2 = difftime(mktime(to), mktime(current));
-            // if < 0 prwto mikrotero
             // change the latest date time
             if(diffT1 <= 0 && diffT2 >= 0){
                 // from is less than current 
@@ -423,6 +386,7 @@ int betweenDates(char* fromTime, char* fromYear, char* toTime, char* toYear, str
     }
 }
 
+// make sure that if a from date is given the to is also, the same for year
 int checkValidityofDates(char* fromTime, char* fromYear, char* toTime, char* toYear){
     if((fromTime == NULL) && (toTime != NULL)){
         return ERROR;
@@ -452,7 +416,6 @@ int findPayments(walletHT* wHT, char* senderID, SRHashT* sender, char* fromTime,
         return ERROR;
     }
 
-    // printf("Sender %s, has paid in total %d money in all of his transactions\n",this->_walletID, this->moneySent);
     // let's find all suitable trxs
     bucketNode* senderBuck;
     senderBuck = searchSRHT(sender, senderID);
@@ -488,7 +451,6 @@ int findEarnings(walletHT* wHT, char* receiverID, SRHashT* receiver, char* fromT
         return ERROR;
     }
 
-    // printf("receiver %s, has received in total %d money in all of his transactions\n",this->_walletID, this->moneyReceived);
     // let's find all suitable trxs
     bucketNode* receiverBuck;
     receiverBuck = searchSRHT(receiver, receiverID);
@@ -510,4 +472,3 @@ int findEarnings(walletHT* wHT, char* receiverID, SRHashT* receiver, char* fromT
     printf("user %s, has earned %d dollars in these transactions\n",this->_walletID, money);
     return SUCCESS;
 }
-

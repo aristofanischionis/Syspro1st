@@ -5,22 +5,16 @@
 #include "../HeaderFiles/Input.h"
 #include "../HeaderFiles/Structs.h"
 
-
-int readLines(char* in){
-    char *line = NULL;
-    size_t len = 0;
-    size_t nread;
-    int counter = 0;
-    FILE* input = FileRead(in);
-    while ((nread = getline(&line, &len, input)) != -1) {
-        counter++;
-    }
-    fclose(input);
-    return counter;
-}
+// very nice and simple function to read the btc balances file and 
+// calculate how many bitcoins i will have and how many wallet ids
+// lines will be the same num with the wallets
+// bitcoins will be the same number with whitespaces
+// good practises for hashtables say that the maximum of a hashtable load should be 70%
+// if it id >70% resizeup 2xsize
+// <30% load resizedown 2/size
+// so i decided to have my hashtables 70% loaded, so don't be overloaded, neither allocate more space than needed
 
 void NumberCalculator(char* btcBalances, int *btcNUM, int *WalNum){
-    // na einai to 70% otu hashtable
     int counter = 1; // number of wallets
     unsigned long spaces = 1; // number of bitcoins in file
     int ch;
@@ -32,12 +26,14 @@ void NumberCalculator(char* btcBalances, int *btcNUM, int *WalNum){
     fclose(input);
     
     // theoretically in a hashtable the load should be at max 70% of its size
+    // 10/7 ~= 1.42
     float num = 1.42;
     *btcNUM = (int)(num * spaces);
     *WalNum = (int)(num * counter);
     return;
 }
 
+// calculate how many bucketNode i will have in each bucket
 int bucketCalculator(int b){
     // we have to have buckets of b bytes
     // and inside we have to put an array of buckets
@@ -50,6 +46,7 @@ int bucketCalculator(int b){
     return sizeOfBucketNodeArray;
 }
 
+// parse command line args
 void paramChecker(int n, char* argv[], char* toCheck, char** result){
     int i = 1;
     while( i<n ){
@@ -73,6 +70,7 @@ void paramChecker(int n, char* argv[], char* toCheck, char** result){
     }
 }
 
+// bassically play the role of main
 int InputReader(int argc, char *argv[]){
     int n = argc;
     // init all the variables to be read as cmd line arguments
@@ -128,10 +126,9 @@ int InputReader(int argc, char *argv[]){
     SRHashT* sender;
     SRHashT* receiver;
     LinkedList* AllTrxs;
-
+    
+    // initializing the trxids ll 
     AllTrxs = init(sizeof(char*), freeString);
-    // int trxiDs = readLines(trxFile);
-    // printf("The trx file has got %d lines\n", trxiDs);
     int walNum = 0;
     int btcNum = 0;
     if(!strcmp(bitCoinBalancesFile, "")){
