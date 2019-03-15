@@ -53,7 +53,7 @@ void incrementUserBitcoin(userBitcoin* this, int v){
 
 void addNewUserBitcoin(wallet* this, userBitcoin* ubtc, int v){
     userBitcoin* clone = newUserBitcoin(v, ubtc->btc);
-    insertBEG(this->btcList, clone);
+    insertEND(this->btcList, clone);
 }
 
 
