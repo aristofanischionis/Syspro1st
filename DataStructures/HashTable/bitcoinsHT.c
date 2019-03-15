@@ -29,7 +29,6 @@ BitcoinHT* newBTC(const int size){
 }
 
 static void delNodeBTC(bitcoin* i){
-
     if(i->btcTree != NULL){
         destroyTree(i->btcTree);
     }

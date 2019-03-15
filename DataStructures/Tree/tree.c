@@ -28,15 +28,15 @@ void deleteLeft(btcTree* node){
 
     deleteLeft(node->lKid);
     deleteBTCnode(node->node);
-    free(node);
+    // free(node);
 }
 
 void deleteRight(btcTree* node){
     if (node == NULL) return;
     // first delete both subtrees
-
-    deleteRight(node->rKid);
-    free(node);
+    free(node->node->walletID);
+    // deleteRight(node->rKid);
+    // free(node);
 }
 
 void destroyTree(Tree* r){
@@ -46,9 +46,10 @@ void destroyTree(Tree* r){
         return;
     }
     // deleteNode(r->root);
+    deleteBTCnode(r->root->node);
     deleteLeft(r->root);
-    deleteRight(r->root);
-    free(r);
+    // deleteRight(r->root);
+    // free(r);
 }
 // void deleteNode(btcTree* node){
 //     if (node == NULL) return;

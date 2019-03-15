@@ -9,8 +9,8 @@
 
 
 void ExitProgram(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver){
-    delHTBTC(bht);
     delHT(wHT);
+    delHTBTC(bht);
     deleteSRHT(sender);
     deleteSRHT(receiver);
 }

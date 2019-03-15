@@ -23,7 +23,11 @@ wallet* newWallet(char* _walletID, LinkedList* btcList, int balance){
 
 void destroyBitcoin(void* data){
     bitcoin* b = (bitcoin*) data;
-    destroyTree(b->btcTree);
+    if(b == NULL) return ;
+    if(b->btcTree != NULL){
+        destroyTree(b->btcTree);
+    }
+    // free(b);
 }
 
 void deleteTRX(trxObject* trx){
@@ -38,16 +42,18 @@ void deleteTRX(trxObject* trx){
 void deleteBTCnode(btcNode* node){
     if(node == NULL) return;
     if(node->thisTrx == NULL) return;
-    // deleteTRX(node->thisTrx); 
-    printf("this trx is : %s\n", node->thisTrx->_trxID);  
+    deleteTRX(node->thisTrx); 
+    // printf("this trx is : %s\n", node->thisTrx->_trxID);  
     free(node->thisTrx);
-    free(node->walletID);
-    free(node);
+    // free(node->walletID);
+    // free(node);
 }
 
 
 void destroyUserBitcoin(void* data){
+    if(data == NULL) return ;
     userBitcoin* d = (userBitcoin*)data;
+    if(d->btc == NULL) return;
     destroyBitcoin(d->btc);
 }
 
@@ -84,7 +90,7 @@ btcNode* newBTCNode(char* walletID, int dollars, trxObject* txID){
 }
 
 LinkedList* newBtcList(){
-    return init(sizeof(userBitcoin), NULL);
+    return init(sizeof(userBitcoin), destroyUserBitcoin);
 }
 
 trxObject* newTrxObj(char* sendID, char* recID, char* id, int val, struct tm* t){

@@ -30,9 +30,9 @@ walletHT* new(const int size) {
 
 static void delNode(wallet* i) {
     free(i->_walletID);
-    // if(i->btcList != NULL){
-    //     destroy(i->btcList);
-    // }
+    if(i->btcList != NULL){
+        destroy(i->btcList);
+    }
     
     free(i);
 }
