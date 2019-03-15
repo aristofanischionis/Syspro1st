@@ -153,7 +153,7 @@ LinkedList* newBtcList(){
 }
 
 LinkedList* newTRXList(){
-    return init(sizeof(trxObject), deleteTRX);
+    return init(sizeof(trxObject), NULL);
 }
 
 LinkedList* newBucketList(){
