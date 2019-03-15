@@ -29,14 +29,18 @@ walletHT* new(const int size) {
 }
 
 static void delNode(wallet* i) {
-    destroy(i->btcList);
+    free(i->_walletID);
+    // if(i->btcList != NULL){
+    //     destroy(i->btcList);
+    // }
+    
     free(i);
 }
 
 void delHT(walletHT* ht) {
     for (int i = 0; i < ht->size; i++) {
         wallet* item = ht->nodes[i];
-        if (item != NULL && item != &DELETED_WALLET && !strcmp(item->_walletID,"")) {
+        if (item != NULL) {
             delNode(item);
         }
     }
@@ -65,23 +69,16 @@ void insert(walletHT* ht, wallet* item) {
     if(item == NULL) printf("wallet is NULL\n");
     int index = getHash(item->_walletID, ht->size, 0);
     
-    
     wallet* curItem = ht->nodes[index];
     // printf("id that is given after newWallet %s\n", ht->nodes[index]);
     int i = 1;
     while ( curItem != NULL ) {
-        // if( curItem != &DELETED_WALLET ){
         if (strcmp(curItem->_walletID, item->_walletID) == 0) {
             // if an _id is given that it has already been given
             printf("Error this wallet id already exists in the Hashtable\n");
             exit(1);
-            // delNode(curItem);
-            // // ht->nodes[index] = item;
-            // ht->nodes[index] = malloc(sizeof(wallet));
-            // memcpy(ht->nodes[index], item, sizeof(wallet));
-            // return;
+            
         }
-        // }
         index = getHash(item->_walletID, ht->size, i);
         curItem = ht->nodes[index];
         i++;

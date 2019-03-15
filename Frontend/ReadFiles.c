@@ -46,7 +46,7 @@ void initializeBitcoinTrees(wallet* this, int btcval){
             
         }
         ubtc->btc->btcTree->root = newTreeNode(t);
-
+        // ubtc->btc->btcTree->root = createTree()
         node = node->next;
     }
 
@@ -188,7 +188,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
     printf("Done reading both files Successfully!\n");
     findMax(AllTrxs);
     
-    // destroy(AllTrxs);
+    destroy(AllTrxs);
     fclose(input);
     fclose(input1);
     
@@ -213,7 +213,7 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
         printf("> ");
         if( getline(&buffer,&bufsize,stdin) == -1){
             //exits program
-            ExitProgram();
+            ExitProgram(wHT, bht, sender, receiver);
             free(command);
             free(buffer);
             free(line);
@@ -240,17 +240,23 @@ int InputManager(LinkedList* AllTrxs, walletHT* wHT, BitcoinHT* bht, SRHashT* se
                 // if ((pos=strchr(command[0], '\n')) != NULL) *pos = '\0';
                 if(!strcmp(command[0], "exit")){ 
                     //exits program
-                    ExitProgram();
-                    free(command);
-                    free(buffer);
-                    free(line);
+                    ExitProgram(wHT, bht, sender, receiver);
                     //
+                    memset(latest, 0, sizeof(struct tm));
+                    free(latest);
+                    free(_trxId);
                     free(walletID);
                     free(bitcoinID);
                     free(senderID);
                     free(receiverID);
                     free(date);
                     free(_time);
+                    free(file1);
+                    free(file2);
+                    free(command);
+                    free(buffer);
+                    free(line);
+                    //
                     return 0;
                 }
                 else fprintf(stderr, "Unknown Command Starting with:%s \n",command[0]);

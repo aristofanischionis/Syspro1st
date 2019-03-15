@@ -26,8 +26,6 @@ struct wallet {
     char* _walletID;
     struct LinkedList* btcList;  // this is a LL of userBitcoin*
     int balance;
-    // int moneyReceived;
-    // int moneySent;
 };
 
 struct userBitcoin {
@@ -51,6 +49,7 @@ struct trxObject {
     char* sender;
     char* receiver;
     int value;
+    int printed; // yes or no
     struct tm* _time; // time
 };
 
@@ -99,6 +98,7 @@ userBitcoin* newUserBitcoin(int amount, bitcoin* b);
 void destroyUserBitcoin(void* data);
 bitcoin* newBitcoin(int _bitcoinID, int btcVal, char* this);
 btcNode* newBTCNode(char* walletID, int dollars, trxObject* txID);
+void deleteBTCnode(btcNode* node);
 LinkedList* newBtcList();
 trxObject* newTrxObj(char* sendID, char* recID, char* id, int val, struct tm* t);
 LinkedList* newTRXList();

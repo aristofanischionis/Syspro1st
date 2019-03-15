@@ -8,8 +8,11 @@
 #include "../HeaderFiles/Transactions.h"
 
 
-void ExitProgram(){
-
+void ExitProgram(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver){
+    delHTBTC(bht);
+    delHT(wHT);
+    deleteSRHT(sender);
+    deleteSRHT(receiver);
 }
 // needs fix
 int traceCoin(int btcID, BitcoinHT* bHT){

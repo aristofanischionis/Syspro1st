@@ -29,14 +29,17 @@ BitcoinHT* newBTC(const int size){
 }
 
 static void delNodeBTC(bitcoin* i){
-    destroyTree(i->btcTree);
+
+    if(i->btcTree != NULL){
+        destroyTree(i->btcTree);
+    }
     free(i);
 }
 
 void delHTBTC(BitcoinHT* ht) {
     for (int i = 0; i < ht->size; i++) {
         bitcoin* item = ht->nodes[i];
-        if (item != NULL && item != &DELETED_BITCOIN) {
+        if (item != NULL) {
             delNodeBTC(item);
         }
     }
@@ -64,18 +67,11 @@ void insertBTC(BitcoinHT* ht, bitcoin* item) {
     
     int i = 1;
     while ( curItem != NULL ){
-        // if( curItem != &DELETED_BITCOIN ){
         if (curItem->_bitcoinID == item->_bitcoinID) {
             // if an _id is given that it has already been given
             printf("Error this bitcoin id already exists in the Hashtable\n");
             exit(1);
-            // delNodeBTC(curItem);
-            // // ht->nodes[index] = item;
-            // ht->nodes[index] = malloc(sizeof(bitcoin));
-            // memcpy(ht->nodes[index], item, sizeof(bitcoin));
-            // return;
         }
-        // }
         index = getHashBTC(item->_bitcoinID, ht->size, i);
         curItem = ht->nodes[index];
         i++;

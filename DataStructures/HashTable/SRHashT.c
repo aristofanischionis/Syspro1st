@@ -24,7 +24,12 @@ SRHashT* initSRHT(int h1, int numOfBucketNodes){
 }
 
 void deleteBucketNode(bucketNode* this){
-    destroy(this->headofList);
+
+    // if(this->headofList == NULL){
+    //     free(this);
+    //     return;
+    // }
+    // destroy(this->headofList);
     free(this);
 }
 

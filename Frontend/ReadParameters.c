@@ -15,6 +15,7 @@ int readLines(char* in){
     while ((nread = getline(&line, &len, input)) != -1) {
         counter++;
     }
+    fclose(input);
     return counter;
 }
 
@@ -103,12 +104,16 @@ int InputReader(int argc, char *argv[]){
     paramChecker(n, argv, "-t", &trxFile);
     paramChecker(n, argv, "-v", &btc);
     btcValue = atoi(btc);
+    free(btc);
     paramChecker(n, argv, "-h1", &h1);
     h1Num = atoi(h1);
+    free(h1);
     paramChecker(n, argv, "-h2", &h2);
     h2Num = atoi(h2);
+    free(h2);
     paramChecker(n, argv, "-b", &b);
     bSize = atoi(b);
+    free(b);
     // print them to be sure that everything is right
     if(bSize < 1 || btcValue < 1 || h1Num < 1 || h2Num < 1){
         printf("Wrong parameters are given to the program\n");

@@ -8,7 +8,7 @@ int printuserBTC(void *t);
 // call it in transactions if it's the first bitcoin a user gets
 void initializeBitcoinTrees(wallet* this, int btcval);
 FILE* FileRead (char *in);
-void ExitProgram();
+void ExitProgram(walletHT* wHT, BitcoinHT* bht, SRHashT* sender, SRHashT* receiver);
 struct tm* initLatest();
 
 int traceCoin(int btcID, BitcoinHT* bHT);

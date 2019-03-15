@@ -31,7 +31,7 @@ int destroy(LinkedList *list)
             list->freeFn(cur->data);
         }
 
-        free(cur->data);
+        // free(cur->data);
         free(cur);
     }
     return SUCCESS;
