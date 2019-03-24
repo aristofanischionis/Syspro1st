@@ -1,4 +1,4 @@
-First Syspro Assignment
+First Systems programming Assignment
 Bitcoin-like transaction system
 to run the program
 $ make
